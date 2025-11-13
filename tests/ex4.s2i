@@ -1,0 +1,49 @@
+| ex4 - Tri-state drivers with multiple Vdd using [Pin Mapping].
+|
+[IBIS Ver] 3.2
+[File rev] 0
+[Date] April 1, 2004
+[Source] From MegaFLOPS Inc. layout and silicon models.
+[Notes] Demonstrates [Pin Mapping] for multiple Vdd.
+[Disclaimer] Demonstration purposes only.
+[Copyright] Copyright 2004 MegaFLOPS Inc.
+[Cleanup]
+[Spice type] hspice
+[Temperature range] 27 100 0
+[Voltage range] 3.3 3 3.6
+[Sim time] 3ns
+[Vil] 0 0 0
+[Vih] 3.3 3 3.6
+[Rload] 500
+[R_pkg] 2.0m 1.0m 4.0m
+[L_pkg] 0.2nH 0.1nH 0.4nH
+[C_pkg] 2pF 1pF 4pF
+
+[Component] TriState Buffer
+[Manufacturer] MegaFLOPS Inc.
+
+[Spice file] tristate.sp
+
+[Pin]
+1 out out tri_model
+2 en en en_model
+3 vdd1 vdd1 POWER
+4 vdd2 vdd2 POWER
+5 gnd gnd GND
+
+[Pin Mapping]
+pullup pulldown gnd_clamp power_clamp
+1 vdd1 gnd vdd1
+2 vdd1 gnd vdd1
+
+[Model] tri_model
+[Model type] 3-state
+[Polarity] Non-inverting
+[Enable] Active-high
+[Model file] tristate.mod tristate.mod tristate.mod
+[C_comp] 20pf
+[Rising waveform] 500 0 NA NA NA NA NA NA NA
+[Falling waveform] 500 3.3 NA NA NA NA NA NA NA
+
+[Model] en_model
+[Model type] input

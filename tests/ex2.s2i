@@ -1,0 +1,43 @@
+| ex2 - Repeat of ex1 with HSPICE and a better model.
+|
+[IBIS Ver] 3.2
+[File rev] 0
+[Date] April 1, 2004
+[Source] From MegaFLOPS Inc. layout and silicon models.
+[Notes] Better model version.
+[Disclaimer] Demonstration purposes only.
+[Copyright] Copyright 2004 MegaFLOPS Inc.
+[Cleanup]
+[Spice type] hspice
+[Temperature range] 27 100 0
+[Voltage range] 3.3 3 3.6
+[Sim time] 3ns
+[Vil] 0 0 0
+[Vih] 3.3 3 3.6
+[Rload] 500
+[R_pkg] 2.0m 1.0m 4.0m
+[L_pkg] 0.2nH 0.1nH 0.4nH
+[C_pkg] 2pF 1pF 4pF
+
+[Component] MCM Driver 2
+[Manufacturer] MegaFLOPS Inc.
+
+[Spice file] better_buffer.sp
+
+[Pin]
+out out out driver
+-> in
+in in in dummy
+gnd gnd gnd GND
+vdd vdd vdd POWER
+
+[Model] driver
+[Model type] output
+[Polarity] Non-inverting
+[Model file] better_hspice.mod better_hspice.mod better_hspice.mod
+[C_comp] 20pf
+[Rising waveform] 500 0 NA NA NA NA NA NA NA
+[Falling waveform] 500 3.3 NA NA NA NA NA NA NA
+
+[Model] dummy
+[nomodel]

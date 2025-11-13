@@ -1,0 +1,38 @@
+[IBIS Ver] 3.2
+[File Name] ex3.ibs
+[File Rev] 0
+[Date] April 1, 2004
+[Source] From MegaFLOPS Inc. layout and silicon models.
+[Notes] Demonstrates [Series MOSFET].
+[Disclaimer] Demonstration purposes only.
+[Copyright] Copyright 2004 MegaFLOPS Inc.
+
+[Temperature Range] 2.700e+01 1.000e+02 0.000e+00
+[Voltage Range] 3.300e+00 3.000e+00 3.600e+00
+[Vil] 0.000e+00 0.000e+00 0.000e+00
+[Vih] 3.300e+00 3.000e+00 3.600e+00
+[Rload] 500.0
+[Sim Time] 3.000e-09
+[R_pkg] 2.000e-03 1.000e-03 4.000e-03
+[L_pkg] 2.000e-10 1.000e-10 4.000e-10
+[C_pkg] 2.000e-12 1.000e-12 4.000e-12
+
+[Component] Series MOSFET Test
+[Manufacturer] MegaFLOPS Inc.
+
+[Pin]
+pin_name signal_name model_name
+1        pin1         series_model
+2        pin2         series_model
+gnd      gnd          GND
+vdd      vdd          POWER
+
+[Model] series_model
+[Model type] series_switch
+[On]
+[Off]
+[R Series] 1.000e+06 NA NA
+[Series MOSFET]
+[Vds] 0.5
+[Vds] 1.0
+
