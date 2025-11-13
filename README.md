@@ -23,3 +23,4 @@ pip install -r requirements.txt
 
 # 4. Run the converter
 python main.py path/to/your_recipe.s2i -o my_output
+python main.py tests/buffer.s2i --outdir tests/output --spice-type hspice --iterate 1 --cleanup 0 --verbose

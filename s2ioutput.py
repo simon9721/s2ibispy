@@ -89,10 +89,17 @@ class IbisWriter:
                 comp.pinParasitics.C_pkg.min,
                 comp.pinParasitics.C_pkg.max
             )
+        # Print [Package] keyword
+        f.write("[Package]\n")
+
+        # Print table header
         self._print_typ_min_max_header(f)
+
+        # Print values
         self._print_keyword(f, "R_pkg", self._fmt_tmm(comp.pinParasitics.R_pkg, "Ohm"))
         self._print_keyword(f, "L_pkg", self._fmt_tmm(comp.pinParasitics.L_pkg, "H"))
         self._print_keyword(f, "C_pkg", self._fmt_tmm(comp.pinParasitics.C_pkg, "F"))
+
         f.write("\n")
 
         # [Pin]
@@ -235,10 +242,14 @@ class IbisWriter:
         f.write("\n")
 
     def _print_pin(self, f, pin: IbisPin) -> None:
-        r = self._fmt_float(pin.R_pin) if pin.R_pin != CS.NOT_USED else ""
-        l = self._fmt_float(pin.L_pin, "H") if pin.L_pin != CS.NOT_USED else ""
-        c = self._fmt_float(pin.C_pin, "F") if pin.C_pin != CS.NOT_USED else ""
-        f.write(f"{pin.pinName:<6} {pin.signalName:<20} {pin.modelName:<15} {r:>8} {l:>8} {c:>8}\n")
+        # If the model is "nomodel" (noModel flag set), comment the line
+        if pin.model and getattr(pin.model, "noModel", False):
+            f.write(f"| {pin.pinName} {pin.signalName} {pin.modelName}\n")
+        else:
+            r = self._fmt_float(pin.R_pin) if pin.R_pin != CS.NOT_USED else ""
+            l = self._fmt_float(pin.L_pin, "H") if pin.L_pin != CS.NOT_USED else ""
+            c = self._fmt_float(pin.C_pin, "F") if pin.C_pin != CS.NOT_USED else ""
+            f.write(f"{pin.pinName:<6} {pin.signalName:<20} {pin.modelName:<15} {r:>8} {l:>8} {c:>8}\n")
 
     def _print_pin_map(self, f, pm) -> None:
         if isinstance(pm, list):
@@ -286,10 +297,35 @@ class IbisWriter:
         if self._is_na(val):
             return "NA"
         val = float(val)
-        for suffix, scale in [("p", 1e-12), ("n", 1e-9), ("u", 1e-6), ("m", 1e-3), ("", 1), ("k", 1e3), ("M", 1e6)]:
-            if 0.1 <= abs(val / scale) < 1000:
-                return f"{val/scale:.4f}{suffix}{unit}"
-        return f"{val:.4g}{unit}"
+
+        # CRITICAL: START FROM LARGEST SCALE → SMALLEST
+        suffixes = [
+            ("M", 1e6), ("k", 1e3), ("", 1),
+            ("m", 1e-3), ("u", 1e-6), ("n", 1e-9), ("p", 1e-12)
+        ]
+
+        for suffix, scale in suffixes:
+            scaled = val / scale
+            if 0.1 <= abs(scaled) < 1000:
+                formatted = f"{scaled:.4f}{suffix}"
+                if unit == "Ohm":
+                    return formatted
+                elif unit == "H":
+                    return f"{formatted}H"
+                elif unit == "F":
+                    return f"{formatted}F"
+                else:
+                    return f"{formatted}{unit}"
+
+        fallback = f"{val:.4g}"
+        if unit == "Ohm":
+            return fallback
+        elif unit == "H":
+            return f"{fallback}H"
+        elif unit == "F":
+            return f"{fallback}F"
+        else:
+            return f"{fallback}{unit}"
 
     def _fmt_float(self, val, unit: str = "") -> str:
         return self._si(val, unit) if not self._is_na(val) else "NA"

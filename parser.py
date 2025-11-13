@@ -216,7 +216,8 @@ class S2IParser:
             return
 
         if key == "disclaimer":
-            self.ibis.disclaimer = args[: CS.MAX_IBIS_STRING_LENGTH]
+            #self.ibis.disclaimer = args[: CS.MAX_IBIS_STRING_LENGTH]
+            self.ibis.disclaimer += args + "\n"  # Append line
             return
 
         if key == "copyright":
@@ -536,6 +537,9 @@ class S2IParser:
                 self.tempModel.modelType = low_norm
             else:
                 self.tempModel.modelType = lookup.get(low_norm, low_norm)
+            # ADD THIS LINE
+            if low_norm == "nomodel":
+                self.tempModel.noModel = True
             if self.pendingSeriesModel and self.tempModel.modelType in [str(CS.ModelType.SERIES), str(CS.ModelType.SERIES_SWITCH)]:
                 self.tempModel.seriesModel = self.pendingSeriesModel
                 self.pendingSeriesModel = None
@@ -552,6 +556,7 @@ class S2IParser:
 
         if key == "nomodel" and self.modelProc:
             self.tempModel.modelType = "nomodel"
+            self.tempModel.noModel = True  # ← ADD
             return
 
         if key == "vinl" and self.modelProc:

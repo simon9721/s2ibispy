@@ -222,7 +222,7 @@ class S2IUtil:
                     continue
 
                 up = name.upper()
-                if up in {"POWER", "GND", "NC", "NOMODEL", "DUMMY", "#"}:
+                if up in {"POWER", "GND", "NC", "#"}:
                     pin.model = None
                     continue
 
