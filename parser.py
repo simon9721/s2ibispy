@@ -101,6 +101,8 @@ class S2IParser:
         logging.info(f"Parsing file: {self.ibis.thisFileName}")
         logging.info(f"Date: {self.ibis.date}")
 
+        in_multiline = None  # Tracks if we're inside [source], [notes], etc.
+
         # Build logical lines: handle inline comments and '+' continuations
         logical_lines: List[Tuple[int, str]] = []
         carry = ""
@@ -139,10 +141,31 @@ class S2IParser:
             m = re.match(r"\[(.*?)]\s*(.*)", line, re.IGNORECASE)
             if m:
                 keyword, args = m.groups()
-                self.process_key(keyword, args, line_num)
-                current_section = keyword.lower()
+                keyword = keyword.lower()
+
+                # FLUSH MULTI-LINE ON NEW KEYWORD
+                if in_multiline and keyword != in_multiline:
+                    in_multiline = None
+
+                # HANDLE MULTI-LINE KEYWORDS
+                if keyword in {"source", "notes", "disclaimer", "copyright"}:
+                    in_multiline = keyword
+                    setattr(self.ibis, keyword, args + "\n")
+                else:
+                    # ALWAYS CALL process_key() FOR NON-MULTILINE
+                    self.process_key(keyword, args, line_num)
+
+                current_section = keyword
             else:
-                self.process_data(line, current_section, line_num)
+                # DATA LINE
+                if in_multiline:
+                    current_text = getattr(self.ibis, in_multiline)
+                    setattr(self.ibis, in_multiline, current_text + line + "\n")
+                else:
+                    self.process_data(line, current_section, line_num)
+        # FLUSH FINAL MULTI-LINE
+        if in_multiline:
+            in_multiline = None
 
         # Close any open component
         if self.componentProc:
@@ -534,9 +557,13 @@ class S2IParser:
             }
 
             if low_norm.isdigit():
-                self.tempModel.modelType = low_norm
+                #self.tempModel.modelType = low_norm
+                # Convert to int, then map to enum
+                enum_val = int(low_norm)
+                self.tempModel.modelType = enum_val  # ← int
             else:
                 self.tempModel.modelType = lookup.get(low_norm, low_norm)
+
             # ADD THIS LINE
             if low_norm == "nomodel":
                 self.tempModel.noModel = True

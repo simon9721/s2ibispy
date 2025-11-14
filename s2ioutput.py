@@ -102,10 +102,11 @@ class IbisWriter:
 
         f.write("\n")
 
-        # [Pin]
+        # [Pin] — REVERSE INPUT ORDER (per correct .ibs)
         if comp.pList:
+            reversed_pins = comp.pList[::-1]  # Reverse the list
             f.write("[Pin]  signal_name          model_name           R_pin     L_pin     C_pin\n")
-            for pin in comp.pList:
+            for pin in reversed_pins:
                 self._print_pin(f, pin)
             f.write("\n")
 
@@ -128,15 +129,22 @@ class IbisWriter:
     def _print_model(self, f, model: IbisModel, ibis_ver: int) -> None:
         self._print_header(f, model.modelName, "Model")
         self._print_keyword(f, "[Model]", model.modelName)
-        self._print_keyword(f, "Model_type", self._model_type_str(model.modelType))
+        # === FIX: Convert string digit to int enum ===
+        mt = model.modelType
+        if isinstance(mt, str) and mt.isdigit():
+            mt = int(mt)
+        self._print_keyword(f, "Model_type", self._model_type_str(mt))
+        #self._print_keyword(f, "Model_type", self._model_type_str(model.modelType))
 
-        polarity = {CS.MODEL_POLARITY_NON_INVERTING: "Non-Inverting", CS.MODEL_POLARITY_INVERTING: "Inverting"}.get(model.polarity)
-        if polarity:
-            self._print_keyword(f, "Polarity", polarity)
+        # Always print Polarity (default: Non-Inverting)
+        polarity_str = {CS.MODEL_POLARITY_NON_INVERTING: "Non-Inverting", CS.MODEL_POLARITY_INVERTING: "Inverting"}.get(
+            model.polarity, "Non-Inverting")
+        self._print_keyword(f, "Polarity", polarity_str)
 
-        enable = {CS.MODEL_ENABLE_ACTIVE_HIGH: "Active-High", CS.MODEL_ENABLE_ACTIVE_LOW: "Active-Low"}.get(model.enable)
-        if enable:
-            self._print_keyword(f, "Enable", enable)
+        # Always print Enable (default: Active-High)
+        enable_str = {CS.MODEL_ENABLE_ACTIVE_HIGH: "Active-High", CS.MODEL_ENABLE_ACTIVE_LOW: "Active-Low"}.get(
+            model.enable, "Active-High")
+        self._print_keyword(f, "Enable", enable_str)
 
         if not self._is_na(model.Vinl.typ):
             self._print_keyword(f, "Vinl", f"{model.Vinl.typ:.10g}V")
@@ -270,10 +278,17 @@ class IbisWriter:
             f.write(f"{keyword} {value}\n")
 
     def _print_multiline(self, f, keyword: str, value: str) -> None:
-        if value:
-            for line in value.splitlines():
-                f.write(f"{keyword} {line}\n")
-            f.write("\n")
+        if not value:
+            return
+        lines = value.splitlines()
+        if not lines:
+            return
+        # Print keyword on first line
+        f.write(f"{keyword} {lines[0]}\n")
+        # Print remaining lines with leading space
+        for line in lines[1:]:
+            f.write(f" {line}\n")
+        f.write("\n")
 
     def _print_header(self, f, name: str, kind: str) -> None:
         bar = "|" + "*" * 78 + "\n"
