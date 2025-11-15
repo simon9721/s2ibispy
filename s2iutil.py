@@ -135,7 +135,8 @@ class S2IUtil:
 
             # scalars
             # Rload: only copy if model doesn’t define waves (common rule of thumb)
-            if (model.Rload == 0.0) and not (model.risingWaveList or model.fallingWaveList):
+            #if (model.Rload == 0.0) and not (model.risingWaveList or model.fallingWaveList):
+            if model.Rload == 0.0:
                 if not self._is_use_na(global_.Rload) and global_.Rload != 0.0:
                     model.Rload = global_.Rload
 

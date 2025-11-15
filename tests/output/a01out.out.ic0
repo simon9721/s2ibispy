@@ -1,7 +1,7 @@
 * "simulator" "PrimeSim HSPICE"
 * "version" "T-2022.06 win64"
 * "format" "HSP"
-* "rundate" "23:28:51 11/13/2025 "
+* "rundate" "13:37:52 11/15/2025 "
 * "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\output\a01out.spi "
 * "runtitle" "* typ rising_wave curve for model driver"
 * time =  0.000e+00       

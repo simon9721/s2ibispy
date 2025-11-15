@@ -951,7 +951,7 @@ class S2ISpice:
             return 1
 
         mock_out = os.path.join(self.outdir if self.outdir else self.mock_dir, os.path.basename(spice_out))
-        target_file = spice_out if os.path.exists(spice_out) else mock_out
+        target_file = spice_out
         logging.debug(f"[ramp] target_file={target_file}, retry_count={retry_count}")
 
         if not os.path.exists(target_file):
@@ -966,49 +966,24 @@ class S2ISpice:
             eldo_vi_hdr = CS.VIDataBeginMarker.get(self.spice_type, "")
             is_eldo = (self.spice_type == CS.SpiceType.ELDO)
 
-            data_start = False
-            rows_started = False
             t_v_pairs: List[Tuple[float, float]] = []
 
             for raw in lines:
                 line = raw.strip()
-                if not data_start:
-                    if (tran_hdr and tran_hdr in line) or ("time" in line.lower() and "volt" in line.lower()):
-                        data_start = True
-                    continue
-
-                if is_eldo and not rows_started:
-                    if line.startswith(eldo_vi_hdr):
-                        rows_started = True
-                    continue
-                elif not is_eldo:
-                    rows_started = True
-
-                if not line:
-                    continue
+                if not line or line.startswith('*'):
+                    continue  # ← SKIP ALL COMMENT LINES
 
                 toks = line.split()
                 if len(toks) < 2:
                     continue
 
-                # === Extract last two numeric columns: t and v ===
-                t_val = None
-                v_val = None
-                for j in range(len(toks) - 1, -1, -1):
-                    try:
-                        val = float(toks[j])
-                        if t_val is None:
-                            t_val = val
-                        elif v_val is None:
-                            v_val = val
-                            break
-                    except ValueError:
-                        pass
-
-                if t_val is None or v_val is None:
-                    continue
-
-                t_v_pairs.append((t_val, v_val))
+                # Try to read first two columns: time and voltage
+                try:
+                    t = float(toks[0])
+                    v = float(toks[1])
+                    t_v_pairs.append((t, v))
+                except ValueError:
+                    continue  # ← SKIP NON-NUMERIC LINES
 
             if not t_v_pairs:
                 logging.error(f"No valid ramp data found in {target_file}")
@@ -1083,7 +1058,13 @@ class S2ISpice:
                     model.ramp.dv_f.max = dv
                     model.ramp.dt_f.max = dt * (1 + derate_pct / 100.0)
 
-            logging.info(f"[ramp] Extracted ({command}) dv={dv:.3f}, dt={dt:.3e} from {target_file}")
+            # Replace your current logging.info with this:
+            curve_type_str = "RISING" if curve_type == CS.CurveType.RISING_RAMP else "FALLING"
+            logging.info(
+                f"[RAMP] {command.upper():>3} | {curve_type_str:<7} | "
+                f"dv={dv:.4f}V  dt={dt:.4e}s  v0={v0:.3f}V  v1={v1:.3f}V  "
+                f"model={model.modelName}  file={os.path.basename(target_file)}"
+            )
             return 0
 
         except Exception as e:
@@ -1106,7 +1087,7 @@ class S2ISpice:
             return 1
 
         mock_out = os.path.join(self.outdir if self.outdir else self.mock_dir, os.path.basename(spice_out))
-        target_file = spice_out if os.path.exists(spice_out) else mock_out
+        target_file = spice_out
         logging.debug(f"[wave] target_file={target_file}, retry_count={retry_count}")
 
         if not os.path.exists(target_file):

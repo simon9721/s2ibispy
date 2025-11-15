@@ -153,9 +153,15 @@ class IbisWriter:
 
         self._print_keyword(f, "C_comp", self._fmt_tmm(model.c_comp, "F"))
 
+        # [Temperature Range] — print raw values, no scaling
+        if not self._is_na_tmm(model.tempRange):
+            tr = model.tempRange
+            tr_str = f"{tr.typ:.4f} {tr.min:.4f} {tr.max:.4f}"
+            self._print_keyword(f, "[Temperature Range]", tr_str)
+
         if ibis_ver != CS.VERSION_ONE_ONE:
             for key, tmm, unit in [
-                ("[Temperature Range]", model.tempRange, ""),
+                #("[Temperature Range]", model.tempRange, ""),
                 ("[Voltage Range]", model.voltageRange, "V"),
                 ("[Pullup Reference]", model.pullupRef, "V"),
                 ("[Pulldown Reference]", model.pulldownRef, "V"),
@@ -211,22 +217,47 @@ class IbisWriter:
                     f"{self._fmt_float(i.max):>12}\n")
         f.write("\n")
 
-    def _print_ramp(self, f, ramp, rload: float) -> None:
+    def _print_ramp(self, f, ramp, model_rload: float) -> None:
+        # Use model.Rload if valid; else use global
+        effective_rload = model_rload
+
         f.write("[Ramp]\n")
-        f.write("| variable    typ          min          max\n")
+        f.write("| variable typ min max\n")  # ← EXACT header
+
+        def format_dt(dt_val: float) -> str:
+            if self._is_na(dt_val) or dt_val <= 0:
+                return "NA"
+            # Convert seconds → nanoseconds, add 'n'
+            return f"{dt_val * 1e9:.4g}n"
+
+        def format_dv_dv(dt_val: float, dv_val: float) -> str:
+            if self._is_na(dv_val) or self._is_na(dt_val) or dt_val <= 0:
+                return "NA"
+            dv_str = f"{dv_val:.4f}"
+            dt_str = format_dt(dt_val)
+            return f"{dv_str}/{dt_str}"
+
+        def format_rload(rload: float) -> str:
+            if self._is_na(rload) or rload <= 0:
+                return ""
+            if rload >= 1e3:
+                return f"{rload / 1e3:.4g}k"
+            else:
+                return f"{rload:.4g}"
+
         for edge, dv, dt in [("r", ramp.dv_r, ramp.dt_r), ("f", ramp.dv_f, ramp.dt_f)]:
-            line = f"dV/dt_{edge}     "
+            line = f"dV/dt_{edge} "
             for corner in ['typ', 'min', 'max']:
                 dv_val = getattr(dv, corner)
                 dt_val = getattr(dt, corner)
-                if self._is_na(dv_val) or self._is_na(dt_val) or dt_val == 0:
-                    val = "NA"
-                else:
-                    val = f"{dv_val/dt_val:.4g}"
-                line += f"{val:>10}  "
-            f.write(line + "\n")
-        if not self._is_na(rload):
-            f.write(f"R_load = {rload:.4g}\n")
+                val = format_dv_dv(dt_val, dv_val)
+                line += f"{val:>13} "
+            f.write(line.rstrip() + "\n")
+
+        rload_str = format_rload(effective_rload)
+        if rload_str:
+            f.write(f"R_load = {rload_str}\n")
+
         f.write("\n")
 
     def _print_waveform(self, f, wave: IbisWaveTable, direction: str) -> None:

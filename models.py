@@ -154,7 +154,10 @@ class IbisModel:
     # Analysis knobs
     simTime: float = 0.0
     Rload: float = 0.0
-    c_comp: IbisTypMinMax = field(default_factory=IbisTypMinMax)
+    #c_comp: IbisTypMinMax = field(default_factory=IbisTypMinMax)
+    c_comp: IbisTypMinMax = field(
+        default_factory=lambda: IbisTypMinMax(typ=5.0e-12, min=5.0e-12, max=5.0e-12)
+    )
     clampTol: float = 0.0
     derateVIPct: float = 0.0
     derateRampPct: float = 0.0
@@ -166,7 +169,8 @@ class IbisModel:
     Cac: IbisTypMinMax = field(default_factory=IbisTypMinMax)
 
     # Data / results
-    ramp: Optional[IbisRamp] = None
+    #ramp: Optional[IbisRamp] = None
+    ramp: IbisRamp = field(default_factory=IbisRamp)  # ← CORRECT
     pullupData: Optional[IbisVItable] = None
     pulldownData: Optional[IbisVItable] = None
     powerClampData: Optional[IbisVItable] = None
@@ -268,8 +272,8 @@ class IbisModel:
             self.seriesVITables = []
 
         # Ensure ramp exists so code can rely on it
-        if self.ramp is None:
-            self.ramp = IbisRamp()
+        #if self.ramp is None:
+        #    self.ramp = IbisRamp()
 
         # Normalize scalar inputs to .typ only
         for field in ['Vinl', 'Vinh', 'Vmeas', 'Cref', 'Rref', 'Vref']:
@@ -362,7 +366,7 @@ class IbisGlobal:
     gndClampRef: IbisTypMinMax = field(default_factory=IbisTypMinMax)
     vil: IbisTypMinMax = field(default_factory=IbisTypMinMax)
     vih: IbisTypMinMax = field(default_factory=IbisTypMinMax)
-    Rload: float = 0.0
+    Rload: float = 50.0
     simTime: float = 0.0
     pinParasitics: IbisPinParasitics = field(default_factory=IbisPinParasitics)
     tr: IbisTypMinMax = field(default_factory=IbisTypMinMax)

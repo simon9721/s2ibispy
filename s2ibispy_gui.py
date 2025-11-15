@@ -379,9 +379,56 @@ class S2IBISpyGUI:
                     str(pin.C_pin) if pin.C_pin != CS.NOT_USED else ""
                 ))
 
-    def _model_type_str(self, mt):
-        mapping = {v: k for k, v in CS.ModelType.__members__.items()}
-        return mapping.get(mt, str(mt)) if isinstance(mt, CS.ModelType) else str(mt)
+    def _model_type_str(self, mt) -> str:
+        """Convert ModelType: str/int/enum → IBIS string (e.g., '2', 2, CS.ModelType.OUTPUT → 'Output')"""
+        from s2i_constants import ConstantStuff as CS
+
+        # Mapping: enum → string
+        mapping = {
+            CS.ModelType.INPUT: "Input",
+            CS.ModelType.OUTPUT: "Output",
+            CS.ModelType.I_O: "I/O",
+            CS.ModelType.SERIES: "Series",
+            CS.ModelType.SERIES_SWITCH: "Series_switch",
+            CS.ModelType.TERMINATOR: "Terminator",
+            CS.ModelType.OPEN_DRAIN: "Open_drain",
+            CS.ModelType.OPEN_SINK: "Open_sink",
+            CS.ModelType.OPEN_SOURCE: "Open_source",
+            CS.ModelType.IO_OPEN_DRAIN: "I/O_Open_drain",
+            CS.ModelType.IO_OPEN_SINK: "I/O_Open_sink",
+            CS.ModelType.IO_OPEN_SOURCE: "I/O_Open_source",
+            CS.ModelType.OUTPUT_ECL: "Output_ECL",
+            CS.ModelType.IO_ECL: "I/O_ECL",
+            CS.ModelType.THREE_STATE: "3-state",
+        }
+
+        # 1. If already enum → use mapping
+        if isinstance(mt, CS.ModelType):
+            return mapping.get(mt, "Output")
+
+        # 2. If string → try to convert to int → enum
+        if isinstance(mt, str):
+            mt = mt.strip()
+            if mt.isdigit():
+                mt = int(mt)
+            else:
+                # Try direct name lookup (e.g., "Output", "I/O")
+                try:
+                    enum_val = getattr(CS.ModelType, mt.upper().replace("/", "_").replace("-", "_"))
+                    return mapping.get(enum_val, mt)
+                except AttributeError:
+                    return mt  # fallback to raw string
+
+        # 3. If int → convert to enum
+        if isinstance(mt, int):
+            try:
+                enum_val = CS.ModelType(mt)
+                return mapping.get(enum_val, str(mt))
+            except ValueError:
+                return str(mt)
+
+        # 4. Fallback
+        return str(mt)
 
     def _polarity_str(self, p): return "Inverting" if p == CS.MODEL_POLARITY_INVERTING else "Non-Inverting"
     def _enable_str(self, e): return "Active-Low" if e == CS.MODEL_ENABLE_ACTIVE_LOW else "Active-High"

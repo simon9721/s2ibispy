@@ -47,8 +47,8 @@ out    out                  driver
 Model_type Output
 Polarity Non-Inverting
 Enable Active-Low
-C_comp NA NA NA
-[Temperature Range] 27.0000 0.1000k 0
+C_comp 5.0000pF 5.0000pF 5.0000pF
+[Temperature Range] 27.0000 100.0000 0.0000
 [Voltage Range] 3.3000V 3.0000V 3.6000V
 [Pulldown]
 | Voltage     I(typ)        I(min)        I(max)
@@ -257,10 +257,10 @@ C_comp NA NA NA
   6.3000     -72.5300m       -0.1067     -80.7100m
 
 [Ramp]
-| variable    typ          min          max
-dV/dt_r      4.839e+09   4.839e+09   1.064e+10  
-dV/dt_f      4.839e+09   4.839e+09   4.839e+09  
-R_load = 0
+| variable typ min max
+dV/dt_r 1.8312/0.1696n 1.6440/0.1935n 2.0076/0.1773n
+dV/dt_f 1.8845/0.1525n 1.7182/0.1972n 2.0519/0.1471n
+R_load = 500
 
 [Rising Waveform] 0.5000k 0
 | time       V(typ)       V(min)       V(max)
