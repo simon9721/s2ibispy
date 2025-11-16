@@ -261,23 +261,43 @@ class IbisWriter:
         f.write("\n")
 
     def _print_waveform(self, f, wave: IbisWaveTable, direction: str) -> None:
-        header = f"[{direction} Waveform]"
-        params = [self._fmt_float(wave.R_fixture), self._fmt_float(wave.V_fixture)]
-        for attr, unit in [
-            ("V_fixture_min", ""), ("V_fixture_max", ""),
-            ("L_fixture", "H"), ("C_fixture", "F"),
-            ("R_dut", ""), ("L_dut", "H"), ("C_dut", "F")
-        ]:
-            val = getattr(wave, attr, CS.USE_NA)
-            if not self._is_na(val):
-                params.append(self._fmt_float(val, unit))
-        f.write(f"{header} {' '.join(params)}\n")
-        f.write("| time       V(typ)       V(min)       V(max)\n")
-        for e in wave.waveData or []:
-            f.write(f"{self._fmt_float(e.t, 's'):>8}  "
-                    f"{self._fmt_float(e.v.typ):>10}  "
-                    f"{self._fmt_float(e.v.min):>10}  "
-                    f"{self._fmt_float(e.v.max):>10}\n")
+        if not wave.waveData:
+            return
+
+        # === [Rising/Falling Waveform] Header ===
+        f.write(f"[{direction} Waveform]\n")
+        f.write(f"R_fixture = {wave.R_fixture:.4g}\n")
+        f.write(f"V_fixture = {wave.V_fixture:.4g}\n")
+        if wave.V_fixture_min is not None and not math.isnan(wave.V_fixture_min):
+            f.write(f"V_fixture_min = {wave.V_fixture_min:.4g}\n")
+        if wave.V_fixture_max is not None and not math.isnan(wave.V_fixture_max):
+            f.write(f"V_fixture_max = {wave.V_fixture_max:.4g}\n")
+
+        # === Java-Exact Table Header ===
+        f.write("|time             V(typ)              V(min)              V(max)\n")
+
+        # === DEBUG: LOG LAST BIN VALUE ===
+        last_idx = len(wave.waveData) - 1
+        last_pt = wave.waveData[last_idx]
+        logging.debug(
+            f"[PRINT] {direction} LAST BIN [{last_idx}]: "
+            f"t={last_pt.t:.4e}  "
+            f"V(typ)={last_pt.v.typ:.6g}  V(min)={last_pt.v.min:.6g}  V(max)={last_pt.v.max:.6g}"
+        )
+
+        # === Data Rows — Exact Java Format ===
+        for pt in wave.waveData:
+            # Time: in ns, 4 decimal places, 'n' suffix, right-aligned to 15 chars
+            t_str = f"{pt.t * 1e9:.4f}n"
+            t_str = t_str.rjust(15)
+
+            # Voltages: up to 10 significant digits, right-aligned to 15 chars
+            v_typ = f"{pt.v.typ:.10g}".rjust(15)
+            v_min = f"{pt.v.min:.10g}".rjust(15)
+            v_max = f"{pt.v.max:.10g}".rjust(15)
+
+            f.write(f"{t_str}  {v_typ}  {v_min}  {v_max}\n")
+
         f.write("\n")
 
     def _print_pin(self, f, pin: IbisPin) -> None:

@@ -134,7 +134,9 @@ vdd vdd vdd POWER
 |[c_comp] 20pf
 [Rising waveform] 500 0 NA NA NA NA NA NA NA
 [Rising waveform] 1500 0 NA NA NA NA NA NA NA
+
 |[Rising waveform] 2500 0 NA NA NA NA NA NA NA
+
 [Falling waveform] 500 3.3 NA NA NA NA NA NA NA
 [Falling waveform] 3500 3.3 NA NA NA NA NA NA NA
 

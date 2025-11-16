@@ -786,7 +786,8 @@ class AnalyzePin:
             rising_sorted = sorted(rising_waves, key=lambda w: w.R_fixture, reverse=True)
 
             for file_idx, wave in enumerate(rising_sorted):
-                orig_idx = current_pin.model.risingWaveList.index(wave)
+                orig_idx = next((i for i, w in enumerate(current_pin.model.risingWaveList)
+                                 if w.R_fixture == wave.R_fixture), -1)
                 rc = self.s2ispice.generate_wave_data(
                     current_pin=current_pin,
                     enable_pin=enable_pin,
@@ -816,7 +817,8 @@ class AnalyzePin:
             falling_sorted = sorted(falling_waves, key=lambda w: w.R_fixture, reverse=True)
 
             for file_idx, wave in enumerate(falling_sorted):
-                orig_idx = current_pin.model.fallingWaveList.index(wave)
+                orig_idx = next((i for i, w in enumerate(current_pin.model.fallingWaveList)
+                                 if w.R_fixture == wave.R_fixture), -1)
                 rc = self.s2ispice.generate_wave_data(
                     current_pin=current_pin,
                     enable_pin=enable_pin,

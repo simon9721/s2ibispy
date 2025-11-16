@@ -414,3 +414,4 @@ class IbisPinMap:
 class seriesSwitchGroup:
     state: str = ""
     groupNames: List[str] = field(default_factory=list)
+

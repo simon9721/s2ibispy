@@ -918,8 +918,9 @@ class S2ISpice:
 
             logging.debug(f"Extracted: v={v_val:.6e}, i={i_val:.6e} from: {raw_line}")
 
-            vi_cont.VIs[row].v = v_val
+            #vi_cont.VIs[row].v = v_val
             if command == "typ":
+                vi_cont.VIs[row].v = v_val
                 vi_cont.VIs[row].i.typ = i_val
             elif command == "min":
                 vi_cont.VIs[row].i.min = i_val
@@ -1080,239 +1081,132 @@ class S2ISpice:
             spice_out: str,
             command: str,
             wave_p: IbisWaveTable,
-            retry_count: int = 0
+            curve_type: int
     ) -> int:
-        if retry_count > 1:
-            logging.error(f"Max retries reached for {spice_out}")
+        if not os.path.exists(spice_out):
+            logging.error(f"Cannot find {spice_out}")
             return 1
 
-        mock_out = os.path.join(self.outdir if self.outdir else self.mock_dir, os.path.basename(spice_out))
-        target_file = spice_out
-        logging.debug(f"[wave] target_file={target_file}, retry_count={retry_count}")
-
-        if not os.path.exists(target_file):
-            logging.error(f"Unable to open {target_file} for reading")
-            return 1
-
-        if not sim_time or math.isnan(sim_time) or sim_time <= 0:
+        if sim_time <= 0 or math.isnan(sim_time):
             sim_time = 10e-9
-            logging.warning(f"Invalid sim_time, using {sim_time}")
 
         max_bins = CS.WAVE_POINTS_DEFAULT
         bin_time = sim_time / (max_bins - 1)
 
-        # Pre-allocate
-        if not wave_p.waveData or len(wave_p.waveData) != max_bins:
-            wave_p.waveData = [IbisWaveTableEntry(t=0.0, v=IbisTypMinMax(0.0, 0.0, 0.0))
-                               for _ in range(max_bins)]
-
         try:
-            with open(target_file, "r") as f:
+            with open(spice_out, 'r') as f:
                 lines = f.readlines()
 
-            tran_hdr = CS.tranDataBeginMarker.get(self.spice_type, "")
-            is_eldo = (self.spice_type == CS.SpiceType.ELDO)
-
+            # Find start of data
             data_start = False
-            rows_started = False
-            t_v_pairs: List[Tuple[float, float]] = []
-
-            for raw in lines:
-                line = raw.strip()
-                if not data_start:
-                    if tran_hdr and tran_hdr in line:
-                        data_start = True
-                    continue
-
-                # ELDO: wait for SECOND tran marker
-                if is_eldo and not rows_started:
-                    if tran_hdr and tran_hdr in line:
-                        rows_started = True
-                    continue
-                elif not is_eldo and not rows_started:
-                    rows_started = True
-
-                if not line:
-                    continue
-
-                toks = line.split()
-                if len(toks) < 2:
-                    continue
-
-                # Extract last two numeric: t, v
-                t_val = None
-                v_val = None
-                for j in range(len(toks) - 1, -1, -1):
-                    try:
-                        val = float(toks[j])
-                        if t_val is None:
-                            t_val = val
-                        elif v_val is None:
-                            v_val = val
-                            break
-                    except ValueError:
-                        pass
-
-                if t_val is None or v_val is None:
-                    continue
-
-                t_v_pairs.append((t_val, v_val))
-
-            if not t_v_pairs:
-                logging.error(f"No valid waveform data found in {target_file}")
-                if os.path.exists(mock_out) and target_file != mock_out:
-                    shutil.copy(mock_out, spice_out)
-                    return self.get_spice_wave_data(sim_time, spice_out, command, wave_p, retry_count + 1)
+            for i, line in enumerate(lines):
+                if 'time' in line.lower() and any(x in line.lower() for x in ['v(', 'voltage', 'out']):
+                    data_start = True
+                    header_line = i
+                    break
+            if not data_start:
+                logging.error("No 'time v(' header found")
                 return 1
 
-            t_v_pairs.sort(key=lambda x: x[0])
+            t_v_pairs = []
+            for line in lines[header_line + 2:]:
+                line = line.strip()
+                if not line or line.startswith('*'):
+                    continue
+                parts = line.split()
+                if len(parts) < 2:
+                    continue
+                try:
+                    t = float(parts[0])
+                    v = float(parts[1])
+                    if 0 <= t <= sim_time:
+                        t_v_pairs.append((t, v))
+                except ValueError:
+                    continue
 
-            bin_param = BinParams(
-                last_bin=0,
-                interp_bin=0,
-                running_sum=0.0,
-                num_points_in_bin=0
+            if not t_v_pairs:
+                logging.error("No V-t data extracted")
+                return 1
+
+            # === BINNING ===
+            bin_param = [0, 0, 0.0, 0]
+            for t, v in t_v_pairs:
+                self._bin_tran_data_java(t, v, sim_time, bin_time, command, bin_param, wave_p)
+
+            # === CLOSE LAST BIN (MATCH JAVA) ===
+            if bin_param[3] > 0:
+                v_avg = bin_param[2] / bin_param[3]
+                last_bin = bin_param[0]
+                t_bin = last_bin * bin_time
+                wave_p.waveData[last_bin].t = t_bin
+                setattr(wave_p.waveData[last_bin].v, command, v_avg)
+
+            # FIXED LOG
+            direction = "RISING" if curve_type == CS.CurveType.RISING_WAVE else "FALLING"
+            logging.info(
+                f"[WAVE] {command.upper():>3} | {direction:<7} | "
+                f"R_fixture={wave_p.R_fixture:.1f}  V_fixture={wave_p.V_fixture:.3f}  "
+                f"file={os.path.basename(spice_out)}"
             )
 
-            # === PROCESS FIRST POINT ===
-            if t_v_pairs:
-                first_t, first_v = t_v_pairs[0]
-                current_bin = round(first_t / bin_time)
-                if 0 <= current_bin < max_bins:
-                    bin_param.last_bin = current_bin
-                    bin_param.running_sum = first_v
-                    bin_param.num_points_in_bin = 1
-                    # Set first bin
-                    wave_p.waveData[current_bin].t = current_bin * bin_time
-                    if command == "typ":
-                        wave_p.waveData[current_bin].v.typ = first_v
-                    elif command == "min":
-                        wave_p.waveData[current_bin].v.min = first_v
-                    else:
-                        wave_p.waveData[current_bin].v.max = first_v
-
-            # === PROCESS REST ===
-            for t, v in t_v_pairs[1:]:
-                self._bin_tran_data_java(
-                    t=t, v=v, sim_time=sim_time, bin_time=bin_time,
-                    command=command, bin_param=bin_param, wave_p=wave_p
-                )
-
-            # === LAST BIN ===
-            if bin_param.num_points_in_bin > 0 and 0 <= bin_param.last_bin < max_bins:
-                v_avg = bin_param.running_sum / bin_param.num_points_in_bin
-                t_bin = sim_time
-                wave_p.waveData[bin_param.last_bin].t = t_bin
-                if command == "typ":
-                    wave_p.waveData[bin_param.last_bin].v.typ = v_avg
-                elif command == "min":
-                    wave_p.waveData[bin_param.last_bin].v.min = v_avg
-                else:
-                    wave_p.waveData[bin_param.last_bin].v.max = v_avg
-
-            # === FINAL INTERPOLATION (Java: from interpBin to lastBin using LAST DATA POINT) ===
-            if t_v_pairs and bin_param.last_bin != bin_param.interp_bin:
-                t_interp_bin = wave_p.waveData[bin_param.interp_bin].t
-                if command == "typ":
-                    v_interp_bin = wave_p.waveData[bin_param.interp_bin].v.typ
-                elif command == "min":
-                    v_interp_bin = wave_p.waveData[bin_param.interp_bin].v.min
-                else:
-                    v_interp_bin = wave_p.waveData[bin_param.interp_bin].v.max
-
-                last_t, last_v = t_v_pairs[-1]  # Java uses last point in data
-                for i in range(bin_param.interp_bin + 1, bin_param.last_bin):
-                    t_interp = i * bin_time
-                    if abs(last_t - t_interp_bin) < 1e-30:
-                        v_interp = last_v
-                    else:
-                        v_interp = v_interp_bin + (t_interp - t_interp_bin) * (last_v - v_interp_bin) / (
-                                    last_t - t_interp_bin)
-                    wave_p.waveData[i].t = t_interp
-                    if command == "typ":
-                        wave_p.waveData[i].v.typ = v_interp
-                    elif command == "min":
-                        wave_p.waveData[i].v.min = v_interp
-                    else:
-                        wave_p.waveData[i].v.max = v_interp
-
-            wave_p.size = max_bins
-            logging.info(f"[wave] Extracted ({command}) {wave_p.size} points from {target_file}")
             return 0
 
         except Exception as e:
-            logging.error(f"Error parsing waveform data from {target_file}: {e}")
-            if os.path.exists(mock_out) and target_file != mock_out:
-                shutil.copy(mock_out, spice_out)
-                return self.get_spice_wave_data(sim_time, spice_out, command, wave_p, retry_count + 1)
+            logging.error(f"Parse error: {e}")
             return 1
 
     def _bin_tran_data_java(
-            self,
-            t: float,
-            v: float,
-            sim_time: float,
-            bin_time: float,
-            command: str,
-            bin_param: BinParams,
-            wave_p: IbisWaveTable
+            self, t: float, v: float, sim_time: float, bin_time: float,
+            command: str, bin_param: list, wave_p: IbisWaveTable
     ) -> None:
         """
-        Mirror of Java binTranData:
-          - Average all points that land in the same bin.
-          - When we *advance* to a new bin, write the previous bin’s averaged value.
-          - If we skipped bins, fill those bins *flat* with the last bin’s avg value.
-          - Track interpBin as in Java (used by post-loop interpolation in get_spice_wave_data).
+        EXACT port of Java binTranData using list:
+        bin_param = [last_bin, interp_bin, running_sum, num_points_in_bin]
         """
         if bin_time <= 0:
             return
 
         max_bins = CS.WAVE_POINTS_DEFAULT
-        current_bin = round(t / bin_time)
+        current_bin = min(math.ceil(t / bin_time), max_bins - 1)
 
-        # Ignore samples that land outside our table’s bin range
-        if current_bin < 0 or current_bin >= max_bins:
+        #logging.debug(f"[BIN] t={t:.4e} v={v:.4e} current_bin={current_bin}")
+
+        last_bin = bin_param[0]
+
+        if current_bin == last_bin:
+            bin_param[2] += v
+            bin_param[3] += 1
+            logging.debug(f"[BIN] Added to bin {current_bin}: sum={bin_param[2]} count={bin_param[3]}")
             return
 
-        if current_bin == bin_param.last_bin:
-            # Still in same bin: accumulate
-            bin_param.running_sum += v
-            bin_param.num_points_in_bin += 1
-            return
+        # Close previous bin
+        if bin_param[3] > 0 and 0 <= last_bin < max_bins:
+            v_avg = bin_param[2] / bin_param[3]
+            t_bin = last_bin * bin_time
+            wave_p.waveData[last_bin].t = t_bin
+            setattr(wave_p.waveData[last_bin].v, command, v_avg)
+            #logging.debug(f"[BIN] Closed bin {last_bin}: t={t_bin:.4e} v_avg={v_avg:.4e} ({command})")
 
-        # We moved to a new bin: finalize previous bin with its average
-        if 0 <= bin_param.last_bin < max_bins and bin_param.num_points_in_bin > 0:
-            v_last_bin = bin_param.running_sum / max(1, bin_param.num_points_in_bin)
-            t_last_bin = bin_param.last_bin * bin_time
-            wave_p.waveData[bin_param.last_bin].t = t_last_bin
-            if command == "typ":
-                wave_p.waveData[bin_param.last_bin].v.typ = v_last_bin
-            elif command == "min":
-                wave_p.waveData[bin_param.last_bin].v.min = v_last_bin
-            else:
-                wave_p.waveData[bin_param.last_bin].v.max = v_last_bin
+            # Interpolate skipped bins (linear)
+            interp_bin = bin_param[1]
+            if last_bin > interp_bin + 1:
+                t_start = wave_p.waveData[interp_bin].t
+                v_start = getattr(wave_p.waveData[interp_bin].v, command)
+                for i in range(interp_bin + 1, last_bin):
+                    t_interp = i * bin_time
+                    frac = (t_interp - t_start) / (t_bin - t_start)
+                    v_interp = v_start + frac * (v_avg - v_start)
+                    wave_p.waveData[i].t = t_interp
+                    setattr(wave_p.waveData[i].v, command, v_interp)
+                    #logging.debug(f"[BIN] Interpolated bin {i}: t={t_interp:.4e} v_interp={v_interp:.4e} ({command})")
 
-            # If bins were skipped, Java fills these with the *same* v_last_bin (no interpolation here)
-            if current_bin > bin_param.last_bin + 1:
-                for i in range(bin_param.last_bin + 1, current_bin):
-                    wave_p.waveData[i].t = i * bin_time
-                    if command == "typ":
-                        wave_p.waveData[i].v.typ = v_last_bin
-                    elif command == "min":
-                        wave_p.waveData[i].v.min = v_last_bin
-                    else:
-                        wave_p.waveData[i].v.max = v_last_bin
+            bin_param[1] = last_bin  # interp_bin = last_bin
 
-        # Update interpBin like Java
-        if current_bin > (bin_param.last_bin + 1):
-            bin_param.interp_bin = bin_param.last_bin
-        else:
-            bin_param.interp_bin = current_bin
-
-        # Start accumulation for the new bin
-        bin_param.last_bin = current_bin
-        bin_param.running_sum = v
-        bin_param.num_points_in_bin = 1
+        # Start new bin
+        bin_param[0] = current_bin
+        bin_param[2] = v
+        bin_param[3] = 1
+        #logging.debug(f"[BIN] Started new bin {current_bin}: sum={bin_param[2]} count={bin_param[3]}")
 
     def generate_vi_curve(
             self,
@@ -1645,109 +1539,139 @@ class S2ISpice:
 
         logging.debug(f"Using simTime={model.simTime}, spice_file={active_sp_file} for waveform data generation")
 
-        wave = model.risingWaveList[index] if curve_type == CS.CurveType.RISING_WAVE else model.fallingWaveList[index]
+        # === CLEAR AND USE EXISTING WAVES FROM INPUT ===
+        if curve_type == CS.CurveType.RISING_WAVE:
+            input_waves = model.risingWaveList
+            model.risingWaveList = []
+        else:
+            input_waves = model.fallingWaveList
+            model.fallingWaveList = []
+
+        # === GET UNIQUE R_fixture FROM INPUT (NO HARD-CODING) ===
+        r_fixtures = []
+        for wave in input_waves:
+            if wave.R_fixture not in r_fixtures:
+                r_fixtures.append(wave.R_fixture)
+
+        # === REBUILD WAVES LIST WITH R_fixture and V_fixture FROM INPUT ===
+        waves = []
+        for input_wave in input_waves:
+            wave = IbisWaveTable(
+                R_fixture=input_wave.R_fixture,
+                V_fixture=input_wave.V_fixture  # SINGLE VALUE
+            )
+            wave.waveData = [
+                IbisWaveTableEntry(t=0.0, v=IbisTypMinMax(0, 0, 0))
+                for _ in range(CS.WAVE_POINTS_DEFAULT)
+            ]
+            waves.append(wave)
+            if curve_type == CS.CurveType.RISING_WAVE:
+                model.risingWaveList.append(wave)
+            else:
+                model.fallingWaveList.append(wave)
+
+        # === INITIALIZE waveData ONCE PER WAVE (CRITICAL FIX) ===
+        # === INITIALIZE waveData WITH REAL OBJECTS ===
+        for wave in waves:
+            wave.waveData = [
+                IbisWaveTableEntry(t=0.0, v=IbisTypMinMax(0, 0, 0))
+                for _ in range(CS.WAVE_POINTS_DEFAULT)
+            ]
+
         output_state = CS.OUTPUT_RISING if curve_type == CS.CurveType.RISING_WAVE else CS.OUTPUT_FALLING
 
-        # Initialize waveform data
-        if not getattr(wave, "waveData", None) or not wave.waveData:
-            wave.waveData = [IbisWaveTableEntry(t=0.0, v=IbisTypMinMax(0.0, 0.0, 0.0))
-                             for _ in range(CS.WAVE_POINTS_DEFAULT)]
-        wave.waveData[0].t = 0.0
-        wave.waveData[0].v.typ = 0.0
-        wave.waveData[0].v.min = 0.0
-        wave.waveData[0].v.max = 0.0
-
-        node_list = [current_pin.pinName] + [f"dummy{i}" for i in range(10)]
-        node_index = 0
-        load_buffer = ""
-
-        if not math.isnan(wave.L_dut):
-            load_buffer += f"LDUTS2I {node_list[node_index]} {node_list[node_index + 1]} {wave.L_dut}\n"
-            node_index += 1
-        if not math.isnan(wave.R_dut):
-            load_buffer += f"RDUTS2I {node_list[node_index]} {node_list[node_index + 1]} {wave.R_dut}\n"
-            node_index += 1
-        if not math.isnan(wave.C_dut):
-            load_buffer += f"CDUTS2I {node_list[node_index]} 0 {wave.C_dut}\n"
-            # No increment for grounded capacitor
-
-        output_node = node_list[node_index]
-
-        if not math.isnan(wave.L_fixture):
-            load_buffer += f"LFIXS2I {node_list[node_index]} {node_list[node_index + 1]} {wave.L_fixture}\n"
-            node_index += 1
-        if not math.isnan(wave.C_fixture):
-            load_buffer += f"CFIXS2I {node_list[node_index]} 0 {wave.C_fixture}\n"
-            # No increment for grounded capacitor
-
-        load_buffer += f"RFIXS2I {node_list[node_index]} {node_list[node_index + 1]} {wave.R_fixture}\n"
-        node_index += 1  # Increment for two-terminal R_fixture
-
-        corners = [
-            ("typ", model.modelFile, model.tempRange.typ, vcc.typ, gnd.typ, vcc_clamp.typ, gnd_clamp.typ,
-             wave.V_fixture),
-            ("min", model.modelFileMin, model.tempRange.min, vcc.min, gnd.min, vcc_clamp.min, gnd_clamp.min,
-             wave.V_fixture_min if not math.isnan(wave.V_fixture_min) else wave.V_fixture),
-            ("max", model.modelFileMax, model.tempRange.max, vcc.max, gnd.max, vcc_clamp.max, gnd_clamp.max,
-             wave.V_fixture_max if not math.isnan(wave.V_fixture_max) else wave.V_fixture),
-        ]
-
         res_total = 0
-        for corner, model_file, temp, vcc_val, gnd_val, vcc_clamp_val, gnd_clamp_val, v_fixture in corners:
-            header_line = f"* {corner.capitalize()} {CS.curve_name_string.get(curve_type, 'unknown')} curve for model {model.modelName}\n"
-            case_flag = CS.TYP_CASE if corner == "typ" else CS.MIN_CASE if corner == "min" else CS.MAX_CASE
+        for wave_idx, wave in enumerate(waves):
+            # === BUILD LOAD BUFFER FOR THIS WAVE ===
+            node_list = [current_pin.pinName] + [f"dummy{i}" for i in range(10)]
+            node_index = 0
+            load_buffer = ""
 
-            input_buffer = self.set_pin_dc(enable_pin, model.enable, CS.ENABLE_OUTPUT, "ENA", case_flag) or ""
-            if input_pin:
-                pulse = self.set_pin_tran(input_pin, model.polarity, output_state, "IN", case_flag)
-                if pulse:
-                    input_buffer += ("\n" if input_buffer else "") + pulse
+            if not math.isnan(wave.L_dut):
+                load_buffer += f"LDUTS2I {node_list[node_index]} {node_list[node_index + 1]} {wave.L_dut}\n"
+                node_index += 1
+            if not math.isnan(wave.R_dut):
+                load_buffer += f"RDUTS2I {node_list[node_index]} {node_list[node_index + 1]} {wave.R_dut}\n"
+                node_index += 1
+            if not math.isnan(wave.C_dut):
+                load_buffer += f"CDUTS2I {node_list[node_index]} 0 {wave.C_dut}\n"
 
-            input_buffer += f"\nVFIXS2I {node_list[node_index]} 0 DC {v_fixture}\n"
+            output_node = node_list[node_index]
 
-            power_buffer = self.setup_power_temp_cmds(
-                curve_type, power_pin, gnd_pin, power_clamp_pin, gnd_clamp_pin,
-                vcc_val, gnd_val, vcc_clamp_val, gnd_clamp_val, temp
-            )
+            if not math.isnan(wave.L_fixture):
+                load_buffer += f"LFIXS2I {node_list[node_index]} {node_list[node_index + 1]} {wave.L_fixture}\n"
+                node_index += 1
+            if not math.isnan(wave.C_fixture):
+                load_buffer += f"CFIXS2I {node_list[node_index]} 0 {wave.C_fixture}\n"
 
-            analysis_buffer = self.setup_tran_cmds(model.simTime, output_node)
+            load_buffer += f"RFIXS2I {node_list[node_index]} {node_list[node_index + 1]} {wave.R_fixture}\n"
+            node_index += 1
 
-            if corner == "typ":
-                base = CS.spice_file_typ_prefix[curve_type]
-            elif corner == "min":
-                base = CS.spice_file_min_prefix[curve_type]
-            else:
-                base = CS.spice_file_max_prefix[curve_type]
+            # === CORNERS FOR THIS WAVE ===
+            corners = [
+                ("typ", model.modelFile, model.tempRange.typ, vcc.typ, gnd.typ, vcc_clamp.typ, gnd_clamp.typ,
+                 wave.V_fixture),
+                ("min", model.modelFileMin, model.tempRange.min, vcc.min, gnd.min, vcc_clamp.min, gnd_clamp.min,
+                 wave.V_fixture_min if not math.isnan(wave.V_fixture_min) else wave.V_fixture),
+                ("max", model.modelFileMax, model.tempRange.max, vcc.max, gnd.max, vcc_clamp.max, gnd_clamp.max,
+                 wave.V_fixture_max if not math.isnan(wave.V_fixture_max) else wave.V_fixture),
+            ]
 
-            name_prefix = f"{base}{index:02d}"
-            spice_in, spice_out, spice_msg, spice_st0, spice_ic, spice_ic0 = self.setup_spice_file_names(
-                name_prefix, current_pin.pinName
-            )
+            for corner, model_file, temp, vcc_val, gnd_val, vcc_clamp_val, gnd_clamp_val, v_fixture in corners:
+                header_line = f"* {corner.capitalize()} {CS.curve_name_string.get(curve_type, 'unknown')} curve for model {model.modelName}\n"
+                case_flag = CS.TYP_CASE if corner == "typ" else CS.MIN_CASE if corner == "min" else CS.MAX_CASE
 
-            if self.setup_spice_input_file(
-                    iterate, header_line, active_sp_file, model_file, model.ext_spice_cmd_file,
-                    load_buffer, input_buffer, power_buffer, "", analysis_buffer, spice_in
-            ):
-                logging.error(f"Failed to setup SPICE file {spice_in}")
-                res_total += 1
-                continue
+                input_buffer = self.set_pin_dc(enable_pin, model.enable, CS.ENABLE_OUTPUT, "ENA", case_flag) or ""
+                if input_pin:
+                    pulse = self.set_pin_tran(input_pin, model.polarity, output_state, "IN", case_flag)
+                    if pulse:
+                        input_buffer += ("\n" if input_buffer else "") + pulse
 
-            if self.call_spice(iterate, spice_command, spice_in, spice_out, spice_msg):
-                if self.check_for_abort(spice_out, spice_msg):
-                    logging.error(f"Abort detected in {spice_in}")
+                input_buffer += f"\nVFIXS2I {node_list[node_index]} 0 DC {v_fixture}\n"
+
+                power_buffer = self.setup_power_temp_cmds(
+                    curve_type, power_pin, gnd_pin, power_clamp_pin, gnd_clamp_pin,
+                    vcc_val, gnd_val, vcc_clamp_val, gnd_clamp_val, temp
+                )
+
+                analysis_buffer = self.setup_tran_cmds(model.simTime, output_node)
+
+                if corner == "typ":
+                    base = CS.spice_file_typ_prefix[curve_type]
+                elif corner == "min":
+                    base = CS.spice_file_min_prefix[curve_type]
+                else:
+                    base = CS.spice_file_max_prefix[curve_type]
+
+                name_prefix = f"{base}{wave_idx:02d}"
+                spice_in, spice_out, spice_msg, spice_st0, spice_ic, spice_ic0 = self.setup_spice_file_names(
+                    name_prefix, current_pin.pinName
+                )
+
+                if self.setup_spice_input_file(
+                        iterate, header_line, active_sp_file, model_file, model.ext_spice_cmd_file,
+                        load_buffer, input_buffer, power_buffer, "", analysis_buffer, spice_in
+                ):
+                    logging.error(f"Failed to setup SPICE file {spice_in}")
                     res_total += 1
                     continue
-                logging.error("SPICE process failed without abort marker")
-                res_total += 1
-                continue
 
-            if self.get_spice_wave_data(model.simTime, spice_out, corner, wave):
-                logging.error(f"Failed to extract waveform data from {spice_out}")
-                res_total += 1
-                continue
+                if self.call_spice(iterate, spice_command, spice_in, spice_out, spice_msg):
+                    if self.check_for_abort(spice_out, spice_msg):
+                        logging.error(f"Abort detected in {spice_in}")
+                        res_total += 1
+                        continue
+                    logging.error("SPICE process failed without abort marker")
+                    res_total += 1
+                    continue
 
-            if cleanup:
-                self.cleanup_files(spice_in, spice_out, spice_msg, spice_st0, spice_ic, spice_ic0)
+                if self.get_spice_wave_data(model.simTime, spice_out, corner, wave, curve_type):
+                    logging.error(f"Failed to extract waveform data from {spice_out}")
+                    res_total += 1
+                    continue
+
+                if cleanup:
+                    self.cleanup_files(spice_in, spice_out, spice_msg, spice_st0, spice_ic, spice_ic0)
 
         return res_total
 
