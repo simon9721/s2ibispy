@@ -1,7 +1,7 @@
 * "simulator" "PrimeSim HSPICE"
 * "version" "T-2022.06 win64"
 * "format" "HSP"
-* "rundate" "13:15:15 11/16/2025 "
+* "rundate" "10:30:09 11/17/2025 "
 * "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\output\z00out.spi "
 * "runtitle" "* max falling_wave curve for model driver"
 * time =  0.000e+00       

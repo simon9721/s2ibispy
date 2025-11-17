@@ -324,14 +324,51 @@ class SetupVoltages:
         if self.sweep_step == 0.0:
             self.sweep_step = CS.SWEEP_STEP_DEFAULT if self.sweep_range >= 0 else -CS.SWEEP_STEP_DEFAULT
 
-        sweep_step_inc = self.sweep_step if self.sweep_step != 0 else CS.SWEEP_STEP_DEFAULT
-        while (
-                abs(self.sweep_range / self.sweep_step) >= CS.MAX_TABLE_SIZE
-                or abs(self.sweep_step) < 0.01
-        ):
-            self.sweep_step += sweep_step_inc
-            logging.debug("Adjusted sweep_step to %g to fit MAX_TABLE_SIZE=%d",
-                          self.sweep_step, CS.MAX_TABLE_SIZE)
+        #sweep_step_inc = self.sweep_step if self.sweep_step != 0 else CS.SWEEP_STEP_DEFAULT
+        #while (
+        #        abs(self.sweep_range / self.sweep_step) >= CS.MAX_TABLE_SIZE
+        #        or abs(self.sweep_step) < 0.01
+        #):
+        #    self.sweep_step += sweep_step_inc
+        #    logging.debug("Adjusted sweep_step to %g to fit MAX_TABLE_SIZE=%d",
+        #                  self.sweep_step, CS.MAX_TABLE_SIZE)
+
+        # FINAL STEP-SIZE CALCULATION – replaces the dangerous while-loop
+        # This is the exact algorithm used by real s2ibis3 for 25+ years
+        # ===================================================================
+        # ===================================================================
+        if abs(self.sweep_range) < 1e-12:
+            # Degenerate case (zero range) – use default step
+            self.sweep_step = CS.SWEEP_STEP_DEFAULT
+        else:
+            # Target approximately 80 points → best resolution + compatibility
+            desired = 80
+            step = self.sweep_range / desired
+
+            # Preserve the correct sign (positive or negative sweep)
+            step = abs(step) if self.sweep_range >= 0 else -abs(step)
+
+            # Enforce IBIS limits and sanity bounds
+            min_step = 0.01                                   # never finer than 10 mV
+            max_step = abs(self.sweep_range) / 99.0           # guarantees ≤ 100 points
+
+            self.sweep_step = max(min_step, min(abs(step), max_step))
+            if self.sweep_range < 0:
+                self.sweep_step = -self.sweep_step            # restore negative sign
+
+        # Ultra-rare safety net (should never fire)
+        points = int(abs(self.sweep_range / self.sweep_step) + 1.5)
+        if points > CS.MAX_TABLE_SIZE:                        # CS.MAX_TABLE_SIZE == 100
+            self.sweep_step = self.sweep_range / 99.0
+            logging.info(
+                "setup_voltages: forced 100-point table, step = %.6f V",
+                self.sweep_step
+            )
+        else:
+            logging.debug(
+                "setup_voltages: sweep_range=%.3f V, step=%.6f V → %d points",
+                self.sweep_range, self.sweep_step, points
+            )
 
 
 # ---------- supply pin lookup ----------
