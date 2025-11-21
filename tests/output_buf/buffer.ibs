@@ -257,7 +257,7 @@ C_comp 5.0000pF 5.0000pF 5.0000pF
   6.6000     -72.5300m       -0.1067     -80.7100m
 
 [Ramp]
-| variable typ min max
+| variable   typ        min        max
 dV/dt_r 1.8312/0.1696n 1.6440/0.1935n 2.0076/0.1773n
 dV/dt_f 1.8845/0.1525n 1.7182/0.1972n 2.0519/0.1471n
 R_load = 500

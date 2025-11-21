@@ -3,7 +3,7 @@ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\output_buf\rutout.spi
 lic:
 lic: FLEXlm: SDK_12.10
 lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab
-lic: HOSTID: 00ff89f5aa52         PID:      10404
+lic: HOSTID: 00ff89f5aa52         PID:      14616
 lic: Using FLEXlm license file:
 lic: 1704@synopsys.lic.mst.edu
 lic: Checkout 1 hspice
@@ -28,24 +28,24 @@ lic:
        option ingold =     2.00
  init: end read circuit files, cpu clock= 1.03E-01 peak memory=      71 mb
  init: begin check errors, cpu clock= 1.03E-01
- init: end check errors, cpu clock= 1.06E-01 peak memory=      72 mb
- init: begin setup matrix, pivot=     0 cpu clock= 1.06E-01
-       establish matrix -- done, cpu clock= 1.06E-01 peak memory=      72 mb
-       re-order matrix -- done, cpu clock= 1.06E-01 peak memory=      72 mb
- init: end setup matrix, cpu clock= 1.07E-01 peak memory=      72 mb
- dcop: begin dcop, cpu clock= 1.07E-01
- dcop: end dcop, cpu clock= 1.09E-01 peak memory=      72 mb tot_iter=       3
- sweep: tran tran0    begin, stop_t=  3.00E-09 #sweeps= 101 cpu clock= 1.10E-01
- tran: time= 3.0961E-10 tot_iter=      30 conv_iter=      12 cpu clock= 1.12E-01
- tran: time= 7.4688E-10 tot_iter=      39 conv_iter=      15 cpu clock= 1.12E-01
- tran: time= 1.0469E-09 tot_iter=      46 conv_iter=      17 cpu clock= 1.12E-01
- tran: time= 1.3469E-09 tot_iter=      53 conv_iter=      19 cpu clock= 1.12E-01
- tran: time= 1.5564E-09 tot_iter=      60 conv_iter=      21 cpu clock= 1.12E-01
- tran: time= 1.9043E-09 tot_iter=      69 conv_iter=      24 cpu clock= 1.12E-01
- tran: time= 2.2043E-09 tot_iter=      75 conv_iter=      26 cpu clock= 1.12E-01
- tran: time= 2.5043E-09 tot_iter=      79 conv_iter=      28 cpu clock= 1.13E-01
- tran: time= 2.8043E-09 tot_iter=      83 conv_iter=      30 cpu clock= 1.13E-01
- tran: time= 3.0000E-09 tot_iter=      87 conv_iter=      32 cpu clock= 1.13E-01
- sweep: tran tran0    end, cpu clock= 1.13E-01 peak memory=      72 mb
+ init: end check errors, cpu clock= 1.08E-01 peak memory=      72 mb
+ init: begin setup matrix, pivot=     0 cpu clock= 1.08E-01
+       establish matrix -- done, cpu clock= 1.08E-01 peak memory=      72 mb
+       re-order matrix -- done, cpu clock= 1.08E-01 peak memory=      72 mb
+ init: end setup matrix, cpu clock= 1.08E-01 peak memory=      72 mb
+ dcop: begin dcop, cpu clock= 1.08E-01
+ dcop: end dcop, cpu clock= 1.10E-01 peak memory=      72 mb tot_iter=       3
+ sweep: tran tran0    begin, stop_t=  3.00E-09 #sweeps= 101 cpu clock= 1.12E-01
+ tran: time= 3.0786E-10 tot_iter=      30 conv_iter=      12 cpu clock= 1.13E-01
+ tran: time= 6.0786E-10 tot_iter=      35 conv_iter=      14 cpu clock= 1.13E-01
+ tran: time= 9.0786E-10 tot_iter=      41 conv_iter=      16 cpu clock= 1.13E-01
+ tran: time= 1.2079E-09 tot_iter=      47 conv_iter=      18 cpu clock= 1.13E-01
+ tran: time= 1.5677E-09 tot_iter=      59 conv_iter=      21 cpu clock= 1.14E-01
+ tran: time= 1.9458E-09 tot_iter=      68 conv_iter=      24 cpu clock= 1.14E-01
+ tran: time= 2.2458E-09 tot_iter=      73 conv_iter=      26 cpu clock= 1.14E-01
+ tran: time= 2.5458E-09 tot_iter=      77 conv_iter=      28 cpu clock= 1.14E-01
+ tran: time= 2.8458E-09 tot_iter=      81 conv_iter=      30 cpu clock= 1.14E-01
+ tran: time= 3.0000E-09 tot_iter=      83 conv_iter=      31 cpu clock= 1.14E-01
+ sweep: tran tran0    end, cpu clock= 1.14E-01 peak memory=      72 mb
 >info:         ***** hspice job concluded
  lic: Release hspice token(s)

@@ -7,11 +7,11 @@
   this software is strictly prohibited.
   Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\io_buf\y01out.spi   
   Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\io_buf\y01out.spi -o C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\io_buf\y01out.out
-  Start time: Thu Nov 20 19:00:39 2025
+  Start time: Fri Nov 21 11:12:09 2025
   lic:  
   lic: FLEXlm: SDK_12.10 
   lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
-  lic: HOSTID: 00ff89f5aa52         PID:      6944 
+  lic: HOSTID: 00ff89f5aa52         PID:      15104 
   lic: Using FLEXlm license file: 
   lic: 1704@synopsys.lic.mst.edu 
   lic: Checkout 1 hspice 
@@ -376,13 +376,13 @@ y
   output             0.00
 
 
-           peak memory used         72.11 megabytes
+           peak memory used         72.07 megabytes
            total cpu time            0.05 seconds
            total elapsed time        0.14 seconds
-           job started at     19:00:39 11/20/2025
-           job ended   at     19:00:39 11/20/2025
+           job started at     11:12:09 11/21/2025
+           job ended   at     11:12:10 11/21/2025
            job total runtime         0.14 seconds
 
 
   lic: Release hspice token(s) 
- lic: total license checkout elapse time:        0.07(s)
+ lic: total license checkout elapse time:        0.08(s)

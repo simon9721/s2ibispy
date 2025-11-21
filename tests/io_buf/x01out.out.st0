@@ -3,7 +3,7 @@ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\io_buf\x01out.spi
 lic:
 lic: FLEXlm: SDK_12.10
 lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab
-lic: HOSTID: 00ff89f5aa52         PID:      16544
+lic: HOSTID: 00ff89f5aa52         PID:      14004
 lic: Using FLEXlm license file:
 lic: 1704@synopsys.lic.mst.edu
 lic: Checkout 1 hspice
@@ -39,13 +39,13 @@ lic:
  tran: time= 6.1332E-10 tot_iter=      57 conv_iter=      19 cpu clock= 1.03E-01
  tran: time= 1.2983E-09 tot_iter=      72 conv_iter=      24 cpu clock= 1.03E-01
  tran: time= 1.8033E-09 tot_iter=      78 conv_iter=      26 cpu clock= 1.03E-01
- tran: time= 2.4054E-09 tot_iter=      89 conv_iter=      29 cpu clock= 1.03E-01
+ tran: time= 2.4054E-09 tot_iter=      89 conv_iter=      29 cpu clock= 1.04E-01
  tran: time= 3.0302E-09 tot_iter=     105 conv_iter=      33 cpu clock= 1.04E-01
  tran: time= 3.7900E-09 tot_iter=     114 conv_iter=      36 cpu clock= 1.04E-01
  tran: time= 4.3900E-09 tot_iter=     118 conv_iter=      38 cpu clock= 1.04E-01
- tran: time= 4.9900E-09 tot_iter=     122 conv_iter=      40 cpu clock= 1.04E-01
- tran: time= 5.5900E-09 tot_iter=     126 conv_iter=      42 cpu clock= 1.04E-01
- tran: time= 6.0000E-09 tot_iter=     130 conv_iter=      44 cpu clock= 1.04E-01
+ tran: time= 4.9900E-09 tot_iter=     122 conv_iter=      40 cpu clock= 1.05E-01
+ tran: time= 5.5900E-09 tot_iter=     126 conv_iter=      42 cpu clock= 1.05E-01
+ tran: time= 6.0000E-09 tot_iter=     130 conv_iter=      44 cpu clock= 1.05E-01
  sweep: tran tran0    end, cpu clock= 1.05E-01 peak memory=      72 mb
 >info:         ***** hspice job concluded
  lic: Release hspice token(s)

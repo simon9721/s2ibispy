@@ -361,7 +361,7 @@ class S2IBISpyGUI:
 
             self.models_tree.insert("", "end", values=(
                 m.modelName,
-                mt_str.replace("_", " ").title(),
+                self._model_type_str(m.modelType),
                 f"{getattr(m.Vinl, 'typ', 'NA'):.3f}",
                 f"{getattr(m.Vinh, 'typ', 'NA'):.3f}",
                 f"{getattr(m.c_comp, 'typ', 'NA'):.4f}"
@@ -378,6 +378,57 @@ class S2IBISpyGUI:
                     f"{pin.L_pin:.4f}" if pin.L_pin != CS.NOT_USED else "",
                     f"{pin.C_pin:.4f}" if pin.C_pin != CS.NOT_USED else ""
                 ))
+
+
+    def _model_type_str(self, mt) -> str:
+        """Convert any model type (int, enum, str) → proper IBIS string like 'I/O', 'Open_drain', etc."""
+        from s2i_constants import ConstantStuff as CS
+
+        # Full mapping — matches IBIS spec exactly
+        mapping = {
+            CS.ModelType.INPUT: "Input",
+            CS.ModelType.OUTPUT: "Output",
+            CS.ModelType.I_O: "I/O",
+            CS.ModelType.SERIES: "Series",
+            CS.ModelType.SERIES_SWITCH: "Series_switch",
+            CS.ModelType.TERMINATOR: "Terminator",
+            CS.ModelType.OPEN_DRAIN: "Open_drain",
+            CS.ModelType.OPEN_SINK: "Open_sink",
+            CS.ModelType.OPEN_SOURCE: "Open_source",
+            CS.ModelType.IO_OPEN_DRAIN: "I/O_Open_drain",
+            CS.ModelType.IO_OPEN_SINK: "I/O_Open_sink",
+            CS.ModelType.IO_OPEN_SOURCE: "I/O_Open_source",
+            CS.ModelType.OUTPUT_ECL: "Output_ECL",
+            CS.ModelType.IO_ECL: "I/O_ECL",
+            CS.ModelType.THREE_STATE: "3-state",
+        }
+
+        # 1. If it's already an enum → direct lookup
+        if isinstance(mt, CS.ModelType):
+            return mapping.get(mt, "Unknown")
+
+        # 2. If it's an int → convert to enum
+        if isinstance(mt, int):
+            try:
+                return mapping.get(CS.ModelType(mt), str(mt))
+            except ValueError:
+                return str(mt)
+
+        # 3. If it's a string → try to parse
+        if isinstance(mt, str):
+            mt = mt.strip()
+            if mt.isdigit():
+                try:
+                    return mapping.get(CS.ModelType(int(mt)), mt)
+                except ValueError:
+                    pass
+            # Try direct match in mapping values
+            for enum_val, name in mapping.items():
+                if mt.replace(" ", "_").replace("/", "_").lower() == name.replace(" ", "_").lower():
+                    return name
+            return mt  # fallback
+
+        return "Unknown"
 
     # ===================================================================
     # File Operations

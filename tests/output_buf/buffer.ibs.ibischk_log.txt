@@ -1,0 +1,23 @@
+IBISCHK7 V7.2.1
+
+Checking C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\output_buf\buffer.ibs for IBIS 3.2 Compatibility...
+
+WARNING (line   27) - Component 'MCM Driver 1' contains a blank character.
+NOTE (line   68) - Pulldown Minimum data is non-monotonic
+NOTE (line   73) - Pulldown Typical data is non-monotonic
+NOTE (line   73) - Pulldown Maximum data is non-monotonic
+NOTE (line  241) - Pullup Typical data is non-monotonic
+NOTE (line  243) - Pullup Maximum data is non-monotonic
+NOTE (line  244) - Pullup Minimum data is non-monotonic
+WARNING - Model 'driver': Vmeas timing test load parameter should be specified
+NOTE - Combined Pulldown for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pullup for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pulldown for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pullup for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pulldown for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pullup for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation
+
+Errors  : 0
+Warnings: 2
+
+File Passed

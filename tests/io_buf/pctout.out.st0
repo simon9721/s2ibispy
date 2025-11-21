@@ -3,7 +3,7 @@ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\io_buf\pctout.spi
 lic:
 lic: FLEXlm: SDK_12.10
 lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab
-lic: HOSTID: 00ff89f5aa52         PID:      2732
+lic: HOSTID: 00ff89f5aa52         PID:      16848
 lic: Using FLEXlm license file:
 lic: 1704@synopsys.lic.mst.edu
 lic: Checkout 1 hspice
@@ -33,7 +33,7 @@ lic:
        establish matrix -- done, cpu clock= 1.05E-01 peak memory=      72 mb
        re-order matrix -- done, cpu clock= 1.05E-01 peak memory=      72 mb
  init: end setup matrix, cpu clock= 1.05E-01 peak memory=      72 mb
- sweep: dc dc0    begin, #sweeps= 100 cpu clock= 1.05E-01
- sweep: dc dc0    end, cpu clock= 1.14E-01 peak memory=      72 mb
+ sweep: dc dc0    begin, #sweeps= 100 cpu clock= 1.06E-01
+ sweep: dc dc0    end, cpu clock= 1.15E-01 peak memory=      72 mb
 >info:         ***** hspice job concluded
  lic: Release hspice token(s)
