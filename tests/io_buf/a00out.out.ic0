@@ -1,0 +1,27 @@
+* "simulator" "PrimeSim HSPICE"
+* "version" "T-2022.06 win64"
+* "format" "HSP"
+* "rundate" "19:00:30 11/20/2025 "
+* "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\io_buf\a00out.spi "
+* "runtitle" "* typ rising_wave curve for model driver"
+* time =  0.000e+00       
+* temperature =  2.700e+01       
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ dummy0 = 0.000e+00       
++ in = 0.000e+00       
++ in_sense = 3.300e+00       
++ n1 = 3.300e+00       
++ n2 = 3.300e+00       
++ n3 = 3.300e+00       
++ n_int1 = 2.670e+00       
++ n_int2 = 8.713e-08       
++ nand_n3 = 1.743e-07       
++ oe = 3.300e+00       
++ oe_b = 4.384e-08       
++ out = 7.302e-09       
++ vdd = 3.300e+00       
++ vss = 0.000e+00       
+***   END: Saved Operating Point ***                     

@@ -114,6 +114,7 @@ class S2IUtil:
         """
         logging.info("Propagating global parameters to models")
 
+
         DEFAULT_SIM_TIME = 10.0e-9  # used if nothing is set anywhere
 
         for model in self.mList:
@@ -261,7 +262,7 @@ class S2IUtil:
             self._inherit_tmm(m.c_comp,        comp.c_comp)
 
             self._inherit_num(m, "Rload",         comp.Rload)
-            self._inherit_num(m, "simTime",       comp.simTime)
+            #self._inherit_num(m, "simTime",       comp.simTime)
             self._inherit_num(m, "derateVIPct",   comp.derateVIPct)
             self._inherit_num(m, "derateRampPct", comp.derateRampPct)
             self._inherit_num(m, "clampTol",      comp.clampTol)

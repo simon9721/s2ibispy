@@ -16,7 +16,7 @@ class ConstantStuff:
 
 
     SI_SUFFIX_STRING = ["f", "p", "n", "u", "m", "", "k", "M", "G"]
-    VERSION_STRING = "1.1"
+    VERSION_STRING = "3.2"
 
     # Sentinels (match legacy Java behavior + Python NaN)
     USE_NA = float('nan')

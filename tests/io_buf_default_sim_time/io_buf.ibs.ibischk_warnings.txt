@@ -1,0 +1,4 @@
+WARNING (line   27) - Component 'MCM Driver 1' contains a blank character.
+WARNING - Model 'driver': Model_type 'I/O' must have Vinl set
+WARNING - Model 'driver': Model_type 'I/O' must have Vinh set
+WARNING - Model 'driver': Vmeas timing test load parameter should be specified

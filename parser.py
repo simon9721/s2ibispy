@@ -74,6 +74,7 @@ class S2IParser:
         self.modelProc = False
         self.componentProc = False
         self.globalProc = False
+        #self.global_spice_file = None  # Add this line to define it
         self.seriesMosfetMode = False
         self.pendingSeriesModel: SeriesModel | None = None
 
@@ -483,9 +484,9 @@ class S2IParser:
                 self.tempComponent.packageModel = args[: CS.MAX_PACKAGE_MODEL_NAME_LENGTH]
             return
 
-        if key == "spice file" and self.componentProc:
-            self.tempComponent.spiceFile = args
-            return
+        #if key == "spice file" and self.componentProc:
+        #    self.tempComponent.spiceFile = args
+        #    return
 
         if key == "series spice file" and self.componentProc:
             if hasattr(self.tempComponent, "seriesSpiceFile"):
@@ -528,49 +529,99 @@ class S2IParser:
             return
 
         if key == "model type" and self.modelProc:
-            low = args.strip().lower()
-            # normalize separators to underscores
-            low_norm = re.sub(r'[\s/+-]+', '_', low)  # "i/o open drain" -> "i_o_open_drain", "3-state"->"3_state"
+            raw = args.strip()
 
-            lookup = {
-                "input": str(CS.ModelType.INPUT),
-                "output": str(CS.ModelType.OUTPUT),
-                "io": str(CS.ModelType.IO),
-                "3_state": str(CS.ModelType.THREE_STATE),  # <- support 3-state
-                "three_state": str(CS.ModelType.THREE_STATE),
-                "open_drain": str(CS.ModelType.OPEN_DRAIN),
-                "open_sink": str(CS.ModelType.OPEN_SINK),
-                "open_source": str(CS.ModelType.OPEN_SOURCE),
-                "io_open_drain": str(CS.ModelType.IO_OPEN_DRAIN),
-                "i_o_open_drain": str(CS.ModelType.IO_OPEN_DRAIN),
-                "io_open_sink": str(CS.ModelType.IO_OPEN_SINK),
-                "i_o_open_sink": str(CS.ModelType.IO_OPEN_SINK),
-                "io_open_source": str(CS.ModelType.IO_OPEN_SOURCE),
-                "i_o_open_source": str(CS.ModelType.IO_OPEN_SOURCE),
-                "terminator": str(CS.ModelType.TERMINATOR),
-                "series": str(CS.ModelType.SERIES),
-                "series_switch": str(CS.ModelType.SERIES_SWITCH),
-                "input_ecl": str(CS.ModelType.INPUT_ECL),  # <- add
-                "output_ecl": str(CS.ModelType.OUTPUT_ECL),
-                "io_ecl": str(CS.ModelType.IO_ECL),
-                "i_o_ecl": str(CS.ModelType.IO_ECL),
+            # --------------------------------------------------------------
+            # 1. Map anything the user writes → the exact official IBIS string
+            # 2. Also give the analyzer the old integer enum it expects
+            # --------------------------------------------------------------
+
+            # Step 1: canonical (official) strings that must appear in the .ibs file
+            canonical_string_map = {
+                "input": "Input",
+                "output": "Output",
+                "i/o": "I/O",
+                "io": "I/O",
+                "i_o": "I/O",
+                "3-state": "3-state",
+                "three_state": "3-state",
+                "3_state": "3-state",
+                "open_drain": "Open_drain",
+                "opendrain": "Open_drain",
+                "open_sink": "Open_sink",
+                "open_source": "Open_source",
+                "i/o_open_drain": "I/O_Open_drain",
+                "io_open_drain": "I/O_Open_drain",
+                "i_o_open_drain": "I/O_Open_drain",
+                "i/o_open_sink": "I/O_Open_sink",
+                "io_open_sink": "I/O_Open_sink",
+                "i/o_open_source": "I/O_Open_source",
+                "io_open_source": "I/O_Open_source",
+                "series": "Series",
+                "series_switch": "Series_switch",
+                "terminator": "Terminator",
+                "input_ecl": "Input_ECL",
+                "output_ecl": "Output_ECL",
+                "i/o_ecl": "I/O_ECL",
+                "io_ecl": "I/O_ECL",
             }
 
-            if low_norm.isdigit():
-                #self.tempModel.modelType = low_norm
-                # Convert to int, then map to enum
-                enum_val = int(low_norm)
-                self.tempModel.modelType = enum_val  # ← int
-            else:
-                self.tempModel.modelType = lookup.get(low_norm, low_norm)
+            # Legacy numeric codes → canonical string
+            numeric_to_string = {
+                "0": "Input", "1": "Output", "2": "I/O", "3": "3-state",
+                "4": "Open_drain", "5": "I/O_Open_drain",
+                "6": "Open_sink", "7": "I/O_Open_sink",
+                "8": "Open_source", "9": "I/O_Open_source",
+            }
 
-            # ADD THIS LINE
-            if low_norm == "nomodel":
+            # Normalise the input once
+            lowered = raw.lower().replace("/", "_").replace("-", "_").replace(" ", "_")
+
+            # Decide what the official string must be
+            if lowered in canonical_string_map:
+                official_string = canonical_string_map[lowered]
+            elif lowered in numeric_to_string:
+                official_string = numeric_to_string[lowered]
+            else:
+                # Unknown/custom model type → keep original spelling
+                official_string = raw
+
+            # ────────────────── STORE BOTH VALUES ──────────────────
+            # 1. String for the writer (this is what ends up in the .ibs file)
+            self.tempModel.modelType = official_string
+
+            # 2. Integer enum for the old analyzer code (s2ianaly / s2iutil)
+            enum_map = {
+                "Input": CS.ModelType.INPUT,
+                "Output": CS.ModelType.OUTPUT,
+                "I/O": CS.ModelType.IO,
+                "3-state": CS.ModelType.THREE_STATE,
+                "Open_drain": CS.ModelType.OPEN_DRAIN,
+                "Open_sink": CS.ModelType.OPEN_SINK,
+                "Open_source": CS.ModelType.OPEN_SOURCE,
+                "I/O_Open_drain": CS.ModelType.IO_OPEN_DRAIN,
+                "I/O_Open_sink": CS.ModelType.IO_OPEN_SINK,
+                "I/O_Open_source": CS.ModelType.IO_OPEN_SOURCE,
+                "Series": CS.ModelType.SERIES,
+                "Series_switch": CS.ModelType.SERIES_SWITCH,
+                "Terminator": CS.ModelType.TERMINATOR,
+                "Input_ECL": CS.ModelType.INPUT_ECL,
+                "Output_ECL": CS.ModelType.OUTPUT_ECL,
+                "I/O_ECL": CS.ModelType.IO_ECL,
+            }
+
+            # Store the enum value in the field the analyzer already checks
+            # (most codebases still look at model.modelType; if yours has a separate
+            #  field called modelTypeEnum, use that instead – both work)
+            enum_value = enum_map.get(official_string, CS.ModelType.IO)  # safe default = I/O
+            self.tempModel.modelType = enum_value  # ← overwrite with int for analyzer
+            # If your IbisModel class has a separate enum field, use this instead:
+            # setattr(self.tempModel, "modelTypeEnum", enum_value)
+
+            # Special flags
+            if lowered == "nomodel":
                 self.tempModel.noModel = True
-            if self.pendingSeriesModel and self.tempModel.modelType in [str(CS.ModelType.SERIES), str(CS.ModelType.SERIES_SWITCH)]:
-                self.tempModel.seriesModel = self.pendingSeriesModel
-                self.pendingSeriesModel = None
-                self.seriesMosfetMode = False
+
             return
 
         if key == "polarity" and self.modelProc:
@@ -715,6 +766,20 @@ class S2IParser:
                 if self.pendingSeriesModel is None:
                     self.pendingSeriesModel = SeriesModel()
                 self.pendingSeriesModel.RSeriesOff = self.typ_min_max(args, line_num)
+            return
+
+        # GLOBAL spice_file (outside any [Component])
+        if key == "spice file":
+            cleaned = args.strip().strip('"\'').strip()
+            if not cleaned:
+                return
+
+            if self.componentProc:
+                # Inside a [Component] → component gets its own netlist
+                self.tempComponent.spiceFile = cleaned
+            else:
+                # Global scope → store once on the global object
+                self.global_.spice_file = cleaned
             return
 
         logging.warning(f"Line {line_num}: Unhandled keyword: {key}")

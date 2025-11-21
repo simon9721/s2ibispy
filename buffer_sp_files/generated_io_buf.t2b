@@ -1,0 +1,89 @@
+|
+| Cadence T2B configuration template for SPICE to IBIS conversion (Approach 1: Single Netlist + Corner Library Files).
+|
+[IBIS Ver] 5.0
+[File name] buffer.ibs
+[File rev] 0
+
+[Date] October 14, 2025
+[Source] Generated for SPICE to IBIS conversion
+[Notes] Cadence T2B configuration for SPICE to IBIS conversion
+[Disclaimer] This file is for demonstration purposes only
+[Copyright] Copyright 2025 Your Company
+
+[Spice type] Hspice
+
+[Waveform nPoints] 100
+[Iterate]
+[Disable ISSO]
+
+[Temperature Range] 27 100 0
+[Voltage Range] 3.3 3 3.6
+
+
+[R_pkg] 2.0m 1.0m 4.0m
+[L_pkg] 0.2nH 0.1nH 0.4nH
+[C_pkg] 2pF 1pF 4pF
+
+[Rload] 50 ohms
+
+[Sim time] 5ns
+
+[Vil] 0 0 0
+[Vih] 3.3 3 3.6
+
+[Component] CMOS_Buffer
+[Manufacturer] Your Company
+
+[Spice file] C:/Users/sh3qm/PycharmProjects/pret2b/tests/io_buf.sp
+
+[Pin]
+
+out out out driver
+-> in oe
+
+in in in dummy
+
+
+vdd vdd vdd POWER
+
+
+vss vss vss GND
+
+
+
+
+
+
+
+
+
+
+[Model] driver
+
+[Model type] I/O
+[Polarity] Non-inverting
+[Enable] oe
+[Model file] hspice.mod hspice.mod hspice.mod
+
+[Rising waveform] 50 0 NA NA NA NA NA NA NA
+
+[Rising waveform] 50 3.3 NA NA NA NA NA NA NA
+
+
+[Falling waveform] 50 0 NA NA NA NA NA NA NA
+
+[Falling waveform] 50 3.3 NA NA NA NA NA NA NA
+
+
+
+
+[Model] dummy
+[NoModel]
+[Model type] Input
+
+
+
+
+
+

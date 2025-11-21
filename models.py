@@ -302,6 +302,7 @@ class IbisPin:
     signalName: str = ""
     modelName: str = ""
     model: Optional[IbisModel] = None
+    series_model: Optional[IbisModel] = None  # ← ADD THIS LINE
     pParasitics: Optional[IbisPinParasitics] = None
     enablePin: str = ""
     inputPin: str = ""
@@ -376,6 +377,7 @@ class IbisGlobal:
     derateRampPct: float = 0.0
     clampTol: float = 0.0
     commentChar: str = "|"
+    spice_file: Optional[str] = None
 
 
 @dataclass

@@ -34,6 +34,7 @@ class S2ISpice:
             hspice_path: str = "hspice",
             global_: Optional[IbisGlobal] = None,
             outdir: Optional[str] = None,
+            s2i_file: Optional[str] = None,  # ← ADD THIS
     ):
         logging.debug(
             f"S2ISpice init: global_={global_}, vil={getattr(global_, 'vil', None)}, vih={getattr(global_, 'vih', None)}, outdir={outdir}")
@@ -44,6 +45,7 @@ class S2ISpice:
         self.outdir = outdir
         self.mock_dir = os.path.join(PROJECT_ROOT, "mock_spice")
         self.global_ = global_
+        self.s2i_file = s2i_file  # ← ADD THIS
         if not os.path.exists(self.mock_dir):
             os.makedirs(self.mock_dir)
 
@@ -307,20 +309,59 @@ class S2ISpice:
             logging.info(f"File {spice_in} exists, skipping setup")
             return 0
 
+        # ADD THESE 4 LINES HERE -------------------------------------------------
+        comp_name = getattr(self.current_component, "component", "None") if hasattr(self,
+                                                                                    "current_component") and self.current_component else "None"
+        comp_spice = getattr(self.current_component, "spiceFile", None) if hasattr(self,
+                                                                                   "current_component") and self.current_component else None
+        logging.info(f"Processing component: {comp_name}")
+        logging.info(f"  → component.spiceFile = {comp_spice}")
+        # END OF ADDED LINES ----------------------------------------------------
+
         # Resolve spice_file path (project root -> tests -> given)
         # Resolve spice_file path: prefer CWD -> PROJECT_ROOT -> TEST_DIR
-        if not spice_file:
-            spice_file_path = None
-        else:
-            if os.path.isabs(spice_file):
-                spice_file_path = spice_file
+
+        # === FIXED: Use global [Spice File] if component didn't provide one ===
+        s2i_dir = os.path.dirname(self.s2i_file) if self.s2i_file else os.getcwd()
+
+        candidate_names = []
+
+        # 1. Component-level [Spice File] inside [Component] ← MOST COMMON
+        if (hasattr(self, "current_component") and
+                self.current_component and
+                hasattr(self.current_component, "spiceFile") and
+                getattr(self.current_component, "spiceFile", None)):
+            candidate_names.append(self.current_component.spiceFile.strip())
+
+        # 2. Global [Spice File] at top of file
+        if self.global_ and getattr(self.global_, "spice_file", None):
+            candidate_names.append(self.global_.spice_file.strip())
+
+        # 3. Legacy per-model [Model File] (rarely used for DUT)
+        if spice_file:
+            candidate_names.append(spice_file.strip())
+
+        spice_file_path = None
+        for name in candidate_names:
+            if not name:
+                continue
+            if os.path.isabs(name):
+                if os.path.exists(name):
+                    spice_file_path = name
+                    break
             else:
-                candidates = [
-                    spice_file,  # CWD first (tests write here)
-                    os.path.join(PROJECT_ROOT, spice_file),
-                    os.path.join(TEST_DIR, spice_file),
-                ]
-                spice_file_path = next((p for p in candidates if os.path.exists(p)), None)
+                for base in [os.getcwd(), s2i_dir, PROJECT_ROOT, TEST_DIR]:
+                    path = os.path.join(base, name)
+                    if os.path.exists(path):
+                        spice_file_path = path
+                        break
+            if spice_file_path:
+                break
+
+        if not spice_file_path and (spice_file or (self.global_ and self.global_.spice_file)):
+            logging.warning("Spice file not found (tried component and global paths)")
+        elif spice_file_path:
+            logging.info(f"Using SPICE netlist: {spice_file_path}")
 
         if model_file and not os.path.exists(model_file):
             logging.warning(f"Model file {model_file} not found; continuing without it")
@@ -502,12 +543,16 @@ class S2ISpice:
             return ""
 
         m = getattr(pin, "model", None)
+        if not m:
+            logging.error("set_pin_tran called without valid model")
+            return ""
+
         g = getattr(self, "global_", None)
 
         def _sel3(typ, mn, mx):
             val = self._val_case(typ, mn, mx, analyze_case)
             if isinstance(val, float) and math.isnan(val):
-                return typ  # Match Java: fall back to typ
+                return typ
             return val
 
         def _first_real(*vals, default=None):
@@ -522,33 +567,61 @@ class S2ISpice:
                     pass
             return default
 
-        # VIH/VIL from model -> global -> safe defaults
-        vih_model = _sel3(getattr(m, "vih", None).typ if m else float("nan"),
-                          getattr(m, "vih", None).min if m else float("nan"),
-                          getattr(m, "vih", None).max if m else float("nan"))
-        vih_global = _sel3(getattr(g, "vih", None).typ if g else float("nan"),
-                           getattr(g, "vih", None).min if g else float("nan"),
-                           getattr(g, "vih", None).max if g else float("nan"))
+        # === VIH/VIL (unchanged) ===
         vih = _first_real(
-            vih_model,
-            vih_global,
+            _sel3(getattr(m, "vih", None).typ if m else float("nan"),
+                  getattr(m, "vih", None).min if m else float("nan"),
+                  getattr(m, "vih", None).max if m else float("nan")),
+            _sel3(getattr(g, "vih", None).typ if g else float("nan"),
+                  getattr(g, "vih", None).min if g else float("nan"),
+                  getattr(g, "vih", None).max if g else float("nan")),
             default=3.3 if analyze_case == CS.TYP_CASE else 3.0 if analyze_case == CS.MIN_CASE else 3.6,
         )
-        vil_model = _sel3(getattr(m, "vil", None).typ if m else float("nan"),
-                          getattr(m, "vil", None).min if m else float("nan"),
-                          getattr(m, "vil", None).max if m else float("nan"))
-        vil_global = _sel3(getattr(g, "vil", None).typ if g else float("nan"),
-                           getattr(g, "vil", None).min if g else float("nan"),
-                           getattr(g, "vil", None).max if g else float("nan"))
         vil = _first_real(
-            vil_model,
-            vil_global,
+            _sel3(getattr(m, "vil", None).typ if m else float("nan"),
+                  getattr(m, "vil", None).min if m else float("nan"),
+                  getattr(m, "vil", None).max if m else float("nan")),
+            _sel3(getattr(g, "vil", None).typ if g else float("nan"),
+                  getattr(g, "vil", None).min if g else float("nan"),
+                  getattr(g, "vil", None).max if g else float("nan")),
             default=0.0,
         )
-        logging.debug(f"VIH: model={vih_model}, global={vih_global}, final={vih}")
-        logging.debug(f"VIL: model={vil_model}, global={vil_global}, final={vil}")
 
-        # tr/tf/simTime from model -> global -> constants
+        # === RESPECT USER simTime FIRST (from .s2i) ===
+        user_sim_time = getattr(m, "simTime", None)
+
+        if math.isfinite(user_sim_time) and user_sim_time > 0:
+            sim_time = user_sim_time
+        else:
+            # Physics fallback only if user didn't specify
+            tr_temp = _first_real(
+                _sel3(getattr(m, "tr", None).typ if m else float("nan"),
+                      getattr(m, "tr", None).min if m else float("nan"),
+                      getattr(m, "tr", None).max if m else float("nan")),
+                _sel3(getattr(g, "tr", None).typ if g else float("nan"),
+                      getattr(g, "tr", None).min if g else float("nan"),
+                      getattr(g, "tr", None).max if g else float("nan")),
+                default=100e-12,
+            )
+            tf_temp = _first_real(
+                _sel3(getattr(m, "tf", None).typ if m else float("nan"),
+                      getattr(m, "tf", None).min if m else float("nan"),
+                      getattr(m, "tf", None).max if m else float("nan")),
+                _sel3(getattr(g, "tf", None).typ if g else float("nan"),
+                      getattr(g, "tf", None).min if g else float("nan"),
+                      getattr(g, "tf", None).max if g else float("nan")),
+                default=100e-12,
+            )
+            edge_time = max(
+                tr_temp if math.isfinite(tr_temp) and tr_temp > 0 else 100e-12,
+                tf_temp if math.isfinite(tf_temp) and tf_temp > 0 else 100e-12,
+            )
+            sim_time = max(10e-9, 20 * edge_time)
+
+        # ibischk5 safety cap
+        sim_time = min(sim_time, 100e-9)
+
+        # === tr/tf: OFFICIAL s2ibis3 SPEC — default = sim_time / 100.0 ===
         tr = _first_real(
             _sel3(getattr(m, "tr", None).typ if m else float("nan"),
                   getattr(m, "tr", None).min if m else float("nan"),
@@ -556,7 +629,7 @@ class S2ISpice:
             _sel3(getattr(g, "tr", None).typ if g else float("nan"),
                   getattr(g, "tr", None).min if g else float("nan"),
                   getattr(g, "tr", None).max if g else float("nan")),
-            default=3e-11,
+            default=sim_time / 100.0,  # ← SPEC-COMPLIANT
         )
         tf = _first_real(
             _sel3(getattr(m, "tf", None).typ if m else float("nan"),
@@ -565,26 +638,25 @@ class S2ISpice:
             _sel3(getattr(g, "tf", None).typ if g else float("nan"),
                   getattr(g, "tf", None).min if g else float("nan"),
                   getattr(g, "tf", None).max if g else float("nan")),
-            default=3e-11,
-        )
-        sim_time = _first_real(
-            getattr(m, "simTime", None) if m else None,
-            getattr(g, "simTime", None) if g else None,
-            default=3e-9,
+            default=sim_time / 100.0,  # ← SPEC-COMPLIANT
         )
 
-        # Pulse timing to match Java
+        logging.info(
+            f"sim_time={sim_time:.3e}s | "
+            f"user={'NA' if user_sim_time is None else f'{user_sim_time:.1e}s'} | "
+            f"tr={tr:.2e}s tf={tf:.2e}s | "
+            f"model={m.modelName}"
+        )
+
+        # === Pulse generation ===
         pulsewidth = 2.0 * sim_time
         period = 2.0 * (tr + tf + pulsewidth)
 
-        # Requested edge; flip for inverting/active-low
         low, high = (vil, vih) if output_rising else (vih, vil)
         if pin_type in [CS.MODEL_POLARITY_INVERTING, CS.MODEL_ENABLE_ACTIVE_LOW]:
             low, high = high, low
 
         node = self._node_name(pin, node_label)
-        logging.debug(
-            f"Generated pulse for {node_label}: PULSE({low} {high} 0 {tr:.16e} {tf:.16e} {pulsewidth:.16e} {period:.16e})")
         return (
             f"V{node_label}S2I {node} 0 "
             f"PULSE({low} {high} 0 {tr:.16e} {tf:.16e} {pulsewidth:.16e} {period:.16e})\n"
@@ -640,16 +712,20 @@ class S2ISpice:
                 ]
                 if self.outdir:
                     candidates = [os.path.join(self.outdir, os.path.basename(c)) for c in candidates]
+
                 moved = False
                 for c in candidates:
                     if os.path.exists(c):
                         try:
-                            if not os.path.exists(spice_out):
-                                shutil.move(c, spice_out)
+                            shutil.move(c, spice_out)  # ← ALWAYS OVERWRITE
+                            logging.info(f"Renamed {c} → {spice_out}")
                             moved = True
                             break
                         except Exception as e:
-                            logging.warning(f"Failed to move {c} to {spice_out}: {e}")
+                            logging.warning(f"Failed to move {c}: {e}")
+
+                if not moved:
+                    logging.warning(f"No .lis file found for {spice_out}")
 
             if completed.returncode == 0 and os.path.exists(spice_out):
                 logging.info(f"{prog} run succeeded for {spice_in}")
@@ -906,7 +982,7 @@ class S2ISpice:
             # === Extract V and I using VI_ROW_RE ===
             m = CS.VI_ROW_RE.match(line)
             if not m:
-                logging.debug(f"Skipping non-matching line: {raw_line}")
+                #logging.debug(f"Skipping non-matching line: {raw_line}")
                 continue
 
             try:
@@ -916,7 +992,7 @@ class S2ISpice:
                 logging.debug(f"Failed to parse numbers: {raw_line}")
                 continue
 
-            logging.debug(f"Extracted: v={v_val:.6e}, i={i_val:.6e} from: {raw_line}")
+            #logging.debug(f"Extracted: v={v_val:.6e}, i={i_val:.6e} from: {raw_line}")
 
             #vi_cont.VIs[row].v = v_val
             if command == "typ":
@@ -1097,7 +1173,7 @@ class S2ISpice:
             with open(spice_out, 'r') as f:
                 lines = f.readlines()
 
-            # Find start of data
+            # Find data start
             data_start = False
             for i, line in enumerate(lines):
                 if 'time' in line.lower() and any(x in line.lower() for x in ['v(', 'voltage', 'out']):
@@ -1119,7 +1195,7 @@ class S2ISpice:
                 try:
                     t = float(parts[0])
                     v = float(parts[1])
-                    if 0 <= t <= sim_time:
+                    if t >= 0:  # ← REMOVE UPPER BOUND — THIS IS THE FIX
                         t_v_pairs.append((t, v))
                 except ValueError:
                     continue
@@ -1129,26 +1205,18 @@ class S2ISpice:
                 return 1
 
             # === BINNING ===
-            bin_param = [0, 0, 0.0, 0]
+            bin_param = [0, 0, 0.0, 0]  # last_bin, interp_bin, sum, count
             for t, v in t_v_pairs:
                 self._bin_tran_data_java(t, v, sim_time, bin_time, command, bin_param, wave_p)
 
-            # === CLOSE LAST BIN (MATCH JAVA) ===
+            # === FORCE LAST BIN TO EXACT sim_time (JAVA EXACT) ===
             if bin_param[3] > 0:
                 v_avg = bin_param[2] / bin_param[3]
                 last_bin = bin_param[0]
-                t_bin = last_bin * bin_time
-                wave_p.waveData[last_bin].t = t_bin
+                wave_p.waveData[last_bin].t = sim_time  # ← EXACT
                 setattr(wave_p.waveData[last_bin].v, command, v_avg)
 
-            # FIXED LOG
-            direction = "RISING" if curve_type == CS.CurveType.RISING_WAVE else "FALLING"
-            logging.info(
-                f"[WAVE] {command.upper():>3} | {direction:<7} | "
-                f"R_fixture={wave_p.R_fixture:.1f}  V_fixture={wave_p.V_fixture:.3f}  "
-                f"file={os.path.basename(spice_out)}"
-            )
-
+            logging.info(f"[WAVE] {command.upper()} | {len(t_v_pairs)} points → {max_bins} bins")
             return 0
 
         except Exception as e:
@@ -1176,7 +1244,7 @@ class S2ISpice:
         if current_bin == last_bin:
             bin_param[2] += v
             bin_param[3] += 1
-            logging.debug(f"[BIN] Added to bin {current_bin}: sum={bin_param[2]} count={bin_param[3]}")
+            # logging.debug(f"[BIN] Added to bin {current_bin}: sum={bin_param[2]} count={bin_param[3]}")
             return
 
         # Close previous bin
@@ -1237,7 +1305,8 @@ class S2ISpice:
     ) -> int:
         model = current_pin.model
         self.spice_type = spice_type
-        active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
+        #active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
+        active_sp_file = self.global_.spice_file
 
         try:
             num_table_points = int(round(abs(sweep_range) / max(1e-30, abs(sweep_step)))) + 2
@@ -1426,7 +1495,8 @@ class S2ISpice:
     ) -> int:
         model = current_pin.model
         self.spice_type = spice_type
-        active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
+        #active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
+        active_sp_file = self.global_.spice_file
 
         logging.debug(f"Using simTime={model.simTime}, spice_file={active_sp_file} for ramp data generation")
 
@@ -1535,7 +1605,8 @@ class S2ISpice:
     ) -> int:
         model = current_pin.model
         self.spice_type = spice_type
-        active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
+        #active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
+        active_sp_file = self.global_.spice_file
 
         logging.debug(f"Using simTime={model.simTime}, spice_file={active_sp_file} for waveform data generation")
 

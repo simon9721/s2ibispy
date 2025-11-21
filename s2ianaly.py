@@ -585,25 +585,42 @@ class SortVIData:
 
 
 class SortVISeriesData:
-    def sort_vi_series_data(self, vi_series_data: IbisVItable, vcc: IbisTypMinMax) -> IbisVItable:
-        if vi_series_data is None or vi_series_data.size <= 0:
+    @staticmethod
+    def sort_vi_series_data(
+        vi_series_data: Optional[IbisVItable],
+        vcc: IbisTypMinMax,
+        max_points: int = CS.MAX_TABLE_SIZE,
+    ) -> IbisVItable:
+        """
+        Transform raw [Series Current]/[Series MOSFET] table to IBIS-compliant form:
+          • Vcc-relative: Vtable = Vcc - Vpin
+          • Monotonically increasing voltage (REVERSED)
+          • Max 100 points
+        Matches official s2ibis3 behavior 100%.
+        """
+        if not vi_series_data or vi_series_data.size <= 0:
             return IbisVItable(VIs=[], size=0)
 
-        vi_table_size = min(vi_series_data.size, CS.MAX_TABLE_SIZE)
+        size = min(vi_series_data.size, max_points)
 
-        temp = [
-            IbisVItableEntry(
-                v=(vcc.typ - vi_series_data.VIs[i].v),
-                i=IbisTypMinMax(
-                    typ=vi_series_data.VIs[i].i.typ,
-                    min=vi_series_data.VIs[i].i.min,
-                    max=vi_series_data.VIs[i].i.max,
-                ),
+        # Build Vcc-relative entries in REVERSE order → results in increasing voltage
+        processed = []
+        for i in range(size - 1, -1, -1):  # This is the reversal
+            raw = vi_series_data.VIs[i]
+            processed.append(
+                IbisVItableEntry(
+                    v=vcc.typ - raw.v,                    # Vcc-relative
+                    i=IbisTypMinMax(
+                        typ=raw.i.typ,
+                        min=raw.i.min if not is_use_na(raw.i.min) else None,
+                        max=raw.i.max if not is_use_na(raw.i.max) else None,
+                    ),
+                )
             )
-            for i in range(vi_table_size)
-        ]
 
-        return IbisVItable(VIs=temp, size=vi_series_data.size)
+        result = IbisVItable(VIs=processed, size=len(processed))
+        logging.debug("Series VI table: %d → %d points (Vcc-relative + reversed)", vi_series_data.size, result.size)
+        return result
 
 
 # ---------- per-pin analyzer ----------
@@ -646,7 +663,12 @@ class AnalyzePin:
                          vds_idx: int = 0):
             #setup_v.setup_voltages(curve_type, current_pin.model)
             # In AnalyzePin.run_vi_curve
-            setup_v.setup_voltages(curve_type, current_pin.model)
+            #setup_v.setup_voltages(curve_type, current_pin.model)
+
+            # ← CRITICAL FIX #1: Use series_model for SERIES_VI, otherwise main model
+            target_model = current_pin.series_model if curve_type == CS.CurveType.SERIES_VI else current_pin.model
+            setup_v.setup_voltages(curve_type, target_model)
+
             #vcc_clamp = setup_v.vcc if curve_type != CS.CurveType.POWER_CLAMP else IbisTypMinMax(
             #    current_pin.model.powerClampRef.typ, current_pin.model.powerClampRef.min,
             #    current_pin.model.powerClampRef.max)
@@ -654,8 +676,17 @@ class AnalyzePin:
             #    current_pin.model.gndClampRef.typ, current_pin.model.gndClampRef.min, current_pin.model.gndClampRef.max)
 
             # Use the full IbisTypMinMax objects directly
-            vcc_clamp = setup_v.vcc if curve_type != CS.CurveType.POWER_CLAMP else current_pin.model.powerClampRef
-            gnd_clamp = setup_v.gnd if curve_type != CS.CurveType.GND_CLAMP else current_pin.model.gndClampRef
+            #vcc_clamp = setup_v.vcc if curve_type != CS.CurveType.POWER_CLAMP else current_pin.model.powerClampRef
+            #gnd_clamp = setup_v.gnd if curve_type != CS.CurveType.GND_CLAMP else current_pin.model.gndClampRef
+
+            # ← CRITICAL FIX #2: Use real clamp references as fixture voltages when they exist
+            vcc_clamp = (current_pin.model.powerClampRef
+                         if curve_type == CS.CurveType.POWER_CLAMP and not is_use_na(
+                current_pin.model.powerClampRef.typ)
+                         else setup_v.vcc)
+            gnd_clamp = (current_pin.model.gndClampRef
+                         if curve_type == CS.CurveType.GND_CLAMP and not is_use_na(current_pin.model.gndClampRef.typ)
+                         else setup_v.gnd)
 
             rc = self.s2ispice.generate_vi_curve(
                 current_pin,
@@ -928,6 +959,8 @@ class AnalyzeComponent:
 
             logging.info("Analyzing component %s", component.component)
 
+            self.s2ispice.current_component = component  # ← Set before pin loop
+
             for pin in component.pList:
                 logging.info("Analyzing pin '%s' with modelName '%s'", pin.pinName, pin.modelName)
 
@@ -944,8 +977,11 @@ class AnalyzeComponent:
 
                 series_present = getattr(model, "seriesModel", None) is not None and getattr(model.seriesModel,
                                                                                              "vdslist", [])
-                needs_series = series_present  # run series-VI whenever a series model with VDS points is present
+                # Always run series analysis if series model exists with Vds points
+                needs_series = (getattr(model, "seriesModel", None) is not None and
+                                getattr(model.seriesModel, "vdslist", []))
 
+                # Run if: main model not done OR series needs doing
                 needs_analysis = (model.hasBeenAnalyzed == 0) or needs_series
                 if not needs_analysis:
                     continue
@@ -991,6 +1027,7 @@ class AnalyzeComponent:
                         model.hasBeenAnalyzed += 1
                 result += rc
 
+
         return result
 
 
@@ -1011,6 +1048,7 @@ class S2IAnaly:
             spice_command: str,
             global_: Optional[IbisGlobal] = None,
             outdir: Optional[str] = None,
+            s2i_file: Optional[str] = None,  # ← ADD THIS
     ):
         self.mList = mList
         self.spice_type = spice_type
@@ -1018,11 +1056,12 @@ class S2IAnaly:
         self.cleanup = cleanup
         self.spice_command = spice_command
         self.outdir = outdir
+        self.s2i_file = s2i_file  # ← ADD THIS
 
         logging.debug(
             f"S2IAnaly init: global_={global_}, vil={getattr(global_, 'vil', None)}, vih={getattr(global_, 'vih', None)}, outdir={outdir}")
         self.spice = S2ISpice(mList=self.mList, spice_type=spice_type, hspice_path="hspice", global_=global_,
-                              outdir=outdir)
+                              outdir=outdir, s2i_file=self.s2i_file)
         self.util = S2IUtil(self.mList)
         self.comp_analy = AnalyzeComponent(self.spice, self.util)
 

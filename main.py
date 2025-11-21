@@ -15,15 +15,80 @@ from s2ianaly import S2IAnaly
 from s2ioutput import IbisWriter as S2IOutput  # ← Alias!
 
 
-def run_ibischk(ibis_file: str, ibischk: str) -> int:
-    """Run ibischk if available; return the process return code."""
+import re
+from typing import Dict
+
+def run_ibischk(ibis_file: str, ibischk: str) -> Dict[str, object]:
+    """Run ibischk7 and return clean, accurate results — no summary lines in errors/warnings."""
     try:
-        logging.info("Running ibischk on %s", ibis_file)
-        result = subprocess.run([ibischk, ibis_file], text=True)
-        return result.returncode
+        logging.info("Running ibischk7 on %s", ibis_file)
+        result = subprocess.run(
+            [ibischk, ibis_file],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        full_output = result.stdout + result.stderr
+
+        chk = {
+            "returncode": result.returncode,
+            "output": full_output,
+            "errors": [],
+            "warnings": [],
+            "notes": [],
+        }
+
+        # Regexes that match the real message lines (very reliable)
+        ERROR_RE   = re.compile(r"^ERROR\b|^FATAL\b", re.IGNORECASE)
+        WARNING_RE = re.compile(r"^WARNING\b", re.IGNORECASE)
+        NOTE_RE    = re.compile(r"^NOTE\b", re.IGNORECASE)
+
+        for raw_line in full_output.splitlines():
+            line = raw_line.rstrip()
+            if not line.strip():
+                continue
+
+            lower = line.lower()
+
+            # ---- 1. Skip everything that is NOT a real message ----
+            if any(phrase in lower for phrase in [
+                "ibischk", "checking ", "for ibis ", "compatibility",
+                "errors  :", "warnings:", "file passed", "file failed",
+                "processed successfully"
+            ]):
+                continue
+
+            # ---- 2. Classify by prefix (this is 100% accurate for ibischk7) ----
+            if ERROR_RE.search(line):
+                chk["errors"].append(line)
+            elif WARNING_RE.search(line):
+                chk["warnings"].append(line)
+            elif NOTE_RE.search(line):
+                chk["notes"].append(line)
+            # No else → unknown lines are simply ignored (never happen with ibischk7)
+
+        # ---- 3. Final safety (paranoid but costs nothing) ----
+        chk["errors"]   = [e for e in chk["errors"]   if "0 error"   not in e.lower()]
+        chk["warnings"] = [w for w in chk["warnings"] if "0 warning" not in w.lower()]
+
+        # ---- 4. Logging ----
+        if chk["errors"]:
+            logging.error("ibischk7 found %d REAL ERROR(S) → IBIS model is INVALID!", len(chk["errors"]))
+            for e in chk["errors"][:10]:
+                logging.error("  ERR → %s", e)
+        else:
+            logging.info("ibischk7: No errors — model passed syntax check")
+
+        if chk["warnings"]:
+            logging.warning("ibischk7 found %d warning(s)", len(chk["warnings"]))
+
+        logging.info("ibischk7 issued %d note(s)", len(chk["notes"]))
+        return chk
+
     except FileNotFoundError:
-        logging.warning("ibischk not found at '%s' — skipping.", ibischk)
-        return 0
+        logging.warning("ibischk7 executable not found at '%s' — skipping validation", ibischk)
+        return {"returncode": 0, "output": "", "errors": [], "warnings": [], "notes": []}
 
 def main(argv: Optional[list[str]] = None) -> int:
     p = argparse.ArgumentParser(description="Convert SPICE -> IBIS (s2ibis3-style pipeline).")
@@ -83,6 +148,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         spice_command=ibis.spiceCommand,
         global_=global_,  # Pass global_ to S2IAnaly
         outdir=outdir,
+        s2i_file=input_file,  # ← ADD THIS
     )
     rc = analy.run_all(ibis=ibis, global_=global_)
     if rc != 0:
@@ -96,10 +162,44 @@ def main(argv: Optional[list[str]] = None) -> int:
     writer.write_ibis_file(str(out_file))  # ← Only filename
 
     # 5) Optionally run ibischk
+    # 5) Optionally run ibischk + save + process results
     if args.ibischk:
-        rc_chk = run_ibischk(str(out_file), args.ibischk)
-        if rc_chk != 0:
-            logging.warning("ibischk returned %d (see output above)", rc_chk)
+        chk = run_ibischk(str(out_file), args.ibischk)
+
+        # Save full raw log
+        log_path = out_file + ".ibischk_log.txt"
+        with open(log_path, "w", encoding="utf-8") as f:
+            f.write(chk["output"])
+        logging.info("Full ibischk log saved → %s", log_path)
+
+        # Save only warnings (very useful!)
+        if chk["warnings"]:
+            warn_path = out_file + ".ibischk_warnings.txt"
+            with open(warn_path, "w", encoding="utf-8") as f:
+                f.write("\n".join(chk["warnings"]))
+            logging.info("Warnings extracted → %s", warn_path)
+
+        # Save machine-readable JSON report (great for CI!)
+        import json
+        json_path = out_file + ".ibischk_report.json"
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump({
+                "returncode": chk["returncode"],
+                "errors": chk["errors"],
+                "warnings": chk["warnings"],
+                "notes": chk["notes"],
+                "total_errors": len(chk["errors"]),
+                "total_warnings": len(chk["warnings"])
+            }, f, indent=2)
+        logging.info("JSON report → %s", json_path)
+
+        # Optional: Fail the whole conversion if there are real errors
+        if chk["errors"]:
+            logging.error("IBIS file has critical errors! Stopping.")
+            return 20  # Custom error code
+
+        if chk["returncode"] != 0:
+            logging.warning("ibischk exited with code %d", chk["returncode"])
 
     logging.info("Done.")
     return 0

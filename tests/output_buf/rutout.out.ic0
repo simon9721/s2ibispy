@@ -1,0 +1,19 @@
+* "simulator" "PrimeSim HSPICE"
+* "version" "T-2022.06 win64"
+* "format" "HSP"
+* "rundate" "10:29:52 11/18/2025 "
+* "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\output_buf\rutout.spi "
+* "runtitle" "* typ rising_ramp curve for model driver"
+* time =  0.000e+00       
+* temperature =  2.700e+01       
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ in = 0.000e+00       
++ n2 = 3.300e+00       
++ n3 = 1.052e-08       
++ n4 = 3.300e+00       
++ out = 1.036e-08       
++ vdd = 3.300e+00       
+***   END: Saved Operating Point ***                     

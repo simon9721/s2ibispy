@@ -222,7 +222,7 @@ class IbisWriter:
         effective_rload = model_rload
 
         f.write("[Ramp]\n")
-        f.write("| variable typ min max\n")  # ← EXACT header
+        f.write("| variable   typ        min        max\n")
 
         def format_dt(dt_val: float) -> str:
             if self._is_na(dt_val) or dt_val <= 0:
@@ -397,17 +397,44 @@ class IbisWriter:
         return self._si(val, unit) if not self._is_na(val) else "NA"
 
     def _model_type_str(self, mt) -> str:
-        mapping = {
-            CS.ModelType.INPUT: "Input", CS.ModelType.OUTPUT: "Output",
-            CS.ModelType.IO: "I/O", CS.ModelType.SERIES: "Series",
-            CS.ModelType.SERIES_SWITCH: "Series_switch", CS.ModelType.TERMINATOR: "Terminator",
-            CS.ModelType.OPEN_DRAIN: "Open_drain", CS.ModelType.OPEN_SINK: "Open_sink",
-            CS.ModelType.OPEN_SOURCE: "Open_source", CS.ModelType.IO_OPEN_DRAIN: "I/O_Open_drain",
-            CS.ModelType.IO_OPEN_SINK: "I/O_Open_sink", CS.ModelType.IO_OPEN_SOURCE: "I/O_Open_source",
-            CS.ModelType.OUTPUT_ECL: "Output_ECL", CS.ModelType.IO_ECL: "I/O_ECL",
-            CS.ModelType.THREE_STATE: "3-state",
-        }
-        return mapping.get(mt, "Output") if isinstance(mt, int) else str(mt)
+        """
+        Convert whatever is in model.modelType → the exact official IBIS string.
+        Handles:
+          • old integer enums (0,1,2,3,...)
+          • new canonical strings ("I/O", "Open_drain", ...)
+          • anything else (fallback to "I/O")
+        """
+        # 1. If it's already a proper string → just return it
+        if isinstance(mt, str):
+            s = mt.strip()
+            if s:  # non-empty
+                return s
+            # empty string → fall through to mapping below
+
+        # 2. If it's an integer (enum) → map to official string
+        if isinstance(mt, int):
+            mapping = {
+                CS.ModelType.INPUT: "Input",
+                CS.ModelType.OUTPUT: "Output",
+                CS.ModelType.IO: "I/O",
+                CS.ModelType.THREE_STATE: "3-state",
+                CS.ModelType.OPEN_DRAIN: "Open_drain",
+                CS.ModelType.OPEN_SINK: "Open_sink",
+                CS.ModelType.OPEN_SOURCE: "Open_source",
+                CS.ModelType.IO_OPEN_DRAIN: "I/O_Open_drain",
+                CS.ModelType.IO_OPEN_SINK: "I/O_Open_sink",
+                CS.ModelType.IO_OPEN_SOURCE: "I/O_Open_source",
+                CS.ModelType.SERIES: "Series",
+                CS.ModelType.SERIES_SWITCH: "Series_switch",
+                CS.ModelType.TERMINATOR: "Terminator",
+                CS.ModelType.INPUT_ECL: "Input_ECL",
+                CS.ModelType.OUTPUT_ECL: "Output_ECL",
+                CS.ModelType.IO_ECL: "I/O_ECL",
+            }
+            return mapping.get(mt, "I/O")  # safe default
+
+        # 3. Anything else (None, garbage) → spec-compliant default
+        return "I/O"
 
     def _is_na(self, x) -> bool:
         return x is None or (isinstance(x, float) and (math.isnan(x) or x == CS.USE_NA))
