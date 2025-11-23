@@ -1,0 +1,63 @@
+* Four-conductor transmission line from:  F. Y. Chang, "Transient 
+* simulation of nonuniform coupled lossy transmission lines 
+* characterized by frequency-dependent parameters--Part II:  
+* Discrete-time analysis," IEEE Trans. Circs. Systs.--I, 
+* vol. 39, Nov. 1992, p. 918, Fig. 5.  
+
+* Same as wel4.rlc, but with non-zero Rs matrix.  
+
+
+3  *(number of signal conductors)
+
+
+* Lo
+******************************************
+2.41667e-6                          
+0.694444e-6   2.36111e-6             
+0.638889e-6   0.694444e-6   2.41667e-6
+
+* Co
+******************************************
+ 20.9877e-12
+-12.3457e-12    29.3210e-12 
+-4.01235e-12   -12.3457e-12   20.9877e-12 
+
+* Ro
+******************************************
+41.6667
+0        41.6667
+0        0        41.6667
+
+* Go
+******************************************
+0.585937e-3
+0            0.585937e-3
+0            0            0.585937e-3
+
+* Rs
+******************************************
+0.0263523
+        0   0.0263523
+        0           0   0.0263523
+
+
+This file contains the following input parameters for Hspice's w element
+(multiconductor lossy frequency-dependent transmission line):
+  
+N -- number of signal conductors
+
+Lo -- dc inductance matrix per unit length
+
+Co -- dc capacitance matrix per unit length
+
+Ro (optional) -- dc resistance matrix per unit length
+
+Go (optional) -- dc conductance matrix per unit length
+
+Rs (optional) -- skin-effect resistance matrix per unit length,
+                 R(f) = Ro + sqrt(f) Rs
+
+Gd (optional) -- dielectric-loss conductance matrix per unit length,
+                 G(f) = Go + f Gd
+
+All (symmetric) matrices are in the lower-triangular format.  

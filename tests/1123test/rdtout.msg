@@ -1,0 +1,111 @@
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\rdtout.spi  
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      17464 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 9.70E-02                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 1.00E-01 peak memory=      71 mb      
+
+ init: begin check errors, cpu clock= 1.00E-01                                  
+
+ init: end check errors, cpu clock= 1.02E-01 peak memory=      72 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 1.02E-01                     
+
+       establish matrix -- done, cpu clock= 1.02E-01 peak memory=      72 mb    
+
+       re-order matrix -- done, cpu clock= 1.02E-01 peak memory=      72 mb     
+
+ init: end setup matrix, cpu clock= 1.02E-01 peak memory=      72 mb            
+
+ dcop: begin dcop, cpu clock= 1.03E-01                                          
+
+ dcop: end dcop, cpu clock= 1.05E-01 peak memory=      72 mb tot_iter=      20  
+
+ sweep: tran tran0    begin, stop_t=  6.00E-09 #sweeps= 101 cpu clock= 1.07E-01 
+
+ tran: time= 6.1380E-10 tot_iter=      55 conv_iter=      19 cpu clock= 1.08E-01
+
+ tran: time= 1.2995E-09 tot_iter=      70 conv_iter=      24 cpu clock= 1.09E-01
+
+ tran: time= 1.8043E-09 tot_iter=      76 conv_iter=      26 cpu clock= 1.09E-01
+
+ tran: time= 2.4057E-09 tot_iter=      87 conv_iter=      29 cpu clock= 1.09E-01
+
+ tran: time= 3.0309E-09 tot_iter=     103 conv_iter=      33 cpu clock= 1.10E-01
+
+ tran: time= 3.7894E-09 tot_iter=     112 conv_iter=      36 cpu clock= 1.10E-01
+
+ tran: time= 4.3894E-09 tot_iter=     116 conv_iter=      38 cpu clock= 1.10E-01
+
+ tran: time= 4.9894E-09 tot_iter=     120 conv_iter=      40 cpu clock= 1.10E-01
+
+ tran: time= 5.5894E-09 tot_iter=     124 conv_iter=      42 cpu clock= 1.10E-01
+
+ tran: time= 6.0000E-09 tot_iter=     128 conv_iter=      44 cpu clock= 1.11E-01
+
+ sweep: tran tran0    end, cpu clock= 1.11E-01 peak memory=      72 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.03 seconds                               
+
+           total elapsed time            0.11 seconds                           
+
+           job started at     14:07:21 11/23/2025                               
+
+           job ended   at     14:07:22 11/23/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 

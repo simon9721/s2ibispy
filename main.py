@@ -18,6 +18,8 @@ from s2ioutput import IbisWriter as S2IOutput  # ← Alias!
 import re
 from typing import Dict
 
+from correlation import generate_and_run_correlation
+
 def run_ibischk(ibis_file: str, ibischk: str) -> Dict[str, object]:
     """Run ibischk7 and return clean, accurate results — no summary lines in errors/warnings."""
     try:
@@ -102,6 +104,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     p.add_argument("--cleanup", type=int, default=0, help="Delete intermediate SPICE files (0/1)")
     p.add_argument("--ibischk", default="", help="Path to ibischk7_64.exe (optional)")
     p.add_argument("-v", "--verbose", action="store_true", help="Verbose logging")
+    p.add_argument("--correlate", action="store_true", 
+               help="Run SPICE vs IBIS correlation after generation")
     args = p.parse_args(argv)
 
     logging.basicConfig(
@@ -154,6 +158,24 @@ def main(argv: Optional[list[str]] = None) -> int:
     if rc != 0:
         logging.error("Analysis failed with code %d", rc)
         return rc
+    
+    # === FIX ABSOLUTE PATHS — REQUIRED FOR CORRELATION ===
+    logging.info("Fixing absolute spice_file paths for correlation...")
+    s2i_dir = os.path.dirname(input_file)
+    for component in ibis.cList:
+        for pin in component.pList:
+            if pin.model and getattr(pin.model, "spice_file", None):
+                spice_file = pin.model.spice_file
+                if not os.path.isabs(spice_file):
+                    candidate = os.path.join(s2i_dir, spice_file)
+                    if os.path.exists(candidate):
+                        pin.model.spice_file = os.path.abspath(candidate)
+                        logging.info(f"→ Resolved: {pin.model.spice_file}")
+                    else:
+                        logging.error(f"Spice file not found: {spice_file} (tried {candidate})")
+                        return 1
+                else:
+                    pin.model.spice_file = os.path.abspath(spice_file)
 
     # 4) Write the .ibs
     out_file = os.path.join(outdir, os.path.splitext(os.path.basename(input_file))[0] + ".ibs")
@@ -200,6 +222,31 @@ def main(argv: Optional[list[str]] = None) -> int:
 
         if chk["returncode"] != 0:
             logging.warning("ibischk exited with code %d", chk["returncode"])
+        
+    # 6 correlation
+    if args.correlate:
+        logging.info("Running SPICE vs IBIS correlation...")
+        from s2ispice import S2ISpice
+        
+        s2i_spice = analy.spice
+        # Run correlation for ALL models (or just the first one — your choice)
+        for model in mList:
+            if getattr(model, "noModel", False):
+                continue
+            logging.info(f"Correlating model: {model.modelName}")
+            try:
+                deck_path, rc = generate_and_run_correlation(
+                    model=model,
+                    ibis=ibis,
+                    outdir=outdir,
+                    s2ispice=s2i_spice,
+                )
+                if rc == 0:
+                    logging.info(f"Correlation SUCCESS for {model.modelName} → {deck_path}")
+                else:
+                    logging.error(f"Correlation FAILED for {model.modelName}")
+            except Exception as e:
+                logging.error(f"Correlation crashed for {model.modelName}: {e}")
 
     logging.info("Done.")
     return 0
