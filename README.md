@@ -7,7 +7,7 @@
 [Work in Progress](https://img.shields.io/badge/status-work%20in%20progress-orange)
 
 
-![S2IBISpy](resources/s2ibispy.png)
+![S2IBISpy](resources//icons/s2ibispy.png)
 
 
 `s2ibis3` was developed by North Carolina State University and has been a widely used reference tool for generating IBIS models from SPICE netlists. Written in Java, it has not received updates in many years.
