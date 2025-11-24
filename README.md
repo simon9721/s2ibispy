@@ -34,7 +34,7 @@ This project is **under active development** and requires extensive real-world v
 ### Installation (Development)
 
 ```bash
-git clone <https://github.com/yourname/s2ibispy.git>
+git clone <https://github.com/simon9721/s2ibispy.git>
 cd s2ibispy
 python -m venv venv
 source venv/bin/activate  # Linux/macOS
@@ -49,7 +49,7 @@ pip install -e .
 ### Command Line Usage
 
 ```bash
-s2ibispy input.s2i [options]`
+python main.py input.s2i [options]`
 ```
 
 ### Required
@@ -72,7 +72,7 @@ s2ibispy input.s2i [options]`
 ### Example
 
 ```bash
-s2ibispy my_buffer.s2i -o results --spice-type spectre --correlate --ibischk ./ibischk8`
+python main.py tests/buffer.s2i --outdir tests/output --spice-type hspice --iterate 1 --cleanup 0 --verbose      
 ```
 
 **Output includes**:
@@ -88,15 +88,15 @@ s2ibispy my_buffer.s2i -o results --spice-type spectre --correlate --ibischk ./i
 A graphical interface is available:
 
 ```bash
-python gui_main.py`
+python gui_main.py
 ```
 
 **Features**:
 
-- Drag-and-drop .s2i file loading
+- Input/Output/ibischk paths selection
 - Real-time log output
 - Waveform plotting (via matplotlib)
-- One-click correlation deck generation
+- Auto correlation deck generation (I/O, tristate buffer only)
 - Built on Tkinter (no extra dependencies)
 
 ---
