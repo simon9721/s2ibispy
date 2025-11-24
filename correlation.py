@@ -132,11 +132,27 @@ def generate_and_run_correlation(
     s2ispice: S2ISpice,
     config: Dict[str, Any] = None,
 ):
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    # FINAL FIX: Skip non-I/O models BEFORE touching spice_file
+    # This ELIMINATES the "Spice file not found" error forever
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    from s2ioutput import IbisWriter
+    writer = IbisWriter(ibis_head=None)
+    mt_str = writer._model_type_str(model.modelType)
+
+    if mt_str not in {"I/O", "3-state"}:
+        logging.info(f"Skipping correlation for {model.modelName} — Model_type '{mt_str}' not supported")
+        return None, 0  # ← 0 = success, no error, no crash
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    if not getattr(model, "spice_file", None):
+            logging.info(f"Skipping correlation for {model.modelName} — no SPICE netlist defined")
+            return None, 0
+
     if model is None:
         model = find_model_for_correlation(ibis)
         if model is None:
             logging.error("No valid model found for correlation")
-            return
+            return None, -1
 
     os.makedirs(outdir, exist_ok=True)
 
@@ -144,13 +160,13 @@ def generate_and_run_correlation(
         netlist_info = prepare_netlist_for_correlation(model, outdir)
     except Exception as e:
         logging.error(f"Failed to prepare netlist: {e}")
-        return
+        return None, -1
 
     subcircuit_name = netlist_info["subcircuit_name"]
     spice_include = netlist_info["spice_include"]
-    pin_list = netlist_info["pin_list"]          # ← THE KEY
+    pin_list = netlist_info["pin_list"]
 
-        # === POWER PINS — 100% SAFE FALLBACK (NEVER CRASHES) ===
+    # === POWER PINS — 100% SAFE FALLBACK (NEVER CRASHES) ===
     pullup_pin = pulldown_pin = None
     find_supply = FindSupplyPins()
     for component in ibis.cList:
@@ -164,7 +180,6 @@ def generate_and_run_correlation(
         if pullup_pin and pulldown_pin:
             break
 
-    # FINAL FALLBACK — use wrapper pin names
     if not pullup_pin:
         vdd_name = next((p for p in pin_list if p.lower() in {"vdd", "vcc", "vddio"}), "vdd")
         pullup_pin = type('obj', (), {'pinName': vdd_name})()
@@ -189,17 +204,16 @@ def generate_and_run_correlation(
         if sense_idx is not None:
             nodes[sense_idx] = f"sense{num}"
 
-        # POWER PINS — SAFE INDEX
         try:
             vdd_idx = pin_list.index(pullup_pin.pinName)
             nodes[vdd_idx] = pullup_pin.pinName
         except ValueError:
-            pass  # leave as 0
+            pass
         try:
             vss_idx = pin_list.index(pulldown_pin.pinName)
             nodes[vss_idx] = pulldown_pin.pinName
         except ValueError:
-            pass  # leave as 0
+            pass
 
         return f"X{num}SPICE {' '.join(nodes)} {subcircuit_name}"
 
@@ -209,7 +223,6 @@ def generate_and_run_correlation(
         make_instance(3, "in_spice", "oe3"),
     ])
 
-    # === OE stimuli ===
     oe_stimuli = """
 * Independent OE control
 VENA1 oe1 0 DC 3.3
@@ -217,7 +230,6 @@ VENA2 oe2 0 DC 3.3   $ Quiet line — change to DC 0 for true high-Z
 VENA3 oe3 0 DC 3.3
 """
 
-    # === Render ===
     env = Environment(loader=FileSystemLoader("templates"))
     template = env.get_template("compare_correlation.sp.j2")
 
@@ -232,8 +244,8 @@ VENA3 oe3 0 DC 3.3
         "pulldown_pin": pulldown_pin,
         "sim_time_ns": 100e-9 * 1e9,
         "rlgc_path": os.path.abspath(os.path.join(os.path.dirname(__file__), "Z50_406.lc3")),
-        "x_instances": x_instances,          # ← UNIVERSAL X-LINES
-        "pin_list": pin_list,                # ← for comment
+        "x_instances": x_instances,
+        "pin_list": pin_list,
         "ibis_fullpath": os.path.abspath(os.path.join(outdir, ibis.thisFileName)),
     }
 
@@ -243,7 +255,6 @@ VENA3 oe3 0 DC 3.3
         f.write(deck_content)
     logging.info(f"Correlation deck generated: {deck_path}")
 
-    # === Run ===
     out_base = os.path.join(outdir, f"compare_{model.modelName}")
     msg_file = out_base + ".msg"
     rc = s2ispice.call_spice(

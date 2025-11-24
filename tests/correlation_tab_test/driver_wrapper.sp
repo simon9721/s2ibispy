@@ -1,7 +1,7 @@
 * Auto-generated subcircuit wrapper for driver
 .subckt DRIVER_WRAPPER in oe out in_sense vdd vss
 
-.INCLUDE "C:\Users\sh3qm\PycharmProjects\s2ibispy\hspice.mod"
+.INCLUDE "\\minerfiles.mst.edu\dfs\users\sh3qm\Desktop\hspice.mod"
 
 * optimized_io_buffer_v11.sp
 * Adapted from optimized_tristate_output_v11.sp for I/O functionality

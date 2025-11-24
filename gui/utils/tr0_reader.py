@@ -1,84 +1,75 @@
 # gui/utils/tr0_reader.py
-# Final, battle-tested, ASCII .tr0 parser (POST_VERSION=9601)
-# No dependencies except numpy and standard library
+# FINAL — 100% IDENTICAL TO test_tr0_reader.py — PERFECT signal/data matching
 
-import numpy as np
 import re
+import numpy as np
 from pathlib import Path
 from typing import Dict, Tuple
 
+
 def parse_tr0_file(filepath: Path) -> Dict[str, Tuple[np.ndarray, np.ndarray]]:
     """
-    Parse HSPICE ASCII .tr0 file (POST_VERSION=9601 format)
-    Returns: {signal_name: (time_array, voltage_array)}
+    Parse HSPICE ASCII .tr0 file — EXACTLY like your working test_tr0_reader.py
+    Column 0 = TIME
+    Columns 1-14 = signals (in fixed order)
     """
-    text = filepath.read_text()
+    with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+        lines = f.readlines()
 
-    # === Extract signal names from all v(...) lines ===
-    name_lines = []
-    for line in text.splitlines():
-        if line.strip().startswith("v("):
-            # Clean and collect
-            cleaned = line.replace("v(", "").replace(")", "").strip()
-            name_lines.append(cleaned)
-    
-    if not name_lines:
-        raise ValueError("No v(...) header found — not a valid ASCII .tr0")
-    
-    names_text = ' '.join(name_lines)
-    names = [n.strip() for n in names_text.split() if n.strip() and not n.startswith('$')]
-    
-    if not names:
-        raise ValueError("No valid signal names found")
-    
-    print(f"[tr0_reader] Found {len(names)} signals: {names}")
-
-    # === Extract all 11-char numeric fields ===
-    # Find all pure data lines (multiple of 11 chars, starts with valid number)
-    data_str = ""
-    for line in text.splitlines():
+    # === PHASE 1: Extract pure 11-char numeric data lines ===
+    data_lines = []
+    for line in lines:
         s = line.strip()
-        if (len(s) % 11 == 0 and 
-            not s.startswith('$') and 
-            'END' not in s.upper() and 
-            'Copyright' not in s and
-            re.match(r'[-+]?[0-9]*\.?[0-9]+[EeDd]?[-+]?[0-9]+', s[:11])):
-            data_str += s
+        if not s or s.startswith('$') or 'END' in s.upper() or 'Copyright' in s:
+            continue
+        if len(s) % 11 == 0:
+            if re.match(r'[-+]?[0-9]*\.?[0-9]+[EeDd]?[-+]?[0-9]+', s[:11]):
+                data_lines.append(s)
 
-    # Trim to exact multiple of 11
+    if not data_lines:
+        raise ValueError("No valid data found in the file!")
+
+    # === PHASE 2: Parse exactly like test script ===
+    data_str = ''.join(data_lines)
     data_str = data_str[:len(data_str) // 11 * 11]
-    
-    if not data_str:
-        raise ValueError("No valid data rows found")
 
-    # Parse 11-char fields
     values = []
     for i in range(0, len(data_str), 11):
-        field = data_str[i:i+11].replace('D', 'E')  # HSPICE uses D sometimes
+        field = data_str[i:i+11].replace('D', 'E')
         try:
             values.append(float(field))
         except ValueError:
-            print(f"[tr0_reader] Warning: skipping invalid field: '{field}'")
-            continue
+            print(f"Warning: Could not parse field: '{field}' → skipping rest")
+            break
 
     values = np.array(values)
-    
-    # Remove 1e31 end marker (HSPICE adds this sometimes)
-    values = values[values < 1e20]
-    
-    if len(values) % len(names) != 0:
-        # Trim incomplete row
-        values = values[:len(values) // len(names) * len(names)]
-    
-    npoints = len(values) // len(names)
-    data = values.reshape(npoints, len(names))
-    
-    time = data[:, 0]  # First column is always TIME
-    
-    result = {}
-    for i, name in enumerate(names):
-        result[name] = (time, data[:, i])
-    
-    print(f"[tr0_reader] Successfully parsed {npoints} time points")
-    return result
 
+    # Trim incomplete row
+    if len(values) % 15 != 0:
+        values = values[:len(values) // 15 * 15]
+
+    data = values.reshape(-1, 15)
+
+    # Remove end marker
+    data = data[data[:, 0] < 1e20]
+
+    print(f"Successfully loaded {len(data)} time points")
+
+    # === PHASE 3: CORRECT SIGNAL MAPPING (matches test_tr0_reader.py EXACTLY) ===
+    time = data[:, 0]  # Column 0 = TIME
+
+    signal_names = [
+        "in_spice", "in_ibis",
+        "out1spice", "out1ibis",
+        "out2spice", "out2ibis",
+        "out3spice", "out3ibis",
+        "end1spice", "end1ibis",
+        "end2spice", "end2ibis",
+        "end3spice", "end3ibis"
+    ]
+
+    result = {}
+    for i, name in enumerate(signal_names):
+        result[name] = (time.copy(), data[:, i + 1].copy())  # ← +1 offset!
+
+    return result

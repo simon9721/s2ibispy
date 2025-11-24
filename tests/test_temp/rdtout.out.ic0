@@ -1,7 +1,7 @@
 * "simulator" "PrimeSim HSPICE"
 * "version" "T-2022.06 win64"
 * "format" "HSP"
-* "rundate" "19:46:43 11/23/2025 "
+* "rundate" "22:30:57 11/23/2025 "
 * "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\test_temp\rdtout.spi "
 * "runtitle" "* typ falling_ramp curve for model driver"
 * time =  0.000e+00       
@@ -11,16 +11,9 @@
 + gmindc= 1.000e-12       
 .nodeset
 + in = 3.300e+00       
-+ in_sense = 4.384e-08       
-+ n1 = 1.553e-08       
-+ n2 = 1.743e-07       
-+ n3 = 2.178e-08       
-+ n_int1 = 8.713e-08       
-+ n_int2 = 2.670e+00       
-+ nand_n3 = 3.300e+00       
-+ oe = 3.300e+00       
-+ oe_b = 4.384e-08       
++ n2 = 1.553e-08       
++ n3 = 3.300e+00       
++ n4 = 9.733e-09       
 + out = 3.300e+00       
 + vdd = 3.300e+00       
-+ vss = 0.000e+00       
 ***   END: Saved Operating Point ***                     

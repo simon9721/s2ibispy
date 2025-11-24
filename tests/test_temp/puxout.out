@@ -7,11 +7,11 @@
   this software is strictly prohibited.
   Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\test_temp\puxout.spi
   Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\test_temp\puxout.spi -o C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\test_temp\puxout.out
-  Start time: Sun Nov 23 19:46:33 2025
+  Start time: Sun Nov 23 22:30:53 2025
   lic:  
   lic: FLEXlm: SDK_12.10 
   lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
-  lic: HOSTID: 00ff89f5aa52         PID:      16860 
+  lic: HOSTID: 00ff89f5aa52         PID:      6836 
   lic: Using FLEXlm license file: 
   lic: 1704@synopsys.lic.mst.edu 
   lic: Checkout 1 hspice 
@@ -203,9 +203,10 @@
           pu0=   -2.36398                 pua=-8.41675e-11         
           pub=      1e-21               pvsat=        -50         
         prdsw=     4.4192         
+  **warning** (C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\test_temp\puxout.spi:124) Both nodes of element vgnds2i are connected together; Line ignored.
  
 
- Warning: Pd = 0 is less than Weff = 1.7864e-06 in BSIM3 model 0:nfet element mx2 with W = 1.79e-06, L = 5.8e-07
+ Warning: Pd = 7.575e-06 is less than Weff = 1.61864e-05 in BSIM3 model 0:nfet element mx14 with W = 1.619e-05, L = 5.8e-07
 
   
       
@@ -337,13 +338,16 @@ y
   Actual Threads Count       :     1
 
 
+  ****** Statistics of Ignored Elements ******
+  Voltage Sources :       1
+
   ******  Circuit Statistics  ******
-  # nodes       =      14 # elements   =      49
-  # resistors   =       0 # capacitors =      14 # inductors   =       0
+  # nodes       =       7 # elements   =      32
+  # resistors   =       0 # capacitors =      11 # inductors   =       0
   # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
-  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       5
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       3
   # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
-  # jfets       =       0 # mosfets    =      30 # U elements  =       0
+  # jfets       =       0 # mosfets    =      18 # U elements  =       0
   # T elements  =       0 # W elements =       0 # B elements  =       0
   # S elements  =       0 # P elements =       0 # va device   =       0
   # vector_srcs =       0 # N elements =       0
@@ -353,7 +357,7 @@ y
 
   analysis           time    # points   tot. iter  conv.iter
   op point           0.00           1           0
-  dc sweep           0.01         100         274
+  dc sweep           0.01         100         210
   readin             0.01
   errchk             0.00
   setup              0.00
@@ -362,10 +366,10 @@ y
 
            peak memory used         72.05 megabytes
            total cpu time            0.03 seconds
-           total elapsed time        0.12 seconds
-           job started at     19:46:33 11/23/2025
-           job ended   at     19:46:34 11/23/2025
-           job total runtime         0.12 seconds
+           total elapsed time        0.11 seconds
+           job started at     22:30:53 11/23/2025
+           job ended   at     22:30:53 11/23/2025
+           job total runtime         0.11 seconds
 
 
   lic: Release hspice token(s) 

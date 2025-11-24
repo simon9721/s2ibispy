@@ -178,34 +178,50 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
     
 
 
-    # 4) Write the .ibs file
+       # 4) Write the .ibs file
     out_file = os.path.join(outdir, os.path.splitext(os.path.basename(input_file))[0] + ".ibs")
     logging.info("Writing IBIS to %s", out_file)
     writer = S2IOutput(ibis_head=ibis)
     writer.write_ibis_file(str(out_file))
 
-        # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-    # FINAL: Run correlation if GUI requested it
     # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-    if gui and gui.run_correlation_after_conversion:
+    # FINAL: Run correlation if GUI requested it — 100% SAFE
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    if gui and getattr(gui, "run_correlation_after_conversion", False):
         logging.info("GUI: Running correlation automatically...")
         from correlation import generate_and_run_correlation
         success = 0
+        
         for model in mList:
             if getattr(model, "noModel", False):
                 continue
+                
             try:
-                deck_path, rc_corr = generate_and_run_correlation(
+                # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+                # THIS LINE FIXES THE NoneType ERROR FOREVER
+                # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+                result = generate_and_run_correlation(
                     model=model,
                     ibis=ibis,
                     outdir=outdir,
-                    s2ispice=analy.spice,  # ← still alive!
+                    s2ispice=analy.spice,
                 )
+                deck_path, rc_corr = result if result is not None else (None, 0)
+                # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+
                 if rc_corr == 0:
-                    success += 1
-                    logging.info(f"Correlation SUCCESS → {Path(deck_path).name}")
+                    if deck_path:
+                        success += 1
+                        logging.info(f"Correlation SUCCESS → {Path(deck_path).name}")
+                    else:
+                        # Model was skipped (non-I/O or no spice_file)
+                        logging.info(f"Correlation skipped for {model.modelName} (not I/O or no netlist)")
+                else:
+                    logging.error(f"Correlation FAILED for {model.modelName}")
+                    
             except Exception as e:
-                logging.error(f"Correlation crashed: {e}")
+                logging.error(f"Correlation crashed for {model.modelName}: {e}")
+                
         logging.info(f"Correlation complete: {success} model(s) processed")
     # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
 
