@@ -1,0 +1,27 @@
+* "simulator" "PrimeSim HSPICE"
+* "version" "T-2022.06 win64"
+* "format" "HSP"
+* "rundate" "15:45:59 11/23/2025 "
+* "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\correlation_tab_test\y00out.spi "
+* "runtitle" "* min falling_wave curve for model driver"
+* time =  0.000e+00       
+* temperature =  1.000e+02       
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ dummy0 = 0.000e+00       
++ in = 3.000e+00       
++ in_sense = 2.280e+00       
++ n1 = 8.570e-08       
++ n2 = 1.437e-06       
++ n3 = 1.796e-07       
++ n_int1 = 7.184e-07       
++ n_int2 = 2.436e+00       
++ nand_n3 = 3.000e+00       
++ oe = 3.000e+00       
++ oe_b = 1.221e-07       
++ out = 1.247e+00       
++ vdd = 3.000e+00       
++ vss = 0.000e+00       
+***   END: Saved Operating Point ***                     

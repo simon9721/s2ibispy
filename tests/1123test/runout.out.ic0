@@ -1,7 +1,7 @@
 * "simulator" "PrimeSim HSPICE"
 * "version" "T-2022.06 win64"
 * "format" "HSP"
-* "rundate" "14:07:21 11/23/2025 "
+* "rundate" "14:49:04 11/23/2025 "
 * "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\runout.spi "
 * "runtitle" "* min rising_ramp curve for model driver"
 * time =  0.000e+00       

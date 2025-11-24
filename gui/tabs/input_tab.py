@@ -3,18 +3,29 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 from tkinter import filedialog, messagebox  # ← Add messagebox here
 from pathlib import Path
+from parser import S2IParser
 
 class InputTab:
     def __init__(self, notebook, gui):
         self.gui = gui
         self.frame = ttk.Frame(notebook)
-        notebook.add(self.frame, text="  Input & Settings  ")
 
         self.input_file = ""
         self.outdir = ""
         self.ibischk_path = ""
 
+        # 1. Build all widgets first
         self.build_ui()
+
+        # 2. Set smart defaults AFTER widgets exist
+        default_out = Path.cwd() / "out"
+        default_out.mkdir(parents=True, exist_ok=True)
+        self.outdir = str(default_out)
+        self.outdir_entry.delete(0, tk.END)
+        self.outdir_entry.insert(0, self.outdir)
+
+        # Optional: also set a nice default in status bar
+        self.gui.log(f"Output directory → {default_out}", "INFO")
 
     def build_ui(self):
         f = self.frame

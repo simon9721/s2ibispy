@@ -6,7 +6,7 @@ class PinsTab:
     def __init__(self, notebook, gui):
         self.gui = gui
         self.frame = ttk.Frame(notebook)
-        notebook.add(self.frame, text="  Pins  ")
+        #notebook.add(self.frame, text="  Pins  ")
 
         self.tree = ttk.Treeview(
             self.frame,

@@ -7,11 +7,11 @@
   this software is strictly prohibited.
   Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\compare_dri
   Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\compare_driver.sp -o C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\compare_driver
-  Start time: Sun Nov 23 14:07:29 2025
+  Start time: Sun Nov 23 14:49:12 2025
   lic:  
   lic: FLEXlm: SDK_12.10 
   lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
-  lic: HOSTID: 00ff89f5aa52         PID:      18212 
+  lic: HOSTID: 00ff89f5aa52         PID:      13736 
   lic: Using FLEXlm license file: 
   lic: 1704@synopsys.lic.mst.edu 
   lic: Checkout 1 hspice 
@@ -574,7 +574,7 @@
           pu0=   -2.36398                 pua=-8.41675e-11         
           pub=      1e-21               pvsat=        -50         
         prdsw=     4.4192         
-  **info** (C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\compare_driver.sp:26) DC voltage reset to initial transient source value in source 0:vin_ibis. new dc=0.3300D+01
+  **info** (C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\compare_driver.sp:28) DC voltage reset to initial transient source value in source 0:vin_ibis. new dc=0.3300D+01
  
 
  Warning: Pd = 0 is less than Weff = 1.7864e-06 in BSIM3 model 1:nfet element mx2 with W = 1.79e-06, L = 5.8e-07
@@ -665,19 +665,19 @@
 
   analysis           time    # points   tot. iter  conv.iter
   op point           0.01           1          39
-  transient          0.18       10001        2763        1172 rev=       193
-  readin             0.03
-  errchk             0.01
+  transient          0.25       10001        2763        1172 rev=       193
+  readin             0.05
+  errchk             0.05
   setup              0.00
   output             0.00
 
 
-           peak memory used         73.14 megabytes
-           total cpu time            0.24 seconds
-           total elapsed time        0.34 seconds
-           job started at     14:07:29 11/23/2025
-           job ended   at     14:07:29 11/23/2025
-           job total runtime         0.34 seconds
+           peak memory used         73.15 megabytes
+           total cpu time            0.38 seconds
+           total elapsed time        0.47 seconds
+           job started at     14:49:12 11/23/2025
+           job ended   at     14:49:13 11/23/2025
+           job total runtime         0.47 seconds
 
 
   lic: Release hspice token(s) 

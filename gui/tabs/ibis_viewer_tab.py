@@ -7,7 +7,7 @@ class IbisViewerTab:
     def __init__(self, notebook, gui):
         self.gui = gui
         self.frame = ttk.Frame(notebook)
-        notebook.add(self.frame, text="  IBIS Viewer  ")
+        #notebook.add(self.frame, text="  IBIS Viewer  ")
 
         paned = ttk.PanedWindow(self.frame, orient=tk.HORIZONTAL)
         paned.pack(fill="both", expand=True, padx=8, pady=8)
@@ -82,12 +82,47 @@ class IbisViewerTab:
         sel = self.tree.selection()
         if not sel:
             return
-        item = self.tree.item(sel[0])
-        values = item["values"]
+        item = sel[0]
+        values = self.tree.item(item, "values")
         if not values:
             return
-        line_num = values[0]  # we stored the actual line index
-        self.text.see(f"{line_num + 1}.0")
+
+        # ←←← FIX: Convert string back to int!
+        try:
+            line_num = int(values[0])
+        except (ValueError, IndexError):
+            return
+
+        # Get full content once
+        content = self.text.get("1.0", "end")
+        lines = content.splitlines()
+
+        # Find the actual [Section] line (skip blank lines/comments above)
+        actual_line = line_num
+        while actual_line > 0 and not lines[actual_line].lstrip().startswith("["):
+            actual_line -= 1
+
+        target_line = actual_line + 1  # Tkinter is 1-indexed
+        target = f"{target_line}.0"
+
+        # Jump to it
+        self.text.see(target)
+
+        # Highlight section
         self.text.tag_remove("sel", "1.0", "end")
-        self.text.tag_add("sel", f"{line_num + 1}.0", f"{line_num + 20}.0")
-        self.text.tag_config("sel", background="#333344", foreground="yellow")
+        end_line = min(target_line + 15, len(lines))
+        self.text.tag_add("sel", target, f"{end_line}.0")
+
+        # Beautiful highlight
+        self.text.tag_config(
+            "sel",
+            background="#2d2d42",
+            foreground="#ffdd88",
+            font=("Courier New", 10, "bold")
+        )
+
+        # Flash effect (feels premium)
+        def flash():
+            self.text.tag_config("sel", background="#3a3a55")
+            self.text.after(120, lambda: self.text.tag_config("sel", background="#2d2d42"))
+        self.text.after(60, flash)

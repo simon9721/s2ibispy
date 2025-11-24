@@ -9,6 +9,7 @@ from .tabs import (
     InputTab, ModelsTab, PinsTab, SimulationTab,
     IbisViewerTab, PlotsTab, CorrelationTab
 )
+from .tabs.correlation_tab import CorrelationTab
 
 class S2IBISpyGUI:
     VERSION = "2.1.0"
@@ -24,6 +25,7 @@ class S2IBISpyGUI:
         self.global_ = None    # Will hold the global settings
         self.mList = []        # Will hold list of IbisModel objects
         # ←←← END OF NEW LINES ←←←
+        self.analy = None
         
         self.icons = {
             "open": self.load_icon("open"),
@@ -36,8 +38,10 @@ class S2IBISpyGUI:
         self.setup_theme()
         self.create_widgets()
         self.setup_logging()
+        self.run_correlation_after_conversion = True  # default
       
         self.restore_session()
+        self.last_ibis_path: Path | None = None   # ← Add this line in __init__
 
     def setup_theme(self):
         style = ttk.Style()

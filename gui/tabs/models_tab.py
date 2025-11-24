@@ -6,7 +6,7 @@ class ModelsTab:
     def __init__(self, notebook, gui):
         self.gui = gui
         self.frame = ttk.Frame(notebook)
-        notebook.add(self.frame, text="  Models  ")
+        #notebook.add(self.frame, text="  Models  ")
 
         self.tree = ttk.Treeview(
             self.frame,

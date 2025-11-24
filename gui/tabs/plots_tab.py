@@ -7,7 +7,7 @@ class PlotsTab:
     def __init__(self, notebook, gui):
         self.gui = gui
         self.frame = ttk.Frame(notebook)
-        notebook.add(self.frame, text="  Plots  ")
+        #notebook.add(self.frame, text="  Plots  ")
 
         self.blocks = []
         self.item_to_var = {}

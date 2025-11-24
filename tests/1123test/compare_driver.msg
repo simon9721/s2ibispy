@@ -10,7 +10,7 @@
 
  lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
 
- lic: HOSTID: 00ff89f5aa52         PID:      18212 
+ lic: HOSTID: 00ff89f5aa52         PID:      13736 
 
  lic: Using FLEXlm license file: 
 
@@ -46,7 +46,7 @@ NOTE - Combined Pulldown for Model: driver Maximum data is non-monotonic based o
 NOTE - Combined Pullup for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation
 
 
- init: begin read circuit files, cpu clock= 1.20E-01                            
+ init: begin read circuit files, cpu clock= 1.35E-01                            
 
        option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
 
@@ -74,13 +74,15 @@ NOTE - Combined Pullup for Model: driver Maximum data is non-monotonic based on 
 
        option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
 
-       option post                                                              
-
        option probe                                                             
 
        option accurate                                                          
 
        option rmax =    0.500                                                   
+
+       option post_version =    9.601E+03                                       
+
+       option post =     2.00                                                   
 IBISCHK7 V7.1.0
 
 Checking C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\io_buf.ibs for IBIS 3.2 Compatibility...
@@ -111,59 +113,59 @@ Warnings: 8
 File Passed
 
 
- init: end read circuit files, cpu clock= 1.28E-01 peak memory=      71 mb      
+ init: end read circuit files, cpu clock= 1.45E-01 peak memory=      71 mb      
 
- init: begin check errors, cpu clock= 1.28E-01                                  
+ init: begin check errors, cpu clock= 1.45E-01                                  
 
- init: end check errors, cpu clock= 1.42E-01 peak memory=      72 mb            
+ init: end check errors, cpu clock= 1.95E-01 peak memory=      72 mb            
 
- init: begin setup matrix, pivot=     0 cpu clock= 1.42E-01                     
+ init: begin setup matrix, pivot=     0 cpu clock= 1.95E-01                     
 
-       establish matrix -- done, cpu clock= 1.43E-01 peak memory=      72 mb    
+       establish matrix -- done, cpu clock= 1.95E-01 peak memory=      72 mb    
 
-       re-order matrix -- done, cpu clock= 1.43E-01 peak memory=      72 mb     
+       re-order matrix -- done, cpu clock= 1.95E-01 peak memory=      72 mb     
 
- init: end setup matrix, cpu clock= 1.44E-01 peak memory=      73 mb            
+ init: end setup matrix, cpu clock= 1.98E-01 peak memory=      73 mb            
 
- dcop: begin dcop, cpu clock= 1.53E-01                                          
+ dcop: begin dcop, cpu clock= 2.09E-01                                          
 
- dcop: end dcop, cpu clock= 1.60E-01 peak memory=      73 mb tot_iter=      39  
+ dcop: end dcop, cpu clock= 2.15E-01 peak memory=      73 mb tot_iter=      39  
 
  output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\1123test\compare_driver.t
 
- sweep: tran tran0    begin, stop_t=  5.00E-08 #sweeps=**** cpu clock= 1.61E-01 
+ sweep: tran tran0    begin, stop_t=  5.00E-08 #sweeps=**** cpu clock= 2.16E-01 
 
- tran: time= 5.0510E-09 tot_iter=     409 conv_iter=     155 cpu clock= 1.89E-01
+ tran: time= 5.0510E-09 tot_iter=     409 conv_iter=     155 cpu clock= 2.58E-01
 
- tran: time= 1.0031E-08 tot_iter=     693 conv_iter=     297 cpu clock= 2.03E-01
+ tran: time= 1.0031E-08 tot_iter=     693 conv_iter=     297 cpu clock= 2.81E-01
 
- tran: time= 1.5054E-08 tot_iter=     751 conv_iter=     326 cpu clock= 2.06E-01
+ tran: time= 1.5054E-08 tot_iter=     751 conv_iter=     326 cpu clock= 2.86E-01
 
- tran: time= 2.0155E-08 tot_iter=    1229 conv_iter=     499 cpu clock= 2.39E-01
+ tran: time= 2.0155E-08 tot_iter=    1229 conv_iter=     499 cpu clock= 3.39E-01
 
- tran: time= 2.5004E-08 tot_iter=    1436 conv_iter=     602 cpu clock= 2.49E-01
+ tran: time= 2.5004E-08 tot_iter=    1436 conv_iter=     602 cpu clock= 3.54E-01
 
- tran: time= 3.0025E-08 tot_iter=    1838 conv_iter=     760 cpu clock= 2.78E-01
+ tran: time= 3.0025E-08 tot_iter=    1838 conv_iter=     760 cpu clock= 3.90E-01
 
- tran: time= 3.5083E-08 tot_iter=    2245 conv_iter=     940 cpu clock= 3.08E-01
+ tran: time= 3.5083E-08 tot_iter=    2245 conv_iter=     940 cpu clock= 4.23E-01
 
- tran: time= 4.0055E-08 tot_iter=    2371 conv_iter=    1003 cpu clock= 3.14E-01
+ tran: time= 4.0055E-08 tot_iter=    2371 conv_iter=    1003 cpu clock= 4.33E-01
 
- tran: time= 4.5117E-08 tot_iter=    2607 conv_iter=    1096 cpu clock= 3.31E-01
+ tran: time= 4.5117E-08 tot_iter=    2607 conv_iter=    1096 cpu clock= 4.54E-01
 
- tran: time= 5.0000E-08 tot_iter=    2761 conv_iter=    1171 cpu clock= 3.43E-01
+ tran: time= 5.0000E-08 tot_iter=    2761 conv_iter=    1171 cpu clock= 4.69E-01
 
- sweep: tran tran0    end, cpu clock= 3.43E-01 peak memory=      73 mb          
+ sweep: tran tran0    end, cpu clock= 4.69E-01 peak memory=      73 mb          
 
 >info:         ***** hspice job concluded                                       
 
-           total cpu time            0.24 seconds                               
+           total cpu time            0.38 seconds                               
 
-           total elapsed time            0.34 seconds                           
+           total elapsed time            0.47 seconds                           
 
-           job started at     14:07:29 11/23/2025                               
+           job started at     14:49:12 11/23/2025                               
 
-           job ended   at     14:07:29 11/23/2025                               
+           job ended   at     14:49:13 11/23/2025                               
 >info:         ***** hspice job concluded
 
 

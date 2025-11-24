@@ -6,7 +6,8 @@ import os
 import sys
 #import shutil
 import subprocess
-from typing import Optional
+from typing import Optional, Any
+from pathlib import Path
 
 from parser import S2IParser
 from s2iutil import S2IUtil
@@ -92,7 +93,7 @@ def run_ibischk(ibis_file: str, ibischk: str) -> Dict[str, object]:
         logging.warning("ibischk7 executable not found at '%s' — skipping validation", ibischk)
         return {"returncode": 0, "output": "", "errors": [], "warnings": [], "notes": []}
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
     p = argparse.ArgumentParser(description="Convert SPICE -> IBIS (s2ibis3-style pipeline).")
     p.add_argument("input", help="Input .s2i text file (your s2ibis recipe/config).")
     p.add_argument("-o", "--outdir", default="out", help="Output directory (default: ./out)")
@@ -125,6 +126,22 @@ def main(argv: Optional[list[str]] = None) -> int:
     logging.info("Parsing %s", input_file)
     try:
         ibis, global_, mList = parser.parse(input_file)
+        # After ibis, global_, mList = parser.parse(...)
+        for comp in ibis.cList:
+            if not getattr(comp, "spiceFile", None):
+                continue
+
+            # Get all unique model names used by pins in this component
+            model_names = {
+                pin.modelName for pin in comp.pList
+                if hasattr(pin, "modelName") and pin.modelName
+            }
+
+            for name in model_names:
+                model = next((m for m in mList if m.modelName == name), None)
+                if model and not getattr(model, "spice_file", None):
+                    model.spice_file = comp.spiceFile
+                    logging.info(f"Set model.{model.modelName}.spice_file = {comp.spiceFile}")
         ibis.mList = mList  # ← ADD THIS
         logging.debug(f"Parsed global_: vil={getattr(global_, 'vil', None)}, vih={getattr(global_, 'vih', None)}")
     except FileNotFoundError as e:
@@ -150,58 +167,62 @@ def main(argv: Optional[list[str]] = None) -> int:
         iterate=ibis.iterate,
         cleanup=ibis.cleanup,
         spice_command=ibis.spiceCommand,
-        global_=global_,  # Pass global_ to S2IAnaly
+        global_=global_,
         outdir=outdir,
-        s2i_file=input_file,  # ← ADD THIS
+        s2i_file=input_file,
     )
     rc = analy.run_all(ibis=ibis, global_=global_)
     if rc != 0:
         logging.error("Analysis failed with code %d", rc)
         return rc
     
-    # === FIX ABSOLUTE PATHS — REQUIRED FOR CORRELATION ===
-    logging.info("Fixing absolute spice_file paths for correlation...")
-    s2i_dir = os.path.dirname(input_file)
-    for component in ibis.cList:
-        for pin in component.pList:
-            if pin.model and getattr(pin.model, "spice_file", None):
-                spice_file = pin.model.spice_file
-                if not os.path.isabs(spice_file):
-                    candidate = os.path.join(s2i_dir, spice_file)
-                    if os.path.exists(candidate):
-                        pin.model.spice_file = os.path.abspath(candidate)
-                        logging.info(f"→ Resolved: {pin.model.spice_file}")
-                    else:
-                        logging.error(f"Spice file not found: {spice_file} (tried {candidate})")
-                        return 1
-                else:
-                    pin.model.spice_file = os.path.abspath(spice_file)
 
-    # 4) Write the .ibs
+
+    # 4) Write the .ibs file
     out_file = os.path.join(outdir, os.path.splitext(os.path.basename(input_file))[0] + ".ibs")
     logging.info("Writing IBIS to %s", out_file)
-    writer = S2IOutput(ibis_head=ibis)  # ← Pass ibis_head
-    writer.write_ibis_file(str(out_file))  # ← Only filename
+    writer = S2IOutput(ibis_head=ibis)
+    writer.write_ibis_file(str(out_file))
 
-    # 5) Optionally run ibischk
-    # 5) Optionally run ibischk + save + process results
+        # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    # FINAL: Run correlation if GUI requested it
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    if gui and gui.run_correlation_after_conversion:
+        logging.info("GUI: Running correlation automatically...")
+        from correlation import generate_and_run_correlation
+        success = 0
+        for model in mList:
+            if getattr(model, "noModel", False):
+                continue
+            try:
+                deck_path, rc_corr = generate_and_run_correlation(
+                    model=model,
+                    ibis=ibis,
+                    outdir=outdir,
+                    s2ispice=analy.spice,  # ← still alive!
+                )
+                if rc_corr == 0:
+                    success += 1
+                    logging.info(f"Correlation SUCCESS → {Path(deck_path).name}")
+            except Exception as e:
+                logging.error(f"Correlation crashed: {e}")
+        logging.info(f"Correlation complete: {success} model(s) processed")
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+
+    # 5) Run ibischk7 if requested
     if args.ibischk:
         chk = run_ibischk(str(out_file), args.ibischk)
 
-        # Save full raw log
+        # Save logs exactly like you already do...
         log_path = out_file + ".ibischk_log.txt"
         with open(log_path, "w", encoding="utf-8") as f:
             f.write(chk["output"])
-        logging.info("Full ibischk log saved → %s", log_path)
 
-        # Save only warnings (very useful!)
         if chk["warnings"]:
             warn_path = out_file + ".ibischk_warnings.txt"
             with open(warn_path, "w", encoding="utf-8") as f:
                 f.write("\n".join(chk["warnings"]))
-            logging.info("Warnings extracted → %s", warn_path)
 
-        # Save machine-readable JSON report (great for CI!)
         import json
         json_path = out_file + ".ibischk_report.json"
         with open(json_path, "w", encoding="utf-8") as f:
@@ -213,40 +234,52 @@ def main(argv: Optional[list[str]] = None) -> int:
                 "total_errors": len(chk["errors"]),
                 "total_warnings": len(chk["warnings"])
             }, f, indent=2)
-        logging.info("JSON report → %s", json_path)
 
-        # Optional: Fail the whole conversion if there are real errors
+        # ONLY FAIL ON REAL ERRORS
         if chk["errors"]:
-            logging.error("IBIS file has critical errors! Stopping.")
-            return 20  # Custom error code
+            logging.error("IBIS file has %d critical error(s) → failing build", len(chk["errors"]))
+            return 20                                    # ← critical failure
 
-        if chk["returncode"] != 0:
-            logging.warning("ibischk exited with code %d", chk["returncode"])
-        
-    # 6 correlation
+        # Warnings are OK → continue normally
+        if chk["warnings"]:
+            logging.warning("ibischk7 reported %d warning(s) — model is still valid", len(chk["warnings"]))
+        else:
+            logging.info("ibischk7 passed with no warnings")
+
+
+
+    # 6) Run correlation if requested
     if args.correlate:
         logging.info("Running SPICE vs IBIS correlation...")
         from s2ispice import S2ISpice
-        
         s2i_spice = analy.spice
-        # Run correlation for ALL models (or just the first one — your choice)
         for model in mList:
             if getattr(model, "noModel", False):
                 continue
-            logging.info(f"Correlating model: {model.modelName}")
             try:
-                deck_path, rc = generate_and_run_correlation(
+                deck_path, rc_corr = generate_and_run_correlation(
                     model=model,
                     ibis=ibis,
                     outdir=outdir,
                     s2ispice=s2i_spice,
                 )
-                if rc == 0:
-                    logging.info(f"Correlation SUCCESS for {model.modelName} → {deck_path}")
+                if rc_corr == 0:
+                    logging.info(f"Correlation SUCCESS for {model.modelName}")
                 else:
                     logging.error(f"Correlation FAILED for {model.modelName}")
             except Exception as e:
                 logging.error(f"Correlation crashed for {model.modelName}: {e}")
+
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    # FINAL SUCCESS: Feed back real data to GUI (if present)
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    if gui is not None:
+        actual_ibis_path = Path(out_file).resolve()
+        gui.last_ibis_path = actual_ibis_path
+        gui.analy = analy
+        gui.ibis = ibis
+        gui.log(f"IBIS generated: {actual_ibis_path.name}", "INFO")
+        gui.log("Analysis engine attached → ready for plots & correlation", "INFO")
 
     logging.info("Done.")
     return 0

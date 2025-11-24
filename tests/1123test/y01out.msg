@@ -10,7 +10,7 @@
 
  lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
 
- lic: HOSTID: 00ff89f5aa52         PID:      14528 
+ lic: HOSTID: 00ff89f5aa52         PID:      16056 
 
  lic: Using FLEXlm license file: 
 
@@ -24,7 +24,7 @@
 
  lic:   
 
- init: begin read circuit files, cpu clock= 1.03E-01                            
+ init: begin read circuit files, cpu clock= 1.05E-01                            
 
        option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
 
@@ -54,57 +54,57 @@
 
        option ingold =     2.00                                                 
 
- init: end read circuit files, cpu clock= 1.06E-01 peak memory=      72 mb      
+ init: end read circuit files, cpu clock= 1.08E-01 peak memory=      71 mb      
 
- init: begin check errors, cpu clock= 1.06E-01                                  
+ init: begin check errors, cpu clock= 1.08E-01                                  
 
- init: end check errors, cpu clock= 1.08E-01 peak memory=      72 mb            
+ init: end check errors, cpu clock= 1.11E-01 peak memory=      72 mb            
 
- init: begin setup matrix, pivot=     0 cpu clock= 1.08E-01                     
+ init: begin setup matrix, pivot=     0 cpu clock= 1.11E-01                     
 
-       establish matrix -- done, cpu clock= 1.09E-01 peak memory=      72 mb    
+       establish matrix -- done, cpu clock= 1.11E-01 peak memory=      72 mb    
 
-       re-order matrix -- done, cpu clock= 1.09E-01 peak memory=      72 mb     
+       re-order matrix -- done, cpu clock= 1.11E-01 peak memory=      72 mb     
 
- init: end setup matrix, cpu clock= 1.09E-01 peak memory=      72 mb            
+ init: end setup matrix, cpu clock= 1.11E-01 peak memory=      72 mb            
 
- dcop: begin dcop, cpu clock= 1.09E-01                                          
+ dcop: begin dcop, cpu clock= 1.12E-01                                          
 
- dcop: end dcop, cpu clock= 1.11E-01 peak memory=      72 mb tot_iter=      20  
+ dcop: end dcop, cpu clock= 1.14E-01 peak memory=      72 mb tot_iter=      20  
 
- sweep: tran tran0    begin, stop_t=  6.00E-09 #sweeps= 101 cpu clock= 1.13E-01 
+ sweep: tran tran0    begin, stop_t=  6.00E-09 #sweeps= 101 cpu clock= 1.15E-01 
 
- tran: time= 6.2166E-10 tot_iter=    1219 conv_iter=     139 cpu clock= 1.47E-01
+ tran: time= 6.2166E-10 tot_iter=    1219 conv_iter=     139 cpu clock= 1.45E-01
 
- tran: time= 1.2640E-09 tot_iter=    1257 conv_iter=     150 cpu clock= 1.49E-01
+ tran: time= 1.2640E-09 tot_iter=    1257 conv_iter=     150 cpu clock= 1.46E-01
 
- tran: time= 1.8484E-09 tot_iter=    1269 conv_iter=     153 cpu clock= 1.49E-01
+ tran: time= 1.8484E-09 tot_iter=    1269 conv_iter=     153 cpu clock= 1.46E-01
 
- tran: time= 2.5515E-09 tot_iter=    1279 conv_iter=     156 cpu clock= 1.50E-01
+ tran: time= 2.5515E-09 tot_iter=    1279 conv_iter=     156 cpu clock= 1.46E-01
 
- tran: time= 3.2154E-09 tot_iter=    1290 conv_iter=     159 cpu clock= 1.50E-01
+ tran: time= 3.2154E-09 tot_iter=    1290 conv_iter=     159 cpu clock= 1.47E-01
 
- tran: time= 3.7364E-09 tot_iter=    1297 conv_iter=     161 cpu clock= 1.51E-01
+ tran: time= 3.7364E-09 tot_iter=    1297 conv_iter=     161 cpu clock= 1.47E-01
 
- tran: time= 4.3364E-09 tot_iter=    1303 conv_iter=     163 cpu clock= 1.51E-01
+ tran: time= 4.3364E-09 tot_iter=    1303 conv_iter=     163 cpu clock= 1.47E-01
 
- tran: time= 4.9364E-09 tot_iter=    1307 conv_iter=     165 cpu clock= 1.51E-01
+ tran: time= 4.9364E-09 tot_iter=    1307 conv_iter=     165 cpu clock= 1.47E-01
 
- tran: time= 5.5364E-09 tot_iter=    1311 conv_iter=     167 cpu clock= 1.51E-01
+ tran: time= 5.5364E-09 tot_iter=    1311 conv_iter=     167 cpu clock= 1.47E-01
 
- tran: time= 6.0000E-09 tot_iter=    1315 conv_iter=     169 cpu clock= 1.52E-01
+ tran: time= 6.0000E-09 tot_iter=    1315 conv_iter=     169 cpu clock= 1.47E-01
 
- sweep: tran tran0    end, cpu clock= 1.52E-01 peak memory=      72 mb          
+ sweep: tran tran0    end, cpu clock= 1.47E-01 peak memory=      72 mb          
 
 >info:         ***** hspice job concluded                                       
 
-           total cpu time            0.06 seconds                               
+           total cpu time            0.05 seconds                               
 
            total elapsed time            0.15 seconds                           
 
-           job started at     14:07:28 11/23/2025                               
+           job started at     14:49:11 11/23/2025                               
 
-           job ended   at     14:07:28 11/23/2025                               
+           job ended   at     14:49:12 11/23/2025                               
 >info:         ***** hspice job concluded
 
 
