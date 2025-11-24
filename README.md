@@ -1,10 +1,10 @@
 # s2ibispy — A Modern Python Implementation of s2ibis3
 
-[Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/downloads/)
 
-[License: MIT](https://img.shields.io/badge/license-MIT-green)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-[Work in Progress](https://img.shields.io/badge/status-work%20in%20progress-orange)
+[![Work in Progress](https://img.shields.io/badge/status-work%20in%20progress-orange)](#status)
 
 
 ![S2IBISpy](resources//icons/s2ibispy.png)
