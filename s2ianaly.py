@@ -17,7 +17,7 @@ from models import (
     IbisGlobal,
 )
 from s2i_constants import ConstantStuff as CS
-from s2iutil import S2IUtil
+#from s2iutil import S2IUtil
 from s2ispice import S2ISpice
 
 # logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -646,6 +646,12 @@ class AnalyzePin:
         cleanup: int,
     ) -> int:
         self.current_pin = current_pin
+        logging.info("INSIDE ANALYZE_PIN — WE MADE IT — PIN %s", current_pin.pinName)
+        logging.info("MODEL TYPE DEBUG: raw=%s, processed=%s, needs_pullup=%s, needs_pulldown=%s",
+             current_pin.model.modelType,
+             _as_model_type(current_pin.model.modelType),
+             this_model_needs_pullup_data(current_pin.model.modelType),
+             this_model_needs_pulldown_data(current_pin.model.modelType))
         if not current_pin.model:
             logging.error("No model associated with pin %s", current_pin.pinName)
             return 1
@@ -932,9 +938,9 @@ class AnalyzePin:
 
 # ---------- per-component orchestrator ----------
 class AnalyzeComponent:
-    def __init__(self, s2ispice: S2ISpice, s2iutil: S2IUtil):
+    def __init__(self, s2ispice: S2ISpice):#, s2iutil: S2IUtil):
         self.s2ispice = s2ispice
-        self.s2iutil = s2iutil
+        #self.s2iutil = s2iutil
 
     def analyze_component(
             self,
@@ -974,7 +980,11 @@ class AnalyzeComponent:
                     logging.error("Pin %s has no associated model", pin.pinName)
                     result += 1
                     continue
-
+                
+                logging.info("DEBUG: pin %s → model %s → hasBeenAnalyzed = %s", 
+                pin.pinName, model.modelName if model else "None", 
+                model.hasBeenAnalyzed if model else "N/A")
+                
                 series_present = getattr(model, "seriesModel", None) is not None and getattr(model.seriesModel,
                                                                                              "vdslist", [])
                 # Always run series analysis if series model exists with Vds points
@@ -983,6 +993,8 @@ class AnalyzeComponent:
 
                 # Run if: main model not done OR series needs doing
                 needs_analysis = (model.hasBeenAnalyzed == 0) or needs_series
+                logging.info("DEBUG: needs_analysis = %s (hasBeenAnalyzed=%s, needs_series=%s) for model %s",
+                needs_analysis, model.hasBeenAnalyzed, needs_series, model.modelName)
                 if not needs_analysis:
                     continue
 
@@ -992,8 +1004,18 @@ class AnalyzeComponent:
                     result += 1
                     continue
 
-                enable_pin = self.s2iutil.get_matching_pin(pin.enablePin, component.pList) if pin.enablePin else None
-                input_pin = self.s2iutil.get_matching_pin(pin.inputPin, component.pList) if pin.inputPin else None
+                def _find_pin_by_name(name: str, pin_list: List[IbisPin]) -> Optional[IbisPin]:
+                    if not name:
+                        return None
+                    name_lower = name.lower()
+                    for p in pin_list:
+                        if p.pinName and p.pinName.lower() == name_lower:
+                            return p
+                    return None
+
+                enable_pin = _find_pin_by_name(pin.enablePin, component.pList) if pin.enablePin else None
+                input_pin = _find_pin_by_name(pin.inputPin, component.pList) if pin.inputPin else None
+
                 if pin.enablePin and not enable_pin:
                     logging.error("Could not find enable pin for %s", pin.pinName)
                     result += 1
@@ -1004,6 +1026,8 @@ class AnalyzeComponent:
                     continue
 
                 ap = AnalyzePin(self.s2ispice)
+                pin.model = model
+                logging.info("CALLING ANALYZE_PIN FOR %s — THIS MUST APPEAR", pin.pinName)
                 rc = ap.analyze_pin(
                     pin,
                     enable_pin,
@@ -1062,12 +1086,12 @@ class S2IAnaly:
             f"S2IAnaly init: global_={global_}, vil={getattr(global_, 'vil', None)}, vih={getattr(global_, 'vih', None)}, outdir={outdir}")
         self.spice = S2ISpice(mList=self.mList, spice_type=spice_type, hspice_path="hspice", global_=global_,
                               outdir=outdir, s2i_file=self.s2i_file)
-        self.util = S2IUtil(self.mList)
-        self.comp_analy = AnalyzeComponent(self.spice, self.util)
+        #self.util = S2IUtil(self.mList)
+        self.comp_analy = AnalyzeComponent(self.spice)#, self.util)
 
     def run_all(self, ibis: IbisTOP, global_: IbisGlobal) -> int:
         # Ensure structures are complete before analysis
-        self.util.complete_data_structures(ibis, global_)
+        #self.util.complete_data_structures(ibis, global_)
 
         rc = self.comp_analy.analyze_component(
             ibis=ibis,

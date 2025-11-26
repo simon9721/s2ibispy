@@ -69,7 +69,7 @@ truncated at 1KB.
 |
 | Specify the SPICE file where the circuit is located.
 |
-[Spice file]    buffer.sp
+[Spice file]    bufferr.sp
 
 
 |

@@ -1,0 +1,98 @@
+ ****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******
+  Copyright (c) 1986 - 2025 by Synopsys, Inc. All Rights Reserved.
+  This software and the associated documentation are proprietary
+  to Synopsys, Inc. This software may only be used in accordance
+  with the terms and conditions of a written license agreement with
+  Synopsys, Inc. All other use, reproduction, or distribution of
+  this software is strictly prohibited.
+  Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\cor
+  Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi -o C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.out
+  Start time: Tue Nov 25 10:46:55 2025
+  lic:  
+  lic: FLEXlm: SDK_12.10 
+  lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+  lic: HOSTID: 00ff89f5aa52         PID:      21296 
+  lic: Using FLEXlm license file: 
+  lic: 1704@synopsys.lic.mst.edu 
+  lic: Checkout 1 hspice 
+  lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+  lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.e
+ du 
+  lic:   
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:6) Definition of model/subckt "pfet" is not found for the element "mx1". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:7) Definition of model/subckt "nfet" is not found for the element "mx2". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:9) Definition of model/subckt "pfet" is not found for the element "mxi1". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:10) Definition of model/subckt "nfet" is not found for the element "mxi2". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:12) Definition of model/subckt "pfet" is not found for the element "mx5". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:13) Definition of model/subckt "pfet" is not found for the element "mx5p". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:14) Definition of model/subckt "pfet" is not found for the element "mx6". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:15) Definition of model/subckt "pfet" is not found for the element "mx6p". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:16) Definition of model/subckt "nfet" is not found for the element "mx7". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:17) Definition of model/subckt "nfet" is not found for the element "mx8". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:19) Definition of model/subckt "pfet" is not found for the element "mx9". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:20) Definition of model/subckt "pfet" is not found for the element "mx9p". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:21) Definition of model/subckt "pfet" is not found for the element "mx10". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:22) Definition of model/subckt "pfet" is not found for the element "mx10p". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:23) Definition of model/subckt "nfet" is not found for the element "mx11". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:24) Definition of model/subckt "nfet" is not found for the element "mx12". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:26) Definition of model/subckt "pfet" is not found for the element "mx13". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:27) Definition of model/subckt "nfet" is not found for the element "mx14". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:29) Definition of model/subckt "pfet" is not found for the element "mx28". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:30) Definition of model/subckt "pfet" is not found for the element "mx27". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:31) Definition of model/subckt "pfet" is not found for the element "mx26". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:32) Definition of model/subckt "pfet" is not found for the element "mx25". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:33) Definition of model/subckt "pfet" is not found for the element "mx24". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:34) Definition of model/subckt "nfet" is not found for the element "mx19". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:35) Definition of model/subckt "nfet" is not found for the element "mx18". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:36) Definition of model/subckt "nfet" is not found for the element "mx17". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:37) Definition of model/subckt "nfet" is not found for the element "mx16". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:38) Definition of model/subckt "nfet" is not found for the element "mx15". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:40) Definition of model/subckt "pfet" is not found for the element "mx29". Please specify a defined model/subckt name.
+  **error** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\s2ibispy_new\tests\correlation_tab_test\puxout.spi:41) Definition of model/subckt "nfet" is not found for the element "mx30". Please specify a defined model/subckt name.
+
+          ***** job aborted
+1****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******
+ ******  
+ * max pullup curve for model driver
+
+ ****** job statistics summary tnom=  25.000 temp=  25.000 ******
+
+  ******  PrimeSim HSPICE Threads Information  ******
+
+  Command Line Threads Count :     1
+  Available CPU Count        :    12
+  Actual Threads Count       :     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =       0 # elements   =      49
+  # resistors   =       0 # capacitors =      14 # inductors   =       0
+  # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       5
+  # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
+  # jfets       =       0 # mosfets    =      30 # U elements  =       0
+  # T elements  =       0 # W elements =       0 # B elements  =       0
+  # S elements  =       0 # P elements =       0 # va device   =       0
+  # vector_srcs =       0 # N elements =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1           0
+  readin             0.11
+  errchk             0.00
+  setup              0.00
+  output             0.00
+
+
+           peak memory used         72.48 megabytes
+           total cpu time            0.11 seconds
+           total elapsed time        0.21 seconds
+           job started at     10:46:55 11/25/2025
+           job ended   at     10:46:55 11/25/2025
+           job total runtime         0.21 seconds
+
+
+  lic: Release hspice token(s) 
+ lic: total license checkout elapse time:        0.09(s)

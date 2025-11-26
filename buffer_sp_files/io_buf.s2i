@@ -62,7 +62,7 @@ truncated at 1KB.
 |
 | Specify the SPICE file where the circuit is located.
 |
-[Spice file]    C:\Users\sh3qm\PycharmProjects\s2ibispy\buffer_sp_files\io_buf.sp
+[Spice file]    io_buf.sp
 
 |[Sim time] 10ns
 |

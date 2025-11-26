@@ -1,0 +1,68 @@
+* Typ pullup curve for model driver
+*Spice Deck created by PYS2IBIS3 Version Beta
+*Missouri S&T EMC Lab
+
+
+mx1 n1 in vdd vdd pfet w=3.6e-06 l=6e-07
+mx2 n1 in vss vss nfet w=1.8e-06 l=6e-07
+
+mxi1 oe_b oe vdd vdd pfet w=0.6e-06 l=6e-07
+mxi2 oe_b oe vss vss nfet w=0.3e-06 l=6e-07
+
+mx5 n2 oe vdd vdd pfet w=3.21e-05 l=6e-07
+mx5p n2 oe vdd vdd pfet w=3.21e-05 l=6e-07
+mx6 n2 in vdd vdd pfet w=3.21e-05 l=6e-07
+mx6p n2 in vdd vdd pfet w=3.21e-05 l=6e-07
+mx7 n2 oe n_int1 vss nfet w=7.2e-06 l=6e-07
+mx8 n_int1 in vss vss nfet w=7.2e-06 l=6e-07
+
+mx9 nand_n3 oe vdd vdd pfet w=3.21e-05 l=6e-07
+mx9p nand_n3 oe vdd vdd pfet w=3.21e-05 l=6e-07
+mx10 nand_n3 n1 vdd vdd pfet w=3.21e-05 l=6e-07
+mx10p nand_n3 n1 vdd vdd pfet w=3.21e-05 l=6e-07
+mx11 nand_n3 oe n_int2 vss nfet w=7.2e-06 l=6e-07
+mx12 n_int2 n1 vss vss nfet w=7.2e-06 l=6e-07
+
+mx13 n3 nand_n3 vdd vdd pfet w=3.21e-05 l=6e-07
+mx14 n3 nand_n3 vss vss nfet w=7.2e-06 l=6e-07
+
+mx28 out n2 vdd vdd pfet w=4.215e-05 l=9e-07
+mx27 vdd n2 out vdd pfet w=4.215e-05 l=9e-07
+mx26 out n2 vdd vdd pfet w=4.215e-05 l=9e-07
+mx25 vdd n2 out vdd pfet w=4.215e-05 l=9e-07
+mx24 out n2 vdd vdd pfet w=4.215e-05 l=9e-07
+mx19 out n3 vss vss nfet w=2.115e-05 l=9e-07
+mx18 vss n3 out vss nfet w=2.115e-05 l=9e-07
+mx17 out n3 vss vss nfet w=2.115e-05 l=9e-07
+mx16 vss n3 out vss nfet w=2.115e-05 l=9e-07
+mx15 out n3 vss vss nfet w=2.115e-05 l=9e-07
+
+mx29 in_sense out vdd vdd pfet w=0.6e-06 l=6e-07
+mx30 in_sense out vss vss nfet w=0.3e-06 l=6e-07
+
+cx10 n2 vss 3.96825e-15
+cx9 n2 vdd 7.81995e-15
+cx8 n2 out 9.1464e-15
+cx7 n3 vss 3.96825e-15
+cx6 n3 vdd 7.81995e-15
+cx5 n3 out 9.1464e-15
+cx4 n1 vss 3.159e-15
+cx3 n2 out 2.214e-15
+cx2 n3 vss 2.75184e-15
+cx1 n1 vss 3.46437e-15
+cx0 n3 vss 2.30877e-15
+cx_int1 n_int1 vss 1e-15
+cx_int2 n_int2 vdd 1e-15
+cx_sense in_sense vss 1e-15
+VOUTS2I out 0 DC 0
+VCCS2I vdd 0 DC 3.3
+VGNDS2I vss 0 DC 0.0
+.TEMP 27.0
+
+VENAS2I oe 0 DC 3.3
+
+VINS2I in 0 DC 3.3
+.OPTION INGOLD=2
+.DC VOUTS2I -9.899999999999999 9.899999999999999 0.09999999999999999
+.PRINT DC I(VOUTS2I)
+.END

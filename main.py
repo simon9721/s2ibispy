@@ -10,10 +10,16 @@ from typing import Optional, Any
 from pathlib import Path
 
 from parser import S2IParser
-from s2iutil import S2IUtil
+#from s2iutil import S2IUtil
 from s2ianaly import S2IAnaly
 #from s2ioutput import S2IOutput
 from s2ioutput import IbisWriter as S2IOutput  # ← Alias!
+
+try:
+    from loader import load_yaml_config
+    YAML_SUPPORT = True
+except ImportError:
+    YAML_SUPPORT = False
 
 
 import re
@@ -93,6 +99,46 @@ def run_ibischk(ibis_file: str, ibischk: str) -> Dict[str, object]:
         logging.warning("ibischk7 executable not found at '%s' — skipping validation", ibischk)
         return {"returncode": 0, "output": "", "errors": [], "warnings": [], "notes": []}
 
+def run_correlation_for_models(mList, ibis, outdir, s2i_spice, gui=None):
+    if s2i_spice is None:
+        logging.error("Cannot run correlation: SPICE engine not available (simulations probably failed)")
+        return 0
+
+    success = 0
+    for model in mList:
+        if getattr(model, "noModel", False):
+            continue
+        try:
+            result = generate_and_run_correlation(
+                model=model,
+                ibis=ibis,
+                outdir=outdir,
+                s2ispice=s2i_spice,
+            )
+            deck_path, rc_corr = result if result is not None else (None, 0)
+
+            if rc_corr == 0:
+                if deck_path:
+                    success += 1
+                    msg = f"Correlation SUCCESS → {Path(deck_path).name}"
+                else:
+                    msg = f"Correlation skipped for {model.modelName}"
+                logging.info(msg)
+                if gui:
+                    gui.log(msg, "INFO")
+            else:
+                msg = f"Correlation FAILED for {model.modelName}"
+                logging.error(msg)
+                if gui:
+                    gui.log(msg, "ERROR")
+        except Exception as e:
+            msg = f"Correlation crashed for {model.modelName}: {e}"
+            logging.error(msg)
+            if gui:
+                gui.log(msg, "ERROR")
+    logging.info(f"Correlation complete — {success} successful run(s)")
+    return success
+    
 def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
     p = argparse.ArgumentParser(description="Convert SPICE -> IBIS (s2ibis3-style pipeline).")
     p.add_argument("input", help="Input .s2i text file (your s2ibis recipe/config).")
@@ -121,32 +167,43 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
     outdir = os.path.abspath(args.outdir)
     os.makedirs(outdir, exist_ok=True)
 
-    # 1) Parse input file
-    parser = S2IParser()
-    logging.info("Parsing %s", input_file)
-    try:
-        ibis, global_, mList = parser.parse(input_file)
-        # After ibis, global_, mList = parser.parse(...)
-        for comp in ibis.cList:
-            if not getattr(comp, "spiceFile", None):
-                continue
-
-            # Get all unique model names used by pins in this component
-            model_names = {
-                pin.modelName for pin in comp.pList
-                if hasattr(pin, "modelName") and pin.modelName
-            }
-
-            for name in model_names:
-                model = next((m for m in mList if m.modelName == name), None)
-                if model and not getattr(model, "spice_file", None):
-                    model.spice_file = comp.spiceFile
-                    logging.info(f"Set model.{model.modelName}.spice_file = {comp.spiceFile}")
-        ibis.mList = mList  # ← ADD THIS
-        logging.debug(f"Parsed global_: vil={getattr(global_, 'vil', None)}, vih={getattr(global_, 'vih', None)}")
-    except FileNotFoundError as e:
-        logging.error("%s", e)
+    # 1) NEW: Smart input handling — .yaml or .s2i
+    input_path = Path(input_file)
+    if not input_path.exists():
+        logging.error("Input file not found: %s", input_file)
         return 2
+
+    if YAML_SUPPORT and input_path.suffix.lower() == ".yaml":
+        logging.info("Loading modern YAML config: %s", input_path.name)
+        try:
+            ibis, global_, mList = load_yaml_config(input_path)
+        except Exception as e:
+            logging.error("Failed to load YAML: %s", e)
+            return 2
+    else:
+        # LEGACY .s2i path — 100% unchanged for now
+        parser = S2IParser()
+        logging.info("Parsing legacy .s2i file: %s", input_path.name)
+        try:
+            ibis, global_, mList = parser.parse(input_file)
+            # Your existing spice_file fixup (unchanged)
+            for comp in ibis.cList:
+                if not getattr(comp, "spiceFile", None):
+                    continue
+                model_names = {
+                    pin.modelName for pin in comp.pList
+                    if hasattr(pin, "modelName") and pin.modelName
+                }
+                for name in model_names:
+                    model = next((m for m in mList if m.modelName == name), None)
+                    if model and not getattr(model, "spice_file", None):
+                        model.spice_file = comp.spiceFile
+                        logging.info(f"Set model.{model.modelName}.spice_file = {comp.spiceFile}")
+            ibis.mList = mList
+            logging.debug(f"Parsed global_: vil={getattr(global_, 'vil', None)}, vih={getattr(global_, 'vih', None)}")
+        except FileNotFoundError as e:
+            logging.error("%s", e)
+            return 2
 
     # Attach CLI overrides
     ibis.spiceType = {"hspice": 0, "spectre": 1, "eldo": 2}.get(args.spice_type, 0)
@@ -155,10 +212,17 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
     ibis.cleanup = args.cleanup
 
     # 2) Complete data structures
-    logging.info("Completing data structures…")
-    util = S2IUtil(mList)
-    util.complete_data_structures(ibis, global_)
+    #logging.info("Completing data structures…")
+    #util = S2IUtil(mList)
+    #util.complete_data_structures(ibis, global_)
 
+    # FINAL DEBUG — SHOW THE TRUTH
+    #logging.info("AFTER s2iutil — component.spiceFile = %s", ibis.cList[0].spiceFile if ibis.cList else "NO COMPONENT")
+    #logging.info("AFTER s2iutil — model 'driver' spice_file = %s", 
+    #             next((m.spice_file for m in mList if m.modelName == "driver"), "NOT FOUND"))
+    #logging.info("AFTER s2iutil — first pin.model = %s", 
+    #            ibis.cList[0].pList[0].model.modelName if ibis.cList and ibis.cList[0].pList else "NO PIN")
+    
     # 3) Run analysis/simulations
     logging.info("Running simulations/analysis…")
     analy = S2IAnaly(
@@ -178,53 +242,24 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
     
 
 
-       # 4) Write the .ibs file
-    out_file = os.path.join(outdir, os.path.splitext(os.path.basename(input_file))[0] + ".ibs")
+    # 4) Write the .ibs file
+    if getattr(ibis, "thisFileName", None):
+        base_name = ibis.thisFileName.strip()
+        if not base_name.lower().endswith(".ibs"):
+            base_name += ".ibs"
+        logging.info("Using user-specified IBIS filename: %s", base_name)
+    else:
+        base_name = Path(input_file).stem + ".ibs"
+        logging.info("No file_name specified → using input stem: %s", base_name)
+
+    out_file = Path(outdir) / base_name
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+
     logging.info("Writing IBIS to %s", out_file)
     writer = S2IOutput(ibis_head=ibis)
     writer.write_ibis_file(str(out_file))
 
-    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-    # FINAL: Run correlation if GUI requested it — 100% SAFE
-    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-    if gui and getattr(gui, "run_correlation_after_conversion", False):
-        logging.info("GUI: Running correlation automatically...")
-        from correlation import generate_and_run_correlation
-        success = 0
-        
-        for model in mList:
-            if getattr(model, "noModel", False):
-                continue
-                
-            try:
-                # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-                # THIS LINE FIXES THE NoneType ERROR FOREVER
-                # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-                result = generate_and_run_correlation(
-                    model=model,
-                    ibis=ibis,
-                    outdir=outdir,
-                    s2ispice=analy.spice,
-                )
-                deck_path, rc_corr = result if result is not None else (None, 0)
-                # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-
-                if rc_corr == 0:
-                    if deck_path:
-                        success += 1
-                        logging.info(f"Correlation SUCCESS → {Path(deck_path).name}")
-                    else:
-                        # Model was skipped (non-I/O or no spice_file)
-                        logging.info(f"Correlation skipped for {model.modelName} (not I/O or no netlist)")
-                else:
-                    logging.error(f"Correlation FAILED for {model.modelName}")
-                    
-            except Exception as e:
-                logging.error(f"Correlation crashed for {model.modelName}: {e}")
-                
-        logging.info(f"Correlation complete: {success} model(s) processed")
-    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-
+    
     # 5) Run ibischk7 if requested
     if args.ibischk:
         chk = run_ibischk(str(out_file), args.ibischk)
@@ -262,29 +297,19 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
         else:
             logging.info("ibischk7 passed with no warnings")
 
+    #6
+        # ———————————————————————— After IBIS file is written ————————————————————————
 
+    # GUI-triggered correlation
+    if gui and getattr(gui, "run_correlation_after_conversion", False):
+        logging.info("GUI requested automatic correlation")
+        run_correlation_for_models(mList, ibis, outdir, analy.spice, gui=gui)
 
-    # 6) Run correlation if requested
+    # CLI --correlate flag
     if args.correlate:
-        logging.info("Running SPICE vs IBIS correlation...")
-        from s2ispice import S2ISpice
-        s2i_spice = analy.spice
-        for model in mList:
-            if getattr(model, "noModel", False):
-                continue
-            try:
-                deck_path, rc_corr = generate_and_run_correlation(
-                    model=model,
-                    ibis=ibis,
-                    outdir=outdir,
-                    s2ispice=s2i_spice,
-                )
-                if rc_corr == 0:
-                    logging.info(f"Correlation SUCCESS for {model.modelName}")
-                else:
-                    logging.error(f"Correlation FAILED for {model.modelName}")
-            except Exception as e:
-                logging.error(f"Correlation crashed for {model.modelName}: {e}")
+        logging.info("Running SPICE vs IBIS correlation (--correlate)")
+        run_correlation_for_models(mList, ibis, outdir, analy.spice)
+
 
     # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
     # FINAL SUCCESS: Feed back real data to GUI (if present)

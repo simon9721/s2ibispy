@@ -1,0 +1,29 @@
+# tests/simple.yaml — FINAL WORKING VERSION
+file_name: simple_test.ibs
+file_rev: "0.1"
+
+global_defaults:
+  voltage_range: { typ: 3.3, min: 3.0, max: 3.6 }
+  c_comp: { typ: 1.0e-12, min: 0.8e-12, max: 1.2e-12 }
+
+models:
+  - name: BUF1
+    type: I/O
+    c_comp:
+      typ: 1.5e-12
+      min: 1.2e-12
+      max: 1.8e-12
+
+components:
+  - component: TEST_CHIP
+    manufacturer: Test Inc.
+    pList:
+      - pinName: "1"
+        signalName: DQ0
+        modelName: BUF1
+      - pinName: "2"
+        signalName: VDD
+        modelName: POWER
+      - pinName: "3"
+        signalName: VSS
+        modelName: GND
