@@ -266,7 +266,7 @@ VENA3 oe3 0 DC 3.3
     )
 
     if rc == 0 and os.path.exists(out_base + ".tr0"):
-        logging.info("CORRELATION SUCCESS — SPICE vs IBIS overlay should be PERFECT")
+        logging.info("CORRELATION SUCCESS — check SPICE vs IBIS overlay")
     else:
         logging.error(f"CORRELATION FAILED — see {msg_file}")
 

@@ -202,8 +202,11 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
                 logging.debug(f"YAML loader: Set model.{model.modelName}.spice_file = {comp.spiceFile}")
         
                 # DEBUG
-        print(f"DEBUG: component.spiceFile = {comp.spiceFile}")
-        print(f"DEBUG: first model.spice_file = {mList[0].spice_file if mList else 'no models'}")
+        logging.debug("component.spiceFile = %s", comp.spiceFile)
+        logging.debug(
+            "first model.spice_file = %s",
+            mList[0].spice_file if mList else "no models"
+        )
 
     ibis.mList = mList
     # FINAL FIX — set global_.spice_file from the first component

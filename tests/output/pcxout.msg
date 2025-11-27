@@ -10,7 +10,7 @@
 
  lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
 
- lic: HOSTID: 00ff89f5aa52         PID:      17380 
+ lic: HOSTID: 00ff89f5aa52         PID:      15852 
 
  lic: Using FLEXlm license file: 
 
@@ -54,23 +54,23 @@
 
        option ingold =     2.00                                                 
 
- init: end read circuit files, cpu clock= 1.06E-01 peak memory=      71 mb      
+ init: end read circuit files, cpu clock= 1.07E-01 peak memory=      71 mb      
 
- init: begin check errors, cpu clock= 1.06E-01                                  
+ init: begin check errors, cpu clock= 1.07E-01                                  
 
- init: end check errors, cpu clock= 1.08E-01 peak memory=      72 mb            
+ init: end check errors, cpu clock= 1.09E-01 peak memory=      72 mb            
 
- init: begin setup matrix, pivot=     0 cpu clock= 1.08E-01                     
+ init: begin setup matrix, pivot=     0 cpu clock= 1.09E-01                     
 
-       establish matrix -- done, cpu clock= 1.08E-01 peak memory=      72 mb    
+       establish matrix -- done, cpu clock= 1.09E-01 peak memory=      72 mb    
 
-       re-order matrix -- done, cpu clock= 1.08E-01 peak memory=      72 mb     
+       re-order matrix -- done, cpu clock= 1.10E-01 peak memory=      72 mb     
 
- init: end setup matrix, cpu clock= 1.08E-01 peak memory=      72 mb            
+ init: end setup matrix, cpu clock= 1.10E-01 peak memory=      72 mb            
 
- sweep: dc dc0    begin, #sweeps= 100 cpu clock= 1.09E-01                       
+ sweep: dc dc0    begin, #sweeps= 100 cpu clock= 1.10E-01                       
 
- sweep: dc dc0    end, cpu clock= 1.18E-01 peak memory=      72 mb              
+ sweep: dc dc0    end, cpu clock= 1.19E-01 peak memory=      72 mb              
 
 >info:         ***** hspice job concluded                                       
 
@@ -78,9 +78,9 @@
 
            total elapsed time            0.12 seconds                           
 
-           job started at     17:26:51 11/25/2025                               
+           job started at     12:32:58 11/26/2025                               
 
-           job ended   at     17:26:52 11/25/2025                               
+           job ended   at     12:32:58 11/26/2025                               
 >info:         ***** hspice job concluded
 
 
@@ -97,7 +97,7 @@
 
  lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
 
- lic: HOSTID: 00ff89f5aa52         PID:      12268 
+ lic: HOSTID: 00ff89f5aa52         PID:      19288 
 
  lic: Using FLEXlm license file: 
 
@@ -145,19 +145,19 @@
 
  init: begin check errors, cpu clock= 1.11E-01                                  
 
- init: end check errors, cpu clock= 1.14E-01 peak memory=      72 mb            
+ init: end check errors, cpu clock= 1.13E-01 peak memory=      72 mb            
 
- init: begin setup matrix, pivot=     0 cpu clock= 1.14E-01                     
+ init: begin setup matrix, pivot=     0 cpu clock= 1.13E-01                     
 
-       establish matrix -- done, cpu clock= 1.14E-01 peak memory=      72 mb    
+       establish matrix -- done, cpu clock= 1.13E-01 peak memory=      72 mb    
 
-       re-order matrix -- done, cpu clock= 1.14E-01 peak memory=      72 mb     
+       re-order matrix -- done, cpu clock= 1.13E-01 peak memory=      72 mb     
 
- init: end setup matrix, cpu clock= 1.14E-01 peak memory=      72 mb            
+ init: end setup matrix, cpu clock= 1.13E-01 peak memory=      72 mb            
 
  sweep: dc dc0    begin, #sweeps= 100 cpu clock= 1.14E-01                       
 
- sweep: dc dc0    end, cpu clock= 1.24E-01 peak memory=      72 mb              
+ sweep: dc dc0    end, cpu clock= 1.23E-01 peak memory=      72 mb              
 
 >info:         ***** hspice job concluded                                       
 
@@ -165,9 +165,9 @@
 
            total elapsed time            0.12 seconds                           
 
-           job started at     17:36:43 11/25/2025                               
+           job started at     12:07:33 11/27/2025                               
 
-           job ended   at     17:36:43 11/25/2025                               
+           job ended   at     12:07:33 11/27/2025                               
 >info:         ***** hspice job concluded
 
 

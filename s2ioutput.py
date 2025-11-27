@@ -67,23 +67,23 @@ class IbisWriter:
         self._print_keyword(f, "[Manufacturer]", comp.manufacturer)
 
         # [Package]
-        logging.info("=== [Package] DEBUG for component: %s ===", comp.component)
+        logging.debug("=== [Package] DEBUG for component: %s ===", comp.component)
         if comp.pinParasitics is None:
-            logging.info("  comp.pinParasitics = None")
+            logging.debug("  comp.pinParasitics = None")
         else:
-            logging.info(
+            logging.debug(
                 "  R_pkg: typ=%.6f min=%.6f max=%.6f",
                 comp.pinParasitics.R_pkg.typ,
                 comp.pinParasitics.R_pkg.min,
                 comp.pinParasitics.R_pkg.max
             )
-            logging.info(
+            logging.debug(
                 "  L_pkg: typ=%.6g min=%.6g max=%.6g (H)",
                 comp.pinParasitics.L_pkg.typ,
                 comp.pinParasitics.L_pkg.min,
                 comp.pinParasitics.L_pkg.max
             )
-            logging.info(
+            logging.debug(
                 "  C_pkg: typ=%.6g min=%.6g max=%.6g (F)",
                 comp.pinParasitics.C_pkg.typ,
                 comp.pinParasitics.C_pkg.min,

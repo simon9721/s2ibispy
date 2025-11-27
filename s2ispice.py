@@ -1,4 +1,4 @@
-# s2ispice.pyno i 
+# s2ispice.py
 import logging
 import math
 import os
@@ -315,8 +315,8 @@ class S2ISpice:
                                                                                     "current_component") and self.current_component else "None"
         comp_spice = getattr(self.current_component, "spiceFile", None) if hasattr(self,
                                                                                    "current_component") and self.current_component else None
-        logging.info(f"Processing component: {comp_name}")
-        logging.info(f"  → component.spiceFile = {comp_spice}")
+        logging.debug(f"Processing component: {comp_name}")
+        logging.debug(f"  → component.spiceFile = {comp_spice}")
         # END OF ADDED LINES ----------------------------------------------------
 
         # Resolve spice_file path (project root -> tests -> given)
@@ -362,7 +362,7 @@ class S2ISpice:
         if not spice_file_path and (spice_file or (self.global_ and self.global_.spice_file)):
             logging.warning("Spice file not found (tried component and global paths)")
         elif spice_file_path:
-            logging.info(f"Using SPICE netlist: {spice_file_path}")
+            logging.debug(f"Using SPICE netlist: {spice_file_path}")
 
         if model_file and not os.path.exists(model_file):
             logging.warning(f"Model file {model_file} not found; continuing without it")
@@ -439,7 +439,7 @@ class S2ISpice:
                 if self.spice_type != CS.SpiceType.SPECTRE:
                     f.write(".END\n")
 
-            logging.info(f"SPICE input file created: {spice_in}")
+            logging.debug(f"SPICE input file created: {spice_in}")
             return 0
 
         except Exception as e:
@@ -642,7 +642,7 @@ class S2ISpice:
             default=sim_time / 100.0,  # ← SPEC-COMPLIANT
         )
 
-        logging.info(
+        logging.debug(
             f"sim_time={sim_time:.3e}s | "
             f"user={'NA' if user_sim_time is None else f'{user_sim_time:.1e}s'} | "
             f"tr={tr:.2e}s tf={tf:.2e}s | "
@@ -682,7 +682,7 @@ class S2ISpice:
             else:
                 command = f"{prog} -i {spice_in} -o {spice_out}"
 
-        logging.info(f"Starting {prog} job with input {spice_in}")
+        logging.debug(f"Starting {prog} job with input {spice_in}")
         try:
             completed = subprocess.run(
                 command,
@@ -719,7 +719,7 @@ class S2ISpice:
                     if os.path.exists(c):
                         try:
                             shutil.move(c, spice_out)  # ← ALWAYS OVERWRITE
-                            logging.info(f"Renamed {c} → {spice_out}")
+                            logging.debug(f"Renamed {c} → {spice_out}")
                             moved = True
                             break
                         except Exception as e:
@@ -729,7 +729,7 @@ class S2ISpice:
                     logging.warning(f"No .lis file found for {spice_out}")
 
             if completed.returncode == 0 and os.path.exists(spice_out):
-                logging.info(f"{prog} run succeeded for {spice_in}")
+                logging.debug(f"{prog} run succeeded for {spice_in}")
                 return 0
 
             logging.error(
@@ -1013,7 +1013,7 @@ class S2ISpice:
             logging.error(f"No valid VI data found in {target_file}")
             return 1
 
-        logging.info(f"Extracted {row} VI points from {target_file} ({command})")
+        logging.debug(f"Extracted {row} VI points from {target_file} ({command})")
         return 0
 
     def get_spice_ramp_data(
@@ -1138,7 +1138,7 @@ class S2ISpice:
 
             # Replace your current logging.info with this:
             curve_type_str = "RISING" if curve_type == CS.CurveType.RISING_RAMP else "FALLING"
-            logging.info(
+            logging.debug(
                 f"[RAMP] {command.upper():>3} | {curve_type_str:<7} | "
                 f"dv={dv:.4f}V  dt={dt:.4e}s  v0={v0:.3f}V  v1={v1:.3f}V  "
                 f"model={model.modelName}  file={os.path.basename(target_file)}"
@@ -1217,7 +1217,7 @@ class S2ISpice:
                 wave_p.waveData[last_bin].t = sim_time  # ← EXACT
                 setattr(wave_p.waveData[last_bin].v, command, v_avg)
 
-            logging.info(f"[WAVE] {command.upper()} | {len(t_v_pairs)} points → {max_bins} bins")
+            logging.debug(f"[WAVE] {command.upper()} | {len(t_v_pairs)} points → {max_bins} bins")
             return 0
 
         except Exception as e:
@@ -1347,10 +1347,27 @@ class S2ISpice:
                 input_buffer += f"VDS {current_pin.pinName} {current_pin.seriesPin2name} DC {vds}\n"
             else:
                 input_buffer = self.set_pin_dc(enable_pin, model.enable, enable_output, "ENA", case_flag) or ""
-                if input_pin:
-                    dummy = self.set_pin_dc(input_pin, model.polarity, output_high, "IN", case_flag)
-                    input_buffer += ("\n" if input_buffer else "") + (
-                            dummy or f"VINS2I {input_pin.pinName} 0 DC {vcc_val}\n")
+                
+                # === INPUT PIN: Only drive when output buffer is ENABLED ===
+                is_buffer_enabled = (enable_output == 1)
+
+                if is_buffer_enabled and input_pin:
+                    # Normal case: drive input pin to correct logic level
+                    vin_line = self.set_pin_dc(input_pin, model.polarity, output_high, "IN", case_flag)
+                    if vin_line:
+                        input_buffer += ("\n" if input_buffer.strip() else "") + vin_line
+
+                elif input_pin:
+                    # === CLAMP or DISABLED curves: DO NOT drive input ===
+                    # Add weak resistor to the ACTUAL ground reference node
+                    # Should disabled pullup and power clamp have weak resistor tie to power reference node instead? Need further research
+                    # What if there's no weak resistor, in other words the effects of leaving input node float? Also need further testings
+                    input_node = self._pin_node(input_pin) or input_pin.pinName
+                    gnd_node = self._pin_node(gnd_pin) if gnd_pin else "0"  # fallback only if no gnd_pin
+
+                    weak_r = 1.0E10  # 10 GΩ — standard in industry
+                    input_buffer += f"RIN_WEAK {input_node} {gnd_node} {weak_r}\n"
+                    #input_buffer += f"* Weak tie to ground reference for clamp/disabled curve\n"
 
             power_buffer = self.setup_power_temp_cmds(
                 curve_type, power_pin, gnd_pin, power_clamp_pin, gnd_clamp_pin,

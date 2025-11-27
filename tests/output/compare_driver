@@ -7,11 +7,11 @@
   this software is strictly prohibited.
   Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\output\compare_d
   Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\output\compare_driver.sp -o C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\output\compare_driver
-  Start time: Tue Nov 25 17:36:59 2025
+  Start time: Thu Nov 27 12:07:59 2025
   lic:  
   lic: FLEXlm: SDK_12.10 
   lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
-  lic: HOSTID: 00ff89f5aa52         PID:      20804 
+  lic: HOSTID: 00ff89f5aa52         PID:      20896 
   lic: Using FLEXlm license file: 
   lic: 1704@synopsys.lic.mst.edu 
   lic: Checkout 1 hspice 
@@ -665,19 +665,19 @@
 
   analysis           time    # points   tot. iter  conv.iter
   op point           0.01           1          39
-  transient          0.20       10001        2504        1057 rev=       179
-  readin             0.05
-  errchk             0.02
+  transient          0.21       10001        2504        1057 rev=       179
+  readin             0.07
+  errchk             0.05
   setup              0.00
   output             0.00
 
 
-           peak memory used         73.14 megabytes
-           total cpu time            0.29 seconds
-           total elapsed time        0.38 seconds
-           job started at     17:36:59 11/25/2025
-           job ended   at     17:36:59 11/25/2025
-           job total runtime         0.38 seconds
+           peak memory used         73.12 megabytes
+           total cpu time            0.35 seconds
+           total elapsed time        0.44 seconds
+           job started at     12:07:59 11/27/2025
+           job ended   at     12:07:59 11/27/2025
+           job total runtime         0.44 seconds
 
 
   lic: Release hspice token(s) 

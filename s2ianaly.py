@@ -415,7 +415,7 @@ class FindSupplyPins:
 
             result["pullupPin"] = result["powerClampPin"] = power_pin
             result["pulldownPin"] = result["gndClampPin"] = gnd_pin
-            logging.warning("No [Pin Mapping] — using first POWER/GND pins (legacy mode)")
+            logging.debug("No [Pin Mapping] — using first POWER/GND pins (legacy mode)")
             return result
 
         # === [Pin Mapping] exists → match by bus label ===
@@ -646,8 +646,8 @@ class AnalyzePin:
         cleanup: int,
     ) -> int:
         self.current_pin = current_pin
-        logging.info("INSIDE ANALYZE_PIN — WE MADE IT — PIN %s", current_pin.pinName)
-        logging.info("MODEL TYPE DEBUG: raw=%s, processed=%s, needs_pullup=%s, needs_pulldown=%s",
+        #logging.info("INSIDE ANALYZE_PIN — WE MADE IT — PIN %s", current_pin.pinName)
+        logging.debug("MODEL TYPE DEBUG: raw=%s, processed=%s, needs_pullup=%s, needs_pulldown=%s",
              current_pin.model.modelType,
              _as_model_type(current_pin.model.modelType),
              this_model_needs_pullup_data(current_pin.model.modelType),
@@ -981,7 +981,7 @@ class AnalyzeComponent:
                     result += 1
                     continue
                 
-                logging.info("DEBUG: pin %s → model %s → hasBeenAnalyzed = %s", 
+                logging.debug("pin %s → model %s → hasBeenAnalyzed = %s", 
                 pin.pinName, model.modelName if model else "None", 
                 model.hasBeenAnalyzed if model else "N/A")
                 
@@ -993,7 +993,7 @@ class AnalyzeComponent:
 
                 # Run if: main model not done OR series needs doing
                 needs_analysis = (model.hasBeenAnalyzed == 0) or needs_series
-                logging.info("DEBUG: needs_analysis = %s (hasBeenAnalyzed=%s, needs_series=%s) for model %s",
+                logging.debug("DEBUG: needs_analysis = %s (hasBeenAnalyzed=%s, needs_series=%s) for model %s",
                 needs_analysis, model.hasBeenAnalyzed, needs_series, model.modelName)
                 if not needs_analysis:
                     continue
@@ -1027,7 +1027,7 @@ class AnalyzeComponent:
 
                 ap = AnalyzePin(self.s2ispice)
                 pin.model = model
-                logging.info("CALLING ANALYZE_PIN FOR %s — THIS MUST APPEAR", pin.pinName)
+                # logging.info("CALLING ANALYZE_PIN FOR %s — THIS MUST APPEAR", pin.pinName)
                 rc = ap.analyze_pin(
                     pin,
                     enable_pin,

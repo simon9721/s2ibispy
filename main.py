@@ -247,7 +247,7 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
         base_name = ibis.thisFileName.strip()
         if not base_name.lower().endswith(".ibs"):
             base_name += ".ibs"
-        logging.info("Using user-specified IBIS filename: %s", base_name)
+        logging.debug("Using user-specified IBIS filename: %s", base_name)
     else:
         base_name = Path(input_file).stem + ".ibs"
         logging.info("No file_name specified → using input stem: %s", base_name)

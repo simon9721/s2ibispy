@@ -10,7 +10,7 @@
 
  lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
 
- lic: HOSTID: 00ff89f5aa52         PID:      16104 
+ lic: HOSTID: 00ff89f5aa52         PID:      17148 
 
  lic: Using FLEXlm license file: 
 
@@ -24,7 +24,7 @@
 
  lic:   
 
- init: begin read circuit files, cpu clock= 9.30E-02                            
+ init: begin read circuit files, cpu clock= 1.19E-01                            
 
        option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
 
@@ -54,33 +54,33 @@
 
        option ingold =     2.00                                                 
 
- init: end read circuit files, cpu clock= 9.60E-02 peak memory=      71 mb      
+ init: end read circuit files, cpu clock= 1.23E-01 peak memory=      71 mb      
 
- init: begin check errors, cpu clock= 9.60E-02                                  
+ init: begin check errors, cpu clock= 1.23E-01                                  
 
- init: end check errors, cpu clock= 9.80E-02 peak memory=      72 mb            
+ init: end check errors, cpu clock= 1.25E-01 peak memory=      72 mb            
 
- init: begin setup matrix, pivot=     0 cpu clock= 9.80E-02                     
+ init: begin setup matrix, pivot=     0 cpu clock= 1.25E-01                     
 
-       establish matrix -- done, cpu clock= 9.80E-02 peak memory=      72 mb    
+       establish matrix -- done, cpu clock= 1.25E-01 peak memory=      72 mb    
 
-       re-order matrix -- done, cpu clock= 9.80E-02 peak memory=      72 mb     
+       re-order matrix -- done, cpu clock= 1.26E-01 peak memory=      72 mb     
 
- init: end setup matrix, cpu clock= 9.90E-02 peak memory=      72 mb            
+ init: end setup matrix, cpu clock= 1.26E-01 peak memory=      72 mb            
 
- sweep: dc dc0    begin, #sweeps= 100 cpu clock= 9.90E-02                       
+ sweep: dc dc0    begin, #sweeps= 100 cpu clock= 1.26E-01                       
 
- sweep: dc dc0    end, cpu clock= 1.20E-01 peak memory=      72 mb              
+ sweep: dc dc0    end, cpu clock= 1.47E-01 peak memory=      72 mb              
 
 >info:         ***** hspice job concluded                                       
 
            total cpu time            0.04 seconds                               
 
-           total elapsed time            0.12 seconds                           
+           total elapsed time            0.15 seconds                           
 
-           job started at     17:26:40 11/25/2025                               
+           job started at     12:32:52 11/26/2025                               
 
-           job ended   at     17:26:40 11/25/2025                               
+           job ended   at     12:32:52 11/26/2025                               
 >info:         ***** hspice job concluded
 
 
@@ -97,7 +97,7 @@
 
  lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
 
- lic: HOSTID: 00ff89f5aa52         PID:      2288 
+ lic: HOSTID: 00ff89f5aa52         PID:      15888 
 
  lic: Using FLEXlm license file: 
 
@@ -111,7 +111,7 @@
 
  lic:   
 
- init: begin read circuit files, cpu clock= 1.05E-01                            
+ init: begin read circuit files, cpu clock= 1.22E-01                            
 
        option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
 
@@ -141,33 +141,33 @@
 
        option ingold =     2.00                                                 
 
- init: end read circuit files, cpu clock= 1.08E-01 peak memory=      71 mb      
+ init: end read circuit files, cpu clock= 1.25E-01 peak memory=      71 mb      
 
- init: begin check errors, cpu clock= 1.08E-01                                  
+ init: begin check errors, cpu clock= 1.25E-01                                  
 
- init: end check errors, cpu clock= 1.10E-01 peak memory=      72 mb            
+ init: end check errors, cpu clock= 1.28E-01 peak memory=      72 mb            
 
- init: begin setup matrix, pivot=     0 cpu clock= 1.10E-01                     
+ init: begin setup matrix, pivot=     0 cpu clock= 1.28E-01                     
 
-       establish matrix -- done, cpu clock= 1.10E-01 peak memory=      72 mb    
+       establish matrix -- done, cpu clock= 1.28E-01 peak memory=      72 mb    
 
-       re-order matrix -- done, cpu clock= 1.11E-01 peak memory=      72 mb     
+       re-order matrix -- done, cpu clock= 1.28E-01 peak memory=      72 mb     
 
- init: end setup matrix, cpu clock= 1.11E-01 peak memory=      72 mb            
+ init: end setup matrix, cpu clock= 1.28E-01 peak memory=      72 mb            
 
- sweep: dc dc0    begin, #sweeps= 100 cpu clock= 1.11E-01                       
+ sweep: dc dc0    begin, #sweeps= 100 cpu clock= 1.28E-01                       
 
- sweep: dc dc0    end, cpu clock= 1.31E-01 peak memory=      72 mb              
+ sweep: dc dc0    end, cpu clock= 1.49E-01 peak memory=      72 mb              
 
 >info:         ***** hspice job concluded                                       
 
            total cpu time            0.04 seconds                               
 
-           total elapsed time            0.13 seconds                           
+           total elapsed time            0.15 seconds                           
 
-           job started at     17:36:36 11/25/2025                               
+           job started at     12:07:23 11/27/2025                               
 
-           job ended   at     17:36:37 11/25/2025                               
+           job ended   at     12:07:23 11/27/2025                               
 >info:         ***** hspice job concluded
 
 
