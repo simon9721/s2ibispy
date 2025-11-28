@@ -39,16 +39,12 @@ class S2ISpice:
     ):
         logging.debug(
             f"S2ISpice init: global_={global_}, vil={getattr(global_, 'vil', None)}, vih={getattr(global_, 'vih', None)}, outdir={outdir}")
-        self.allow_mock_fallback = False
         self.mList = mList
         self.spice_type = spice_type
         self.hspice_path = hspice_path
         self.outdir = outdir
-        self.mock_dir = os.path.join(PROJECT_ROOT, "mock_spice")
         self.global_ = global_
         self.s2i_file = s2i_file  # ← ADD THIS
-        if not os.path.exists(self.mock_dir):
-            os.makedirs(self.mock_dir)
 
     def _vil_vih_for_pin(self, pin: Optional[IbisPin], analyze_case: int, vcc_typ: float) -> tuple[float, float]:
         """
@@ -206,16 +202,18 @@ class S2ISpice:
 
     def setup_tran_cmds(self, sim_time: float, output_node: str) -> str:
         S = self.spice_type
-        step = sim_time / 100.0 if sim_time and sim_time > 0 else 0
+        step = sim_time / 100.0 if sim_time > 0 else 0.01e-9
+
         if S == CS.SpiceType.SPECTRE:
-            analysis = (
-                f"tran_run tran step={step} start=0 stop={sim_time} save=selected\n"
-            )
-            save = f"save {output_node}\n"
+            # Spectre syntax
+            analysis = f"tran_run tran step={step:.3e} start=0 stop={sim_time:.3e} save=selected\n"
+            save = f"save {output_node} I(VCCS2I:p)\n"
             return analysis + save
+
         else:
-            analysis = f".TRAN {step} {sim_time}\n"
-            pr = f".PRINT TRAN V({output_node})\n"
+            # HSPICE, ELDO, and all others use identical syntax
+            analysis = f".TRAN {step:.3e} {sim_time:.3e}\n"
+            pr = f".PRINT TRAN V({output_node}) I(VCCS2I)\n"
             return analysis + pr
 
     def setup_spice_file_names(
@@ -745,18 +743,6 @@ class S2ISpice:
             except Exception:
                 pass
 
-        mock_out = os.path.join(self.outdir if self.outdir else self.mock_dir, os.path.basename(spice_out))
-        mock_msg = os.path.join(self.outdir if self.outdir else self.mock_dir, os.path.basename(spice_msg))
-        if os.path.exists(mock_out):
-            logging.info(f"Using mock output {mock_out}")
-            try:
-                shutil.copy(mock_out, spice_out)
-                if os.path.exists(mock_msg):
-                    shutil.copy(mock_msg, spice_msg)
-                return 0
-            except Exception as e:
-                logging.error(f"Failed to copy mock files: {e}")
-
         return 1
 
     def _file_contains_marker(self, path: str, marker: str) -> bool:
@@ -1028,7 +1014,6 @@ class S2ISpice:
             logging.error(f"Max retries reached for {spice_out}")
             return 1
 
-        mock_out = os.path.join(self.outdir if self.outdir else self.mock_dir, os.path.basename(spice_out))
         target_file = spice_out
         logging.debug(f"[ramp] target_file={target_file}, retry_count={retry_count}")
 
@@ -1065,9 +1050,6 @@ class S2ISpice:
 
             if not t_v_pairs:
                 logging.error(f"No valid ramp data found in {target_file}")
-                if os.path.exists(mock_out) and target_file != mock_out:
-                    shutil.copy(mock_out, spice_out)
-                    return self.get_spice_ramp_data(model, curve_type, spice_out, command, retry_count + 1)
                 return 1
 
             # === Sort by time (Java uses LinkedHashMap with row index) ===
@@ -1105,9 +1087,6 @@ class S2ISpice:
 
             if t20 is None or t80 is None:
                 logging.error(f"Failed to locate 20/80 points: v0={v0}, v1={v1}, t0={t0}, t1={t1}")
-                if os.path.exists(mock_out) and target_file != mock_out:
-                    shutil.copy(mock_out, spice_out)
-                    return self.get_spice_ramp_data(model, curve_type, spice_out, command, retry_count + 1)
                 return 1
 
             dv = abs(v80 - v20)
@@ -1147,9 +1126,6 @@ class S2ISpice:
 
         except Exception as e:
             logging.error(f"Error parsing ramp data from {target_file}: {e}")
-            if os.path.exists(mock_out) and target_file != mock_out:
-                shutil.copy(mock_out, spice_out)
-                return self.get_spice_ramp_data(model, curve_type, spice_out, command, retry_count + 1)
             return 1
 
     def get_spice_wave_data(
@@ -1306,8 +1282,16 @@ class S2ISpice:
     ) -> int:
         model = current_pin.model
         self.spice_type = spice_type
-        #active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
-        active_sp_file = self.global_.spice_file
+        # Prefer argument, then model, then component, then global; never fall back to 'buffer.sp'
+        active_sp_file = None
+        if spice_file:
+            active_sp_file = spice_file
+        elif getattr(model, "spice_file", None):
+            active_sp_file = model.spice_file
+        elif hasattr(self, "current_component") and getattr(self.current_component, "spiceFile", None):
+            active_sp_file = self.current_component.spiceFile
+        elif getattr(self, "global_", None) and getattr(self.global_, "spice_file", None):
+            active_sp_file = self.global_.spice_file
 
         try:
             num_table_points = int(round(abs(sweep_range) / max(1e-30, abs(sweep_step)))) + 2
@@ -1578,8 +1562,16 @@ class S2ISpice:
     ) -> int:
         model = current_pin.model
         self.spice_type = spice_type
-        #active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
-        active_sp_file = self.global_.spice_file
+        # Prefer argument, then model, then component, then global; never fall back to 'buffer.sp'
+        active_sp_file = None
+        if spice_file:
+            active_sp_file = spice_file
+        elif getattr(model, "spice_file", None):
+            active_sp_file = model.spice_file
+        elif hasattr(self, "current_component") and getattr(self.current_component, "spiceFile", None):
+            active_sp_file = self.current_component.spiceFile
+        elif getattr(self, "global_", None) and getattr(self.global_, "spice_file", None):
+            active_sp_file = self.global_.spice_file
 
         logging.debug(f"Using simTime={model.simTime}, spice_file={active_sp_file} for ramp data generation")
 
@@ -1688,8 +1680,16 @@ class S2ISpice:
     ) -> int:
         model = current_pin.model
         self.spice_type = spice_type
-        #active_sp_file = spice_file or getattr(model, "spice_file", None) or "buffer.sp"
-        active_sp_file = self.global_.spice_file
+        # Prefer argument, then model, then component, then global; never fall back to 'buffer.sp'
+        active_sp_file = None
+        if spice_file:
+            active_sp_file = spice_file
+        elif getattr(model, "spice_file", None):
+            active_sp_file = model.spice_file
+        elif hasattr(self, "current_component") and getattr(self.current_component, "spiceFile", None):
+            active_sp_file = self.current_component.spiceFile
+        elif getattr(self, "global_", None) and getattr(self.global_, "spice_file", None):
+            active_sp_file = self.global_.spice_file
 
         logging.debug(f"Using simTime={model.simTime}, spice_file={active_sp_file} for waveform data generation")
 

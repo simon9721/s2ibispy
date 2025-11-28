@@ -7,11 +7,11 @@
   this software is strictly prohibited.
   Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correla
   Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correlate_driver.sp -o C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correlate_driver.tr0
-  Start time: Thu Nov 27 21:54:42 2025
+  Start time: Thu Nov 27 23:55:36 2025
   lic:  
   lic: FLEXlm: SDK_12.10 
   lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
-  lic: HOSTID: 00ff89f5aa52         PID:      17856 
+  lic: HOSTID: 00ff89f5aa52         PID:      18324 
   lic: Using FLEXlm license file: 
   lic: 1704@synopsys.lic.mst.edu 
   lic: Checkout 1 hspice 
@@ -668,19 +668,19 @@
   analysis           time    # points   tot. iter  conv.iter
   op point           0.01           1          39
   transient          0.21       10001        2607        1093 rev=       181
-  readin             0.05
+  readin             0.04
   errchk             0.02
   setup              0.00
   output             0.00
 
 
-           peak memory used         73.34 megabytes
-           total cpu time            0.30 seconds
-           total elapsed time        0.40 seconds
-           job started at     21:54:42 11/27/2025
-           job ended   at     21:54:42 11/27/2025
-           job total runtime         0.40 seconds
+           peak memory used         73.35 megabytes
+           total cpu time            0.29 seconds
+           total elapsed time        0.39 seconds
+           job started at     23:55:36 11/27/2025
+           job ended   at     23:55:36 11/27/2025
+           job total runtime         0.39 seconds
 
 
   lic: Release hspice token(s) 
- lic: total license checkout elapse time:        0.08(s)
+ lic: total license checkout elapse time:        0.09(s)

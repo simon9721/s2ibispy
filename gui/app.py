@@ -7,9 +7,8 @@ from datetime import datetime
 from .utils.session import load_session, save_session
 from .tabs import (
     InputTab, ModelsTab, PinsTab, SimulationTab,
-    IbisViewerTab, PlotsTab, CorrelationTab
+    IbisViewerTab, PlotsTab, CorrelationTab, YamlEditorTab
 )
-from .tabs.correlation_tab import CorrelationTab
 
 class S2IBISpyGUI:
     VERSION = "2.1.0"
@@ -71,6 +70,7 @@ class S2IBISpyGUI:
         self.viewer_tab = IbisViewerTab(self.notebook, self)
         self.plots_tab = PlotsTab(self.notebook, self)
         self.corr_tab = CorrelationTab(self.notebook, self)
+        self.yaml_editor_tab = YamlEditorTab(self.notebook, self)
 
         # 4. NOW ADD TABS TO NOTEBOOK
         self.notebook.add(self.input_tab.frame, text="  Input & Settings  ")
@@ -80,6 +80,7 @@ class S2IBISpyGUI:
         self.notebook.add(self.viewer_tab.frame, text="  IBIS Viewer  ")
         self.notebook.add(self.plots_tab.frame, text="  Plots  ")
         self.notebook.add(self.corr_tab.frame, text="  Correlation  ")
+        self.notebook.add(self.yaml_editor_tab.frame, text="  YAML Editor  ")
 
         # 5. NOW CREATE MENU — AFTER ALL TABS EXIST!
         menubar = tk.Menu(self.root)

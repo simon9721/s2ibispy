@@ -1,8 +1,39 @@
 {
   "returncode": 0,
   "errors": [],
-  "warnings": [],
-  "notes": [],
+  "warnings": [
+    "WARNING (line   20) - Component 'MCM Driver 1' contains a blank character.",
+    "WARNING - Model 'driver': Vmeas timing test load parameter should be specified",
+    "WARNING - Model driver: Typical ISSO_PU current (-1.008e-08A) at 0V is not within  5.00% of Pullup current (-3.628e-02A) at reference ( 0.000V)",
+    "WARNING - Model driver: Typical ISSO_PU current (-3.628e-02A) at Pulldown reference ( 0.000V) - table value ( 3.300V) is non-zero (> 1.0e-06A)",
+    "WARNING - Model driver: Minimum ISSO_PU current (-3.726e-08A) at 0V is not within  5.00% of Pullup current (-2.755e-02A) at reference ( 0.000V)",
+    "WARNING - Model driver: Minimum ISSO_PU current (-3.569e-02A) at Pulldown reference ( 0.000V) - table value ( 3.000V) is non-zero (> 1.0e-06A)",
+    "WARNING - Model driver: Maximum ISSO_PU current (-5.774e-09A) at 0V is not within  5.00% of Pullup current (-4.413e-02A) at reference ( 0.000V)",
+    "WARNING - Model driver: Maximum ISSO_PU current (-3.769e-02A) at Pulldown reference ( 0.000V) - table value ( 3.600V) is non-zero (> 1.0e-06A)"
+  ],
+  "notes": [
+    "NOTE (line   70) - Pulldown Typical data is non-monotonic",
+    "NOTE (line   70) - Pulldown Maximum data is non-monotonic",
+    "NOTE (line   75) - Pulldown Minimum data is non-monotonic",
+    "NOTE (line  161) - Pullup Typical data is non-monotonic",
+    "NOTE (line  164) - Pullup Maximum data is non-monotonic",
+    "NOTE (line  235) - Pullup Minimum data is non-monotonic",
+    "NOTE (line  275) - GND Clamp Minimum data is non-monotonic",
+    "NOTE (line  285) - GND Clamp Typical data is non-monotonic",
+    "NOTE (line  286) - GND Clamp Maximum data is non-monotonic",
+    "NOTE (line  503) - ISSO_PU Maximum data is non-monotonic",
+    "NOTE (line  504) - ISSO_PU Typical data is non-monotonic",
+    "NOTE (line  504) - ISSO_PU Minimum data is non-monotonic",
+    "NOTE (line  548) - ISSO_PD Minimum data is non-monotonic",
+    "NOTE (line  551) - ISSO_PD Typical data is non-monotonic",
+    "NOTE (line  551) - ISSO_PD Maximum data is non-monotonic",
+    "NOTE - Combined Pulldown for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pullup for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pulldown for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pullup for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pulldown for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pullup for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation"
+  ],
   "total_errors": 0,
-  "total_warnings": 0
+  "total_warnings": 8
 }

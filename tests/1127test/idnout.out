@@ -7,11 +7,11 @@
   this software is strictly prohibited.
   Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\idnout.
   Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\idnout.spi -o C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\idnout.out
-  Start time: Thu Nov 27 21:54:24 2025
+  Start time: Thu Nov 27 23:55:17 2025
   lic:  
   lic: FLEXlm: SDK_12.10 
   lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
-  lic: HOSTID: 00ff89f5aa52         PID:      13736 
+  lic: HOSTID: 00ff89f5aa52         PID:      3376 
   lic: Using FLEXlm license file: 
   lic: 1704@synopsys.lic.mst.edu 
   lic: Checkout 1 hspice 
@@ -21,7 +21,7 @@
   lic:   
 1****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******
  ******  
- * min isso_pulldown curve for model driver
+ * min isso_puldown curve for model driver
 
  ****** mos   model parameters tnom=  25.000 temp=  25.000 ******
  ***************************************************************************
@@ -215,7 +215,7 @@
  ******
  runlvl  = 3         bypass  = 2.0000    
  ******
- * min isso_pulldown curve for model driver
+ * min isso_puldown curve for model driver
 
  ****** dc transfer curves tnom=  25.000 temp= 100.000 ******
 x
@@ -293,7 +293,7 @@ y
 
           ***** job concluded
  ******  
- * min isso_pulldown curve for model driver
+ * min isso_puldown curve for model driver
 
  ****** job statistics summary tnom=  25.000 temp= 100.000 ******
 
@@ -327,11 +327,11 @@ y
   output             0.00
 
 
-           peak memory used         72.10 megabytes
-           total cpu time            0.03 seconds
+           peak memory used         72.06 megabytes
+           total cpu time            0.02 seconds
            total elapsed time        0.12 seconds
-           job started at     21:54:24 11/27/2025
-           job ended   at     21:54:24 11/27/2025
+           job started at     23:55:17 11/27/2025
+           job ended   at     23:55:17 11/27/2025
            job total runtime         0.12 seconds
 
 
