@@ -59,6 +59,7 @@ class IbisVItable:
 class IbisWaveTableEntry:
     t: float = 0.0
     v: IbisTypMinMax = field(default_factory=IbisTypMinMax)
+    i: IbisTypMinMax = field(default_factory=IbisTypMinMax)  # Supply current in Amperes
 
 
 @dataclass
@@ -75,7 +76,8 @@ class IbisWaveTable:
     L_fixture: float = float('nan')
     C_fixture: float = float('nan')
 
-    def add_point(self, t: float, v_typ: Optional[float] = None, v_min: Optional[float] = None, v_max: Optional[float] = None) -> None:
+    def add_point(self, t: float, v_typ: Optional[float] = None, v_min: Optional[float] = None, v_max: Optional[float] = None,
+                  i_typ: Optional[float] = None, i_min: Optional[float] = None, i_max: Optional[float] = None) -> None:
         entry = IbisWaveTableEntry(t=t)
         if v_typ is not None:
             entry.v.typ = v_typ
@@ -83,6 +85,12 @@ class IbisWaveTable:
             entry.v.min = v_min
         if v_max is not None:
             entry.v.max = v_max
+        if i_typ is not None:
+            entry.i.typ = i_typ
+        if i_min is not None:
+            entry.i.min = i_min
+        if i_max is not None:
+            entry.i.max = i_max
         self.waveData.append(entry)
 
     def finalize_size(self) -> None:

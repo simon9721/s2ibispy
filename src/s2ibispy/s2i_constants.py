@@ -228,7 +228,7 @@ class ConstantStuff:
     convergenceMarker = {SpiceType.HSPICE: "convergence failure"}
 
     VI_COLUMN_HINTS = ("volt", "current")
-    TRAN_COLUMN_HINTS = ("time", "voltage")
+    TRAN_COLUMN_HINTS = ("time", "voltage", "current")  # Updated: now includes supply current (I_supply)
 
     FLOAT_RE = r"[-+]?(?:\d*\.\d+|\d+)(?:[eE][-+]?\d+)?"
     VI_ROW_RE = re.compile(rf"^\s*({FLOAT_RE})\s+({FLOAT_RE})\s*$")

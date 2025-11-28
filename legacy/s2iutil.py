@@ -2,11 +2,11 @@
 import logging
 import math
 from typing import List, Optional, Dict
-from models import (
+from legacy.models import (
     IbisTOP, IbisGlobal, IbisComponent, IbisPin, IbisModel,
     IbisTypMinMax, IbisRamp, IbisPinParasitics
 )
-from s2i_constants import ConstantStuff as CS
+from legacy.s2i_constants import ConstantStuff as CS
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 

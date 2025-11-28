@@ -9,9 +9,9 @@ import sys
 from s2ibispy.cli import main as package_main
 
 
-def main(argv=None):
+def main(argv=None, gui=None):
     # Delegate to the package CLI; allow passing argv for tests.
-    return package_main(argv)
+    return package_main(argv, gui=gui)
 
 
 if __name__ == "__main__":

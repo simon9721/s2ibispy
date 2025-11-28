@@ -5,11 +5,11 @@ import os
 from datetime import datetime
 import logging
 from typing import Tuple, List
-from models import (
+from legacy.models import (
     IbisTOP, IbisGlobal, IbisComponent, IbisPin, IbisModel, IbisWaveTable,
     IbisDiffPin, IbisSeriesPin, IbisSeriesSwitchGroup, SeriesModel, IbisTypMinMax, IbisRamp, IbisPinParasitics
 )
-from s2i_constants import ConstantStuff as CS
+from legacy.s2i_constants import ConstantStuff as CS
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 

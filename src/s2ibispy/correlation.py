@@ -280,11 +280,13 @@ VENA3 oe3 0 DC 3.3
         try:
             out_base = os.path.join(outdir, f"correlate_{model.modelName}")
             msg_file = out_base + ".msg"
+            # Note: For HSPICE, pass base name without .tr0 extension
+            # HSPICE will create .tr0 file automatically
             rc = s2ispice.call_spice(
                 iterate=ibis.iterate if hasattr(ibis, 'iterate') else 0,
                 spice_command=ibis.spiceCommand if hasattr(ibis, 'spiceCommand') else "",
                 spice_in=out_path,
-                spice_out=out_base + ".tr0",
+                spice_out=out_base,  # No .tr0 extension - HSPICE adds it
                 spice_msg=msg_file,
             )
             if rc == 0:

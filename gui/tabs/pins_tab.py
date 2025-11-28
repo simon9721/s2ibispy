@@ -1,6 +1,6 @@
 # gui/tabs/pins_tab.py
 from tkinter import ttk
-from s2i_constants import ConstantStuff as CS
+from legacy.s2i_constants import ConstantStuff as CS
 
 class PinsTab:
     def __init__(self, notebook, gui):

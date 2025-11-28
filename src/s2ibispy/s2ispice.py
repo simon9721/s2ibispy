@@ -362,8 +362,23 @@ class S2ISpice:
         elif spice_file_path:
             logging.debug(f"Using SPICE netlist: {spice_file_path}")
 
-        if model_file and not os.path.exists(model_file):
-            logging.warning(f"Model file {model_file} not found; continuing without it")
+        # Resolve model_file path (same logic as spice_file)
+        model_file_path = None
+        if model_file:
+            if os.path.isabs(model_file):
+                if os.path.exists(model_file):
+                    model_file_path = model_file
+            else:
+                for base in [os.getcwd(), s2i_dir, PROJECT_ROOT, TEST_DIR]:
+                    path = os.path.join(base, model_file)
+                    if os.path.exists(path):
+                        model_file_path = path
+                        break
+            
+            if not model_file_path:
+                logging.warning(f"Model file {model_file} not found; continuing without it")
+            else:
+                logging.debug(f"Using model file: {model_file_path}")
 
         if spice_file and not spice_file_path:
             logging.warning(f"Spice file {spice_file} not found; continuing without circuit netlist")
@@ -387,9 +402,9 @@ class S2ISpice:
                         logging.warning(f"Failed to copy DUT netlist {spice_file_path}: {e}")
 
                 # Model file (verbatim append if present)
-                if model_file and os.path.exists(model_file):
+                if model_file_path:
                     f.write("\n")
-                    with open(model_file, "r") as mf:
+                    with open(model_file_path, "r") as mf:
                         f.write(mf.read())
                     f.write("\n")
 
@@ -1170,10 +1185,16 @@ class S2ISpice:
                 if len(parts) < 2:
                     continue
                 try:
-                    t = float(parts[0])
-                    v = float(parts[1])
-                    if t >= 0:  # ← REMOVE UPPER BOUND — THIS IS THE FIX
-                        t_v_pairs.append((t, v))
+                    if len(parts) >= 3:
+                        t = float(parts[0])
+                        v = float(parts[1])
+                        i_supply = float(parts[2])  # Keep in Amperes - output formatter will handle units
+                        t_v_pairs.append((t, v, i_supply))
+                    else:
+                        # Fallback: old files with only V(t)
+                        t = float(parts[0])
+                        v = float(parts[1])
+                        t_v_pairs.append((t, v, 0.0))  # zero current if not present
                 except ValueError:
                     continue
 
@@ -1182,16 +1203,18 @@ class S2ISpice:
                 return 1
 
             # === BINNING ===
-            bin_param = [0, 0, 0.0, 0]  # last_bin, interp_bin, sum, count
-            for t, v in t_v_pairs:
-                self._bin_tran_data_java(t, v, sim_time, bin_time, command, bin_param, wave_p)
+            bin_param = [0, 0, 0.0, 0, 0.0, 0]  # last_bin, interp_bin, v_sum, v_count, i_sum, i_count
+            for t, v, i_supply in t_v_pairs:
+                self._bin_tran_data_java(t, v, i_supply, sim_time, bin_time, command, bin_param, wave_p)
 
             # === FORCE LAST BIN TO EXACT sim_time (JAVA EXACT) ===
             if bin_param[3] > 0:
                 v_avg = bin_param[2] / bin_param[3]
+                i_avg = bin_param[4] / bin_param[5] if bin_param[5] > 0 else 0.0
                 last_bin = bin_param[0]
                 wave_p.waveData[last_bin].t = sim_time  # ← EXACT
                 setattr(wave_p.waveData[last_bin].v, command, v_avg)
+                setattr(wave_p.waveData[last_bin].i, command, i_avg)
 
             logging.debug(f"[WAVE] {command.upper()} | {len(t_v_pairs)} points → {max_bins} bins")
             return 0
@@ -1201,12 +1224,12 @@ class S2ISpice:
             return 1
 
     def _bin_tran_data_java(
-            self, t: float, v: float, sim_time: float, bin_time: float,
+            self, t: float, v: float, i_supply: float, sim_time: float, bin_time: float,
             command: str, bin_param: list, wave_p: IbisWaveTable
     ) -> None:
         """
         EXACT port of Java binTranData using list:
-        bin_param = [last_bin, interp_bin, running_sum, num_points_in_bin]
+        bin_param = [last_bin, interp_bin, v_sum, v_count, i_sum, i_count]
         """
         if bin_time <= 0:
             return
@@ -1221,29 +1244,36 @@ class S2ISpice:
         if current_bin == last_bin:
             bin_param[2] += v
             bin_param[3] += 1
-            # logging.debug(f"[BIN] Added to bin {current_bin}: sum={bin_param[2]} count={bin_param[3]}")
+            bin_param[4] += i_supply
+            bin_param[5] += 1
+            # logging.debug(f"[BIN] Added to bin {current_bin}: v_sum={bin_param[2]} v_count={bin_param[3]} i_sum={bin_param[4]} i_count={bin_param[5]}")
             return
 
         # Close previous bin
         if bin_param[3] > 0 and 0 <= last_bin < max_bins:
             v_avg = bin_param[2] / bin_param[3]
+            i_avg = bin_param[4] / bin_param[5] if bin_param[5] > 0 else 0.0
             t_bin = last_bin * bin_time
             wave_p.waveData[last_bin].t = t_bin
             setattr(wave_p.waveData[last_bin].v, command, v_avg)
-            #logging.debug(f"[BIN] Closed bin {last_bin}: t={t_bin:.4e} v_avg={v_avg:.4e} ({command})")
+            setattr(wave_p.waveData[last_bin].i, command, i_avg)
+            #logging.debug(f"[BIN] Closed bin {last_bin}: t={t_bin:.4e} v_avg={v_avg:.4e} i_avg={i_avg:.4e} ({command})")
 
             # Interpolate skipped bins (linear)
             interp_bin = bin_param[1]
             if last_bin > interp_bin + 1:
                 t_start = wave_p.waveData[interp_bin].t
                 v_start = getattr(wave_p.waveData[interp_bin].v, command)
+                i_start = getattr(wave_p.waveData[interp_bin].i, command)
                 for i in range(interp_bin + 1, last_bin):
                     t_interp = i * bin_time
                     frac = (t_interp - t_start) / (t_bin - t_start)
                     v_interp = v_start + frac * (v_avg - v_start)
+                    i_interp = i_start + frac * (i_avg - i_start)
                     wave_p.waveData[i].t = t_interp
                     setattr(wave_p.waveData[i].v, command, v_interp)
-                    #logging.debug(f"[BIN] Interpolated bin {i}: t={t_interp:.4e} v_interp={v_interp:.4e} ({command})")
+                    setattr(wave_p.waveData[i].i, command, i_interp)
+                    #logging.debug(f"[BIN] Interpolated bin {i}: t={t_interp:.4e} v_interp={v_interp:.4e} i_interp={i_interp:.4e} ({command})")
 
             bin_param[1] = last_bin  # interp_bin = last_bin
 
@@ -1251,7 +1281,9 @@ class S2ISpice:
         bin_param[0] = current_bin
         bin_param[2] = v
         bin_param[3] = 1
-        #logging.debug(f"[BIN] Started new bin {current_bin}: sum={bin_param[2]} count={bin_param[3]}")
+        bin_param[4] = i_supply
+        bin_param[5] = 1
+        #logging.debug(f"[BIN] Started new bin {current_bin}: v_sum={bin_param[2]} v_count={bin_param[3]} i_sum={bin_param[4]} i_count={bin_param[5]}")
 
     def generate_vi_curve(
             self,

@@ -58,14 +58,26 @@ Linux/macOS users: use the same steps but activate with `source .venv/bin/activa
 
 ### Features (Current)
 
+**Core Functionality:**
 - Full `.s2i` file parsing with `[Include]` support and line continuations
-- Hierarchical default propagation (global to component to model)
+- Modern YAML configuration format (recommended) with nested structure support
+- Hierarchical default propagation (global → component → model)
 - SPICE deck generation for HSPICE, Spectre, and Eldo
 - VI curve, ramp, and waveform extraction
 - Accurate IBIS file output (formatting and section order compatible with original)
 - Built-in correlation deck generation (SPICE vs IBIS overlay)
 - Optional ibischk validation and JSON report
-- GUI version available (`gui_main.py`)
+
+**GUI Features:**
+- Unified interface with dropdown/checkbox widgets for proper field types
+- Support for both `.yaml` and `.s2i` input formats
+- Inline model and pin editing with NoModel flag support
+- Global defaults configuration with grouped settings
+- Real-time simulation with progress feedback and abort capability
+- Integrated plotting and correlation analysis
+- Bundled ibischk7.exe with auto-detection
+
+See [gui/README.md](gui/README.md) for complete GUI documentation.
 
 ---
 
@@ -125,10 +137,12 @@ Tip (without install): temporarily add the package to `PYTHONPATH`.
 | --spice-type | Simulator: hspice, spectre, or eldo | hspice |
 | --spice-cmd CMD | Custom simulator command line | (auto) |
 | --iterate 0/1 | Reuse existing simulation outputs | 0 |
-| --cleanup 0/1 | Delete intermediate .spi, .out, .msg files | 0 |
+| --cleanup 0/1 | Delete intermediate .spi, .tr0, .mt0 files | 0 |
 | --ibischk PATH | Run ibischk and generate reports | (disabled) |
 | --correlate | Generate and run correlation deck | (disabled) |
 | -v, --verbose | Enable debug logging | (disabled) |
+
+**Note:** The GUI provides a more user-friendly way to configure these options with proper field types and validation.
 
 ### Example
 
@@ -146,19 +160,23 @@ python -m s2ibispy tests/buffer.s2i --outdir tests/output --spice-type hspice --
 
 ### GUI Version
 
-A graphical interface is available:
+A modern graphical interface is available with unified configuration, real-time simulation, and integrated analysis tools:
 
 ```bash
 python gui_main.py
 ```
 
-**Features**:
+**Key Features**:
 
-- Input/Output/ibischk paths selection
-- Real-time log output
-- Waveform plotting (via matplotlib)
-- Auto correlation deck generation (I/O, tristate buffer only)
-- Built on Tkinter (no extra dependencies)
+- Unified main entry tab combining file loading, YAML editing, and simulation controls
+- Support for both `.yaml` (recommended) and `.s2i` (legacy) input formats
+- Inline model and pin editing with proper widget types (dropdowns, checkboxes)
+- Real-time simulation with progress bar and abort capability
+- Integrated waveform plotting and correlation analysis
+- Auto-detection of bundled ibischk7.exe for validation
+- Built on Tkinter with matplotlib integration
+
+**See detailed GUI documentation:** [gui/README.md](gui/README.md)
 
 ---
 
@@ -177,13 +195,23 @@ Core code now lives in a proper package at `src/s2ibispy/`.
 | `s2ibispy/s2ispice.py` | Generates/runs SPICE, parses results |
 | `s2ibispy/s2ioutput.py` | Writes the final `.ibs` (full original, patched) |
 | `s2ibispy/correlation.py` | SPICE↔IBIS correlation deck generation |
-| `s2ibispy/legacy/parser.py` | Legacy `.s2i` file parser |
+| `s2ibispy/legacy/parser.py` | Legacy `.s2i` file parser (moved from root) |
+| `s2ibispy/legacy/` | Legacy modules (s2iutil.py, etc.) |
 
-Compatibility shims remain at the repo root (e.g., `main.py`) so older workflows keep working, but new development should target `src/s2ibispy/`.
+#### GUI Architecture
+
+GUI code is organized under `gui/`:
+- `gui/app.py` - Main application window
+- `gui/tabs/` - Tab implementations (main_entry, plots, correlation, etc.)
+- `gui/utils/` - Utilities (yaml_editor_model.py, yaml_editor_config.py, s2i_to_yaml.py, parse_netlist.py)
+
+See [gui/README.md](gui/README.md) for detailed GUI documentation.
 
 #### Source of Truth
-- Update core code under `src/s2ibispy/`.
-- GUI code (`gui/`, `yaml_editor*.py`, `gui_main.py`) currently remains at the repository root.
+- Core functionality: `src/s2ibispy/`
+- GUI code: `gui/`
+- Legacy code: `legacy/` (backward compatibility)
+- Compatibility shims: Root level (`main.py`, `gui_main.py`)
 
 ---
 

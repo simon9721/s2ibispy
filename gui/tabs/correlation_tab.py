@@ -43,6 +43,8 @@ class CorrelationTab:
         ttk.Button(sel, text="None", width=6, command=self.select_none).pack(side="left", padx=2)
         ttk.Button(sel, text="SPICE", width=8, command=lambda: self.select_keyword("spice")).pack(side="left", padx=2)
         ttk.Button(sel, text="IBIS", width=8, command=lambda: self.select_keyword("ibis")).pack(side="left", padx=2)
+        ttk.Button(sel, text="Ch 1&3", width=8, command=self.select_ch13).pack(side="left", padx=2)
+        ttk.Button(sel, text="Ch 2", width=8, command=self.select_ch2).pack(side="left", padx=2)
 
         # Action buttons
         actions = ttk.Frame(controls)
@@ -54,20 +56,28 @@ class CorrelationTab:
 
         # === Waveform Tree ===
         tree_frame = ttk.LabelFrame(main, text=" Correlation Waveforms (click to toggle) ")
-        main.add(tree_frame, weight=2)
+        main.add(tree_frame, weight=1)
+
+        # Create container for tree and scrollbar
+        tree_container = ttk.Frame(tree_frame)
+        tree_container.pack(fill="both", expand=True, padx=8, pady=6)
+        
+        tree_scroll = ttk.Scrollbar(tree_container)
+        tree_scroll.pack(side="right", fill="y")
 
         cols = ("Sel", "Signal", "Points", "Min (V)", "Max (V)", "ΔV (V)")
-        self.tree = ttk.Treeview(tree_frame, columns=cols, show="headings", height=16)
+        self.tree = ttk.Treeview(tree_container, columns=cols, show="headings", height=8, yscrollcommand=tree_scroll.set)
         widths = [60, 300, 90, 100, 100, 100]
         for c, w in zip(cols, widths):
             self.tree.heading(c, text=c)
             self.tree.column(c, width=w, anchor="center" if c != "Signal" else "w")
-        self.tree.pack(fill="both", expand=True, padx=8, pady=6)
+        self.tree.pack(side="left", fill="both", expand=True)
+        tree_scroll.config(command=self.tree.yview)
         self.tree.bind("<Button-1>", self.on_tree_click)
 
         # === Plot ===
         plot_frame = ttk.LabelFrame(main, text=" Waveform Overlay ")
-        main.add(plot_frame, weight=5)
+        main.add(plot_frame, weight=10)
         self.canvas_frame = ttk.Frame(plot_frame)
         self.canvas_frame.pack(fill="both", expand=True, padx=8, pady=8)
 
@@ -75,6 +85,8 @@ class CorrelationTab:
     def select_all(self):    self._set_all(True)
     def select_none(self):   self._set_all(False)
     def select_keyword(self, kw): self._set_filter(lambda name: kw in name.lower())
+    def select_ch13(self):   self._set_filter(lambda name: any(x in name.lower() for x in ["end1", "end3", "out1", "out3"]))
+    def select_ch2(self):    self._set_filter(lambda name: any(x in name.lower() for x in ["end2", "out2"]))
 
     def _set_all(self, value: bool):
         for var in self.selected.values():
@@ -102,10 +114,24 @@ class CorrelationTab:
 
     # === Data Loading ===
     def load_latest_results(self):
-        outdir = Path(self.gui.input_tab.outdir)
-        tr0_files = list(outdir.glob("compare_*.tr0"))
+        outdir_str = self.gui.main_tab.outdir
+        if not outdir_str or not outdir_str.strip():
+            self.gui.log("Output directory not set. Please set it in Input/Config tab.", "WARNING")
+            self.waveforms.clear()
+            self.refresh_tree()
+            return
+        
+        outdir = Path(outdir_str)
+        if not outdir.exists():
+            self.gui.log(f"Output directory does not exist: {outdir}", "WARNING")
+            self.waveforms.clear()
+            self.refresh_tree()
+            return
+        
+        # Search for .tr0 files but exclude .tr0.tr0 duplicates (HSPICE bug workaround)
+        tr0_files = [f for f in outdir.glob("correlate_*.tr0") if not str(f).endswith(".tr0.tr0")]
         if not tr0_files:
-            self.gui.log("No correlation results yet", "INFO")
+            self.gui.log(f"No correlation .tr0 files found in: {outdir.name}", "INFO")
             self.waveforms.clear()
             self.refresh_tree()
             return

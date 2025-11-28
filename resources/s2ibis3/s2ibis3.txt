@@ -1,0 +1,1083 @@
+INTRODUCTION
+
+    s2ibis3 is the latest version of the SPICE-to-IBIS conversion
+    utility from North Carolina State University. It produces IBIS
+    files which conform to the IBIS v3.2 specification.
+
+    s2ibis3 is similar to s2ibis2. The main difference to it is that
+    it is written in JAVA as compared to C and Lex and Yacc.
+    s2ibis3 has its own command language, which is similar to the
+    IBIS language in many respects, and can be easily extended to
+    include new functionality. Because s2ibis3 creates a full IBIS 
+    model in an internal data structure, and then writes the resulting
+    information to the output file after all processing is done, s2ibis3
+    can easily be extended to comply with future versions of the IBIS 
+    specification.
+
+    This document will describe the s2ibis3 command language
+    and how to properly use it. I would strongly suggest examining
+    the files in the examples/ directory to get a feel for how these
+    commands are used.
+
+
+THE COMMAND LANGUAGE
+
+    -To run s2ibis3, type the following on the command line:
+       
+        % s2ibis3.csh -s2ibis3 buffer.s2i
+
+     where buffer.s2i is the s2i command file as discussed later in
+     the s2ibis3.txt
+			
+    -If there is a 'permission denied' error when running the .csh file, 
+     change permissions by doing 
+
+     	  % chmod 744 s2ibis3.csh
+
+    -If it is desired, s2ibis3 could be run from a different directory 
+     from the installation directory by using the
+     '-root' switch with s2ibis3.csh as this example suggest:
+			
+        % s2ibis3 -root ../../s2i_install_dir -s2ibis3 buffer.s2i
+			
+			
+windows
+    
+    -most of the instruction for unix apply for windows users as well.
+    -To run s2ibis3, type the following on the command prompt:
+
+  	  % s2ibis3.bat -s2ibis3 buffer.s2i
+    
+    -If the path variables are not set for java and the spice engines, 
+     read instructions at http://java.sun.com/j2se/1.4.2/install-windows.html
+     on how to set path variables for windows. s2ibis3 would not run if paths have
+     not been set properly.
+
+[note] % is not needed to be inserted in the command line.			
+
+    
+    The command file consists of two main sections: the header and
+    the component description.
+
+    Note that the command parser ignores case when it reads the
+    command file, so you may specify the commands in upper or lower
+    case, or a mix of the two.
+
+    Also note that s2ibis3 has several reserved words:
+
+        NA  specifies that the value is undefined
+        NC  specifies no connection; can be used as model name
+        +   line continuation character when found in first
+            column of line
+
+
+THE HEADER
+
+    The header contains information that is applicable to the entire
+    file, such as the type of SPICE simulator to use, the IBIS version,
+    etc. It can also contain global specifications. For example, if
+    you want a particular temperature range to apply to all models in
+    your file, specify it in the header. Note, however, that global
+    definitions are overridden by local definitions; in this way, you
+    can specify (e.g.) a global temperature range, but override it for a
+    particular component or model where necessary.
+
+    The following commands can be used in the header:
+
+    [IBIS Ver]  version
+
+        version = 1.1, 2.1 or 3.2
+        
+        Required.
+        
+        THIS MUST BE THE FIRST COMMAND IN THE COMMAND FILE. (It may be
+        preceded by comments.)  This describes the version of IBIS to be
+        produced by s2ibis3. Legal version values are 1.1 and 2.1.
+
+    [File name] filename
+
+        filename = name of IBIS file to produce
+        
+        Optional.  
+        Default: First 8 chars of command filename followed by ".ibs".
+
+        This tells s2ibis3 what the output file name should be. NOTE:
+        this must conform to DOS conventions, i.e. it must be in the
+        form "xxxxxxxx.xxx". If this command is not used, s2ibis3
+        creates the output file name by taking the first part of the
+        command file name, and appending ".ibs" to it. So, for the
+        command file name "tryme.s2i", the output file name would be
+        "tryme.ibs".
+
+    [File rev]  rev
+
+        rev = revision number
+        
+        Optional.
+        Default: none.
+
+        This describes the current file revision. Note that s2ibis3
+        will accept any legal string for the revision number, although
+        the IBIS specification suggests a standard for revision
+        numbering.
+
+    [Date]      date
+
+        date = file date
+        
+        Optional.
+        Default: Current system date.
+
+        Gives the file date. If this command is not present, s2ibis3
+        will use the current system date as the file date.
+
+    [Source]    source
+
+        source = file source
+        
+        Optional.
+        Default: none.
+        
+        Describes the file source. Truncated if longer than 1K byte in
+        length.
+
+    [Notes]     notes
+
+        notes = file notes
+        
+        Optional.
+        Default: none.
+        
+        Describes any optional notes that may be necessary. Truncated
+        if longer than 1K byte in length.
+
+    [Disclaimer]    disclaimer
+
+        disclaimer = file disclaimer
+        
+        Optional.
+        Default: none.
+        
+        This is where you put the legalese. Truncated if longer than 1K
+        byte in length.
+
+    [Copyright] copyright
+
+        source = file copyright
+        
+        Optional.
+        Default: none.
+        
+        Describes the copyright info. Truncated if longer than 1K byte
+        in length.
+
+    [Spice type]    spicetype
+
+        spicetype = HSpice, PSpice, Spice2, Spice3, or Spectre
+
+        Required.
+        
+        Describes which flavor of Spice to use when simulating the
+        circuits.
+
+    [Spice command] command
+
+        command = command to use when invoking Spice.
+
+        Optional.
+        Default: specified in s2iHeader.java
+        
+        This string specifies, in java syntax, how you would call Spice
+        from the command line. See the string variable defaultSpiceCommand           
+	in the file src/s2iHeader.java for an example of the correct format.         
+	(Note that the command line switches used to invoke spice3 and               
+	spectre MUST be used.)
+
+    [Iterate]
+
+        Optional.
+        Default: none.
+        
+        This works the same way as the *[Iterate] command in s2ibis
+        v1.2. If a Spice output file for the curve in question already
+        exists, s2ibis3 will read the data from that file without
+        re-running the simulation. In this way, you can make
+        incremental changes to your s2ibis3 files without having to
+        re-simulate the entire set of models.
+
+    [Cleanup]
+    
+        Optional.
+        Default: none.
+        
+        When this command is specified, s2ibis3 will delete all of the
+        spice input, output and message files as it proceeds. This is
+        good to use when you think the IBIS file is done and you want to
+        clean up the working directory.
+
+    [Temperature range] T_typ   T_min   T_max
+
+        T_typ = temperature for TYP curves
+        T_min = temperature for MIN curves
+        T_max = temperature for MAX curves
+
+        Optional.
+        Default: T_typ = 27C, T_min = 100C, T_max = 0C.
+
+        Specifies the temperature, in degrees C, under which to run the
+        TYP, MIN and MAX simulations.
+
+    [Voltage range]     V_typ   V_min   V_max
+
+        V_typ = supply voltage for TYP curves
+        V_min = supply voltage for MIN curves
+        V_max = supply voltage for MAX curves
+
+        Optional.
+        Default: V_typ = 5.0V, V_min = 4.5V, V_max = 5.5V
+
+        Specifies the supply rail voltage. See the IBIS v3.2
+        specification for a thorough treatment of this.
+
+        NOTE:  You MUST specify a voltage range for all models, either
+        with this command or with ALL FOUR of the following commands.
+
+    [Pullup reference]  V_typ   V_min   V_max
+
+        V_typ = pullup supply voltage for TYP curves
+        V_min = pullup supply voltage for MIN curves
+        V_max = pullup supply voltage for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies the pullup reference supply. See IBIS v3.2
+        specification for details.
+
+    [Pulldown reference]    V_typ   V_min   V_max
+
+        V_typ = pulldown supply voltage for TYP curves
+        V_min = pulldown supply voltage for MIN curves
+        V_max = pulldown supply voltage for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies the pulldown reference supply. See IBIS v3.2
+        specification for details.
+
+    [POWER clamp reference] V_typ   V_min   V_max
+
+        V_typ = power clamp supply voltage for TYP curves
+        V_min = power clamp supply voltage for MIN curves
+        V_max = power clamp supply voltage for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies the power clamp reference supply. See IBIS v3.2
+        specification for details.
+
+    [GND clamp reference]   V_typ   V_min   V_max
+
+        V_typ = ground clamp supply voltage for TYP curves
+        V_min = ground clamp supply voltage for MIN curves
+        V_max = ground clamp supply voltage for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies the ground clamp reference supply. See IBIS v3.2
+        specification for details.
+
+    [R_pkg]     r
+    
+        r = parasitic pin resistance
+
+        Optional.
+        Default: 0
+
+        Describes the default pin resistance for the package.
+
+    [L_pkg]     l
+    
+        l = parasitic pin inductance
+
+        Optional.
+        Default: 0
+
+        Describes the default pin inductance for the package.
+
+    [C_pkg]     c
+    
+        c = parasitic pin capacitance
+
+        Optional.
+        Default: 0
+
+        Describes the default pin capacitance for the package.
+
+    [C_comp]    C_typ   C_min   C_max
+    
+        C_typ = silicon die capacitance for TYP curves
+        C_min = silicon die capacitance for MIN curves
+        C_max = silicon die capacitance for MAX curves
+
+        Optional.
+        Default: C_typ = 5pF, C_min = 5pF, C_max = 5pF
+
+        Describes the silicon die capacitance.
+
+    [Rload]     r
+
+        r = load resistance for ramp rate
+
+        Optional.
+        Default: r = 50 ohms.
+
+        Describes the load resistance to use when performing the
+        simulations for the ramp rate data.
+
+    [Sim time]  t
+
+        t = Spice transient simulation time
+
+        Optional.
+        Default: t = 10ns.
+
+        Describes the transient simulation time to be used by Spice.
+
+    [Vil]       v_typ   v_min   v_max
+
+        v_typ = low stimulus input voltage for TYP curves
+        v_min = low stimulus input voltage for MIN curves
+        v_max = low stimulus input voltage for MAX curves
+
+        Optional.
+        Default: [Pulldown reference] voltage if defined; 0 otherwise.
+
+        Describes the low stimulus input voltage. Note that this is NOT
+        the logic low voltage, but the physical Vil.
+
+    [Vih]       v_typ   v_min   v_max
+
+        v_typ = high stimulus input voltage for TYP curves
+        v_min = high stimulus input voltage for MIN curves
+        v_max = high stimulus input voltage for MAX curves
+
+        Optional.
+        Default: [Pullup reference] voltage if defined; [Voltage range]
+                 voltage otherwise.
+
+        Describes the high stimulus input voltage. Note that this is NOT
+        the logic high voltage, but the physical Vih.
+
+    [Tr]        t_typ   t_min   t_max
+
+        t_typ = stimulus input voltage risetime for TYP curves
+        t_min = stimulus input voltage risetime for MIN curves
+        t_max = stimulus input voltage risetime for MAX curves
+
+        Optional.
+        Default: [Sim time] / 100.
+
+        Describes the stimulus input voltage risetime.
+
+    [Tf]        t_typ   t_min   t_max
+
+        t_typ = stimulus input voltage falltime for TYP curves
+        t_min = stimulus input voltage falltime for MIN curves
+        t_max = stimulus input voltage falltime for MAX curves
+
+        Optional.
+        Default: [Sim time] / 100.
+
+        Describes the stimulus input voltage falltime.
+
+    [Clamp tolerance]   i
+
+        i = threshold for clamp curve printing
+
+        Optional.
+        Default: i = 0
+
+        Describes the threshold for printing lines in the clamp curves.
+        s2ibis3 suppresses printing of current values whose absolute
+        value is below the threshold. 
+
+    [Derate VI] x
+
+        x = percent to derate VI curves
+
+        Optional.
+        Default: x = 0%
+
+        Describes the percentage to derate the VI curves, as described
+        in the IBIS v3.2 spec. Note that x should be expressed as a
+        percentage, not a fraction. For example, to derate 15%, use
+        [Derate VI] 15, _not_ [Derate VI] 0.15. 
+
+    [Derate ramp]   y
+
+        y = percent to derate ramp rates
+
+        Optional.
+        Default: y = 0%
+
+        Describes the percentage to derate the ramp rates, as described
+        in the IBIS v3.2 spec. Note that y should be expressed as a
+        percentage, not a fraction. For example, to derate 15%, use
+        [Derate VI] 15, _not_ [Derate VI] 0.15.
+
+
+THE COMPONENT DESCRIPTION
+
+    The component description provides s2ibis3 with a model of your
+    component. You may have multiple component descriptions per
+    file--all components will be written to the same output file. (If
+    multiple components are specified, please use unique pin names for
+    each component--s2ibis3 uses the pin names to construct the SPICE
+    file names and may become confused if different components use the
+    same pin names.)
+
+    As in the header, you may have component-wide specifications of
+    certain values. Also as in the header, these component-wide values
+    will be overridden by a more local definition (i.e. one within a
+    particular model). As an example, you could specify a
+    component-wide voltage range, and then override this within (for
+    example) an ECL model.
+
+    The component description consists of several parts. It starts with
+    the [Component] keyword, which specifies the name of the component
+    (see below). This is followed by the component header, which
+    contains information which pertains to the entire component. The
+    header is followed by the differential pin list (optional), pin
+    mapping (optional), pin list (required) and model specifications
+    (required). These four need not be in any particular order.
+
+
+THE [Component] KEYWORD
+
+    This keyword specifies the start of the component. It takes the
+    following form:
+
+    [Component] name
+
+        name = component name
+
+        Required.
+
+        This command specifies the start of a new component. The
+        component name may contain spaces. It will be truncated to 40
+        characters in length.
+
+
+THE COMPONENT HEADER
+
+    This is where you specify variables that will apply to the entire
+    component.
+
+    The following commands may be used in the component header:
+
+    [Manufacturer]  name
+
+        name = manufacturer's name
+
+        Optional.
+        Default: "Manufacturer name"
+
+        This describes the manufacturer's name, which may contain
+        spaces. It will be truncated to 40 characters in length.
+
+    [Package model] name
+
+        name = package name
+
+        Optional.
+        Default: none
+
+        This describes the package model to use for the component
+        packaging--see the IBIS v3.2 specification for more detail. May
+        contain spaces. Will be truncated to 40 characters.
+
+    [Spice file]    filename
+
+        filename = name of Spice file which describes component
+
+        Required.
+
+        This gives the name of the Spice file which describes the
+        component topology. Must conform to DOS naming conventions.
+
+    [Series Spice file]    filename
+
+        filename = name of Series Spice file which describes series MOSFET
+        for the [Series Mosfet] keyword.
+
+        Required if series MOSFET analysis is done. Not required otherwise.
+
+    [Temperature range] T_typ   T_min   T_max
+        See section "THE HEADER" (above) for description.
+
+    [Voltage range]     V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [Pullup reference]  V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [Pulldown reference]    V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [POWER clamp reference] V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [GND clamp reference]   V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [R_pkg]     r
+        See section "THE HEADER" (above) for description.
+
+    [L_pkg]     l
+        See section "THE HEADER" (above) for description.
+
+    [C_pkg]     c
+        See section "THE HEADER" (above) for description.
+
+    [C_comp]    C_typ   C_min   C_max
+        See section "THE HEADER" (above) for description.
+
+    [Rload]     r
+        See section "THE HEADER" (above) for description.
+
+    [Sim time]  t
+        See section "THE HEADER" (above) for description.
+
+    [Vil]       v_typ   v_min   v_max
+        See section "THE HEADER" (above) for description.
+
+    [Vih]       v_typ   v_min   v_max
+        See section "THE HEADER" (above) for description.
+
+    [Tr]        t_typ   t_min   t_max
+        See section "THE HEADER" (above) for description.
+
+    [Tf]        t_typ   t_min   t_max
+        See section "THE HEADER" (above) for description.
+
+    [Clamp tolerance]   i
+        See section "THE HEADER" (above) for description.
+
+    [Derate VI] x
+        See section "THE HEADER" (above) for description.
+
+    [Derate ramp]   y
+        See section "THE HEADER" (above) for description.
+
+
+THE DIFFERENTIAL PIN LIST
+
+    This section contains the differential pin list information, as
+    described in the IBIS v3.2 specification. Note that s2ibis3 does
+    no processing on this information; it merely stores it and writes
+    it to the output file.
+
+    The differential pin list begins with the [Diff pin] keyword:
+
+    [Diff pin]
+
+        Optional.
+        Default: none.
+
+        Begins the differential pin list section.
+
+    This keyword is followed by lines describing the differential pin
+    relationships. Each line may contain either four or six columns.
+    The acceptable formats are:
+
+    pin_name   inv_pin   vdiff   tdelay_typ
+
+    and
+
+    pin_name   inv_pin   vdiff   tdelay_typ   tdelay_min   tdelay_max
+
+    These parameters are fully described in the IBIS v3.2 specification.
+
+
+THE PIN MAPPING
+
+    The pin mapping describes which power and ground buses are connected
+    to each pin's driver and receiver. This information is used in the
+    Spice simulations, if it is supplied.
+
+    The pin mapping begins with the [Pin mapping] keyword:
+
+    [Pin mapping]
+
+        Optional.
+        Default: none.
+
+        Begins the pin mapping section.
+
+    The keyword is followed by lines describing the pin mapping. Each
+    line may contain either three or five columns. Acceptable formats
+    are:
+
+    pin_name   pulldown_bus   pullup_bus
+
+    and
+
+    pin_name   pulldown_bus   pullup_bus   gndclamp_bus powerclamp_bus
+
+    Note that power pins are always connected to a pullup_bus, while
+    ground pins are always connected to a pulldown_bus, even if they
+    only supply power and ground for clamping structures.
+
+    These parameters are fully described in the IBIS v3.2 specification.
+
+
+THE PIN LIST
+
+    This section describes which models connect to which pins, and which
+    pins serve as inputs or enables for other (output) pins.
+
+    The pin list begins with the [Pin] keyword:
+
+    [Pin]
+
+        Required.
+
+        Begins the pin list.
+
+    The keyword is followed by "pin information sets" which describe the
+    pin list. There are six valid formats for each pin information set:
+
+    pin_name  spice_node  signal_name  model_name
+
+    pin_name  spice_node  signal_name  model_name  R_pin  L_pin  C_pin
+
+        These two formats are used for a pin with no input or enable,
+        i.e. an input pin, enable pin, power pin or ground pin. Note
+        that R_pin, L_pin and C_pin override the R_pkg, L_pkg and C_pkg
+        specifications.
+
+    pin_name  spice_node  signal_name  model_name
+    -> input_pin
+
+    pin_name  spice_node  signal_name  model_name  R_pin  L_pin  C_pin
+    -> input_pin
+
+        These two formats are used for a pin with an input pin, but no
+        enable pin. i.e. an output-only pin. Note that the
+        input_pin_name must match a pin in the pin list. Note also that
+        the "->" symbol must begin in the first column of the second
+        line.
+
+    pin_name  spice_node  signal_name  model_name
+    -> input_pin  enable_pin
+
+    pin_name  spice_node  signal_name  model_name  R_pin  L_pin  C_pin
+    -> input_pin  enable_pin
+
+        These two formats are used for a pin with both an input pin and
+        an enable pin, i.e. a tristate or I/O pin. Note that both the
+        input_pin_name and enable_pin_name must match pins in the pin
+        list. Note also that the "->" symbol must begin in the first
+        column of the second line.
+
+    Descriptions for each column are given below:
+
+    pin_name........Name of the pin. Must be 5 characters or less.
+    spice_node......Node name in the spice file which corresponds to
+                    this pin.
+    signal_name.....Name of the signal associated with this pin.
+    model_name......Name of the driver/receiver/terminator model
+                    associated with this pin. The model name must
+                    match one described by the [Model] keyword (see
+                    below), unless the model name is one of POWER,
+                    GND or NC.
+    R_pin...........Parasitic pin resistance. Overrides the R_pkg
+                    value if defined.
+    L_pin...........Parasitic pin inductance. Overrides the L_pkg
+                    value if defined.
+    C_pin...........Parasitic pin capacitance. Overrides the C_pkg
+                    value if defined.
+    input_pin.......Name of the pin which supplies the input signal
+                    to the current pin. Must match the name of
+                    another pin in the pin list. This name is used
+                    in the Spice simulations to determine where to
+                    apply the input stimulus.
+    enable_pin......Name of the pin which enables the current pin.
+                    Must match the name of another pin in the pin
+                    list. This name is used in the Spice
+                    simulations to determine where to apply the
+                    enable signal.
+
+THE SERIES PIN MAPPING
+
+    The series pin mapping is used to associate two pins joined by a 
+    series model. Each pin described under this keyword must match the
+    pin names declared previously in the [Pin] section.
+
+    The series pin mapping begins with the [Series Pin mapping] keyword:
+
+    [Series Pin mapping]
+
+        Optional.
+        Default: none.
+
+        Begins the series pin mapping section.
+
+    The keyword is followed by lines describing the series pin mapping. 
+    Each line may contain either three or four columns. Acceptable formats
+    are:
+
+    pin_name   pin_2	model_name
+
+    and
+
+    pin_name   pin_2	model_name	  function_table_group
+
+    When using 4 columns, the header function_table_group must be listed. 
+    Function_table_group must be defined in order to define the allowable 
+    switching combinations in [Series Switch Group] keyword described below.
+    More information on this keyword can be obtained from the IBIS v3.2 
+    specification.
+
+THE SERIES SWITCH GROUP
+
+    The series switch group is used to define allowable switching combinations
+    of series switches described using the names of the groups in the
+    [Series Pin Mapping] keyword function_table_group column.
+
+    The series switch group begins with the [Series switch groups] keyword:
+
+    [Series Switch Groups]
+
+        Optional.
+        Default: none.
+
+        Begins the series switch group section.
+
+    More information on this keyword can be obtained from the IBIS v3.2 
+    specification.
+
+
+THE MODEL SPECIFICATION
+
+    The model specification is used to describe a model and its
+    attributes. There must be a model specification for each model
+    specified in the pin list, with the exception of the reserved model
+    names POWER, GND and NC.
+
+    Each model specification begins with the [Model] keyword:
+
+    [Model]     name
+
+        name = model name
+
+        Required.
+        
+        Begins a model specification. The model name may not contain
+        spaces, and will be truncated to 20 characters.
+
+    The [Model] keyword may be followed by these commands:
+
+    [NoModel]
+
+        Optional.
+
+        Suppresses printing of the model. Useful when one wishes to
+        create a "dummy" input pin to drive an output model.
+
+    [Model type]    type
+
+        type =  Input, Output, I/O, 3-State, Open_drain,
+                I/O_open_drain, Open_sink, I/O_open_sink,
+                Open_source, I/O_open_source, Input_ECL,
+                Output_ECL, I/O_ECL, Terminator, Series
+                or Series_switch.
+
+        Required.
+
+        Specifies the model type.
+
+    [Polarity]  polarity
+
+        polarity = Inverting or Non-Inverting
+
+        Optional.
+        Default: Non-Inverting.
+
+        Defines the model polarity.
+
+    [Enable]    enable
+
+        enable = Active-High or Active-Low
+
+        Optional.
+        Default: Active-High.
+
+        Defines how the model is enabled.
+
+    [Vinl]      v
+
+        v = low input threshold voltage
+
+        Optional.
+        Default: 0.8V for non-ECL, -1.475V for ECL
+
+        Defines the low input threshold voltage.
+
+    [Vinh]      v
+
+        v = high input threshold voltage
+
+        Optional.
+        Default: 2.0V for non-ECL, -1.165V for ECL
+
+        Defines the high input threshold voltage.
+
+    [Vmeas]     v
+
+        v = reference voltage level
+
+        Optional.
+        Default: none
+
+        Defines the reference voltage level for board-level timing
+        simulation.
+
+    [Cref]      c
+
+        c = capacitive load for timing analysis
+
+        Optional.
+        Default: none
+
+        Defines the capacitive load used when specifying the propagation
+        delay or output switching time.
+
+    [Rref]      r
+
+        r = resistive load for timing analysis
+
+        Optional.
+        Default: none
+
+        Defines the resistive load used when specifying the propagation
+        delay or output switching time.
+
+    [Vref]      v
+
+        v = load voltage for timing analysis
+
+        Optional.
+        Default: none
+
+        Defines the load voltage used when specifying the propagation
+        delay or output switching time.
+
+    [Rgnd]      R_typ   R_min   R_max
+
+        R_typ = terminator ground resistance for TYP curves 
+        R_min = terminator ground resistance for MIN curves 
+        R_max = terminator ground resistance for MAX curves 
+
+        Optional.
+        Default: none.
+
+        Defines the terminator ground resistance. Only valid for models
+        of type Terminator.
+
+    [Rpower]    R_typ   R_min   R_max
+
+        R_typ = terminator power resistance for TYP curves 
+        R_min = terminator power resistance for MIN curves 
+        R_max = terminator power resistance for MAX curves 
+
+        Optional.
+        Default: none.
+
+        Defines the terminator power resistance. Only valid for models
+        of type Terminator.
+
+    [Rac]       R_typ   R_min   R_max
+
+        R_typ = terminator RC resistance for TYP curves 
+        R_min = terminator RC resistance for MIN curves 
+        R_max = terminator RC resistance for MAX curves 
+
+        Optional.
+        Default: none.
+
+        Defines the terminator RC resistance. Only valid for models of
+        type Terminator.
+
+    [Cac]       C_typ   C_min   C_max
+
+        C_typ = terminator RC capacitance for TYP curves 
+        C_min = terminator RC capacitance for MIN curves 
+        C_max = terminator RC capacitance for MAX curves 
+
+        Optional.
+        Default: none.
+
+        Defines the terminator RC capacitance. Only valid for models of
+        type Terminator.
+
+    [Model file]    F_typ   F_min   F_max
+
+        F_typ = filename for model file for TYP curves
+        F_min = filename for model file for MIN curves
+        F_max = filename for model file for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies model files to be used for Spice simulations. Note
+        that the model files may include any valid Spice constructs--
+        s2ibis3 simply copies the named file into the Spice input file
+        before calling Spice.
+
+    [ExtSpiceCmd] filename
+	
+	filename: Name of file that have additional spice setup commands.
+	Optional.
+	Default: none.
+
+	The spice commands must conform to the spice engine in use.
+
+
+    [Rising waveform]  R_f  V_f  V_f_min  V_f_max  L_f  C_f  R_d  L_d  C_d
+    [Falling waveform] R_f  V_f  V_f_min  V_f_max  L_f  C_f  R_d  L_d  C_d
+
+        R_f =     test fixture resistance
+        V_f =     test fixture load voltage
+        V_f_min = test fixture load voltage for MIN curve
+        V_f_max = test fixture load voltage for MAX curve
+        L_f =     test fixture inductance
+        C_f =     test fixture capacitance
+        R_d =     package parasitic resistance
+        L_d =     package parasitic inductance
+        C_d =     package parasitic capacitance
+
+        Optional.
+        Default: none.
+
+        These keywords specify that s2ibis3 is to generate a rising or
+        falling waveform using the parameters listed. Note that _all_
+        columns must be filled, although only R_f and V_f must be
+        specified. Please use the reserved word NA to fill a column
+        whose value you do not wish to specify. You may have up to 100
+        rising waveforms and 100 falling waveforms per model.
+
+    [Temperature range] T_typ   T_min   T_max
+        See section "THE HEADER" (above) for description.
+
+    [Voltage range]     V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [Pullup reference]  V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [Pulldown reference]    V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [POWER clamp reference] V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [GND clamp reference]   V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [R_pkg]     r
+        See section "THE HEADER" (above) for description.
+
+    [L_pkg]     l
+        See section "THE HEADER" (above) for description.
+
+    [C_pkg]     c
+        See section "THE HEADER" (above) for description.
+
+    [C_comp]    C_typ   C_min   C_max
+        See section "THE HEADER" (above) for description.
+
+    [Rload]     r
+        See section "THE HEADER" (above) for description.
+
+    [Sim time]  t
+        See section "THE HEADER" (above) for description.
+
+    [Vil]       v_typ   v_min   v_max
+        See section "THE HEADER" (above) for description.
+
+    [Vih]       v_typ   v_min   v_max
+        See section "THE HEADER" (above) for description.
+
+    [Tr]        t_typ   t_min   t_max
+        See section "THE HEADER" (above) for description.
+
+    [Tf]        t_typ   t_min   t_max
+        See section "THE HEADER" (above) for description.
+
+    [Clamp tolerance]   i
+        See section "THE HEADER" (above) for description.
+
+    [Derate VI] x
+        See section "THE HEADER" (above) for description.
+
+    [Derate ramp]   y
+        See section "THE HEADER" (above) for description.
+
+    
+  Series Switch Models Parameters:
+ 
+    [On] [Off]
+
+        Required if Model type is Series_Switch.
+ 
+        'On' state electrical models are positioned under [On] 
+	      Only [Series MOSFET] is implemented under [On].
+
+        'Off' state electrical models are positioned under [Off] 
+	      Only [R Series] are implemented under [Off]
+
+	  These keywords are only valid for the Series Switch Model
+        types only.
+
+    [series MOSFET]
+    [vds] v1
+    [vds] v2
+      .
+      .
+      .
+
+	  Required for Series MOSFET Switches.
+
+	  v1,v2,.. = Vds values. For each Vds value, there will be a VI
+                  table associated with it. 
+			VI table has voltage values = vtable = Vcc - Vs                    
+		      where Vcc is the voltage from [voltage range] keyword
+                  and Vs is varied.
+
+	 The table entries are Vgs of the NMOS device and Vcc - Vgs of the 
+	 PMOS device, if present.
+
+    [R Series] R_typ 	R_min		R_max
+
+       Not Required
+       Default Values for R_typ, R_min, R_max = 1.00M
+
+	 C_comp values are ignored for [series MOSFET] models.
+
+	
+NOTE:in IBIS ver3.2, only nMOSFET are taken into consideration. BIRD 72.3 
+corrected that and modeified IBIS spec to taken into consideration a 
+pMOSFET and an n and p in parallel. This change was reflected in IBIS
+ver4.0 Hence, this keyword is, strictly speaking, ver 4.0 compatible.
+
+Please refer to http://www.vhdl.org/pub/ibis/birds/bird72.3 for more
+information.
+
+
+More information on this keyword can be obtained from the IBIS v3.2 
+specification.

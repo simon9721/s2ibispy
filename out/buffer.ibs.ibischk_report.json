@@ -1,0 +1,26 @@
+{
+  "returncode": 0,
+  "errors": [],
+  "warnings": [
+    "WARNING (line   24) - Component 'MCM Driver 1' contains a blank character.",
+    "WARNING (line   44) - Vinl should not be specified for model type Output",
+    "WARNING (line   45) - Vinh should not be specified for model type Output",
+    "WARNING - Model 'driver': Vmeas timing test load parameter should be specified"
+  ],
+  "notes": [
+    "NOTE (line   68) - Pulldown Minimum data is non-monotonic",
+    "NOTE (line   73) - Pulldown Typical data is non-monotonic",
+    "NOTE (line   73) - Pulldown Maximum data is non-monotonic",
+    "NOTE (line  241) - Pullup Typical data is non-monotonic",
+    "NOTE (line  243) - Pullup Maximum data is non-monotonic",
+    "NOTE (line  244) - Pullup Minimum data is non-monotonic",
+    "NOTE - Combined Pulldown for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pullup for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pulldown for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pullup for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pulldown for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation",
+    "NOTE - Combined Pullup for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation"
+  ],
+  "total_errors": 0,
+  "total_warnings": 4
+}

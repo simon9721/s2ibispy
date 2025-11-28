@@ -211,8 +211,29 @@ class PlotsTab:
         self.popout_window.title("s2ibispy — Detached Plot")
         self.popout_window.geometry("1000x700")
 
+        # Create a NEW figure to avoid conflicts with main canvas
+        import matplotlib.pyplot as plt
         from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-        pop_canvas = FigureCanvasTkAgg(self.fig, self.popout_window)
+        plt.style.use('dark_background')
+        pop_fig = plt.Figure(figsize=(10, 6), facecolor="#1e1e1e")
+        pop_ax = pop_fig.add_subplot(111)
+        pop_ax.set_facecolor("#1e1e1e")
+        
+        # Copy the current plot to the new figure
+        for line in self.ax.get_lines():
+            pop_ax.plot(line.get_xdata(), line.get_ydata(), 
+                       color=line.get_color(), linewidth=line.get_linewidth(),
+                       marker=line.get_marker(), markersize=line.get_markersize(),
+                       linestyle=line.get_linestyle(), label=line.get_label())
+        
+        pop_ax.set_title(self.ax.get_title(), pad=20, fontsize=14, color="white")
+        pop_ax.set_xlabel(self.ax.get_xlabel())
+        pop_ax.set_ylabel(self.ax.get_ylabel())
+        if pop_ax.get_lines():  # Only add legend if there are lines to show
+            pop_ax.legend()
+        pop_ax.grid(True, alpha=0.4)
+        
+        pop_canvas = FigureCanvasTkAgg(pop_fig, self.popout_window)
         pop_canvas.get_tk_widget().pack(fill="both", expand=True)
         toolbar = NavigationToolbar2Tk(pop_canvas, self.popout_window)
         toolbar.update()

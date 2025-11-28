@@ -193,8 +193,12 @@ class IbisWriter:
         # Waveforms
         for wave in model.risingWaveList or []:
             self._print_waveform(f, wave, "Rising")
+            if ibis_ver >= CS.VERSION_FIVE_ZERO:
+                self._print_composite_current(f, wave, "Rising")
         for wave in model.fallingWaveList or []:
             self._print_waveform(f, wave, "Falling")
+            if ibis_ver >= CS.VERSION_FIVE_ZERO:
+                self._print_composite_current(f, wave, "Falling")
 
         self._print_footer(f, "Model")
 
@@ -306,6 +310,40 @@ class IbisWriter:
             v_max = f"{pt.v.max:.10g}".rjust(15)
 
             f.write(f"{t_str}  {v_typ}  {v_min}  {v_max}\n")
+
+        f.write("\n")
+
+    def _print_composite_current(self, f, wave: IbisWaveTable, direction: str) -> None:
+        """Print [Composite Current] table following the waveform."""
+        if not wave.waveData:
+            return
+
+        # Check if any current data exists
+        has_current = any(
+            not math.isnan(pt.i.typ) or not math.isnan(pt.i.min) or not math.isnan(pt.i.max)
+            for pt in wave.waveData
+        )
+        if not has_current:
+            return
+
+        # === [Composite Current] Header ===
+        f.write("[Composite Current]\n")
+        
+        # === Table Header ===
+        f.write("|time             I(typ)              I(min)              I(max)\n")
+
+        # === Data Rows — Same format as voltage waveform ===
+        for pt in wave.waveData:
+            # Time: in ns, 4 decimal places, 'n' suffix, right-aligned to 15 chars
+            t_str = f"{pt.t * 1e9:.4f}n"
+            t_str = t_str.rjust(15)
+
+            # Currents: use _fmt_float for SI formatting (Amperes → will auto-format as mA with 'm' suffix)
+            i_typ = self._fmt_float(pt.i.typ, "A").rjust(15)
+            i_min = self._fmt_float(pt.i.min, "A").rjust(15)
+            i_max = self._fmt_float(pt.i.max, "A").rjust(15)
+
+            f.write(f"{t_str}  {i_typ}  {i_min}  {i_max}\n")
 
         f.write("\n")
 
