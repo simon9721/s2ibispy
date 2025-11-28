@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 from tkinter import filedialog, messagebox  # ← Add messagebox here
 from pathlib import Path
-from parser import S2IParser
+from legacy.parser import S2IParser
 
 class InputTab:
     def __init__(self, notebook, gui):
@@ -70,7 +70,8 @@ class InputTab:
         self.input_entry.insert(0, path)
 
         try:
-            from parser import S2IParser
+            # Use the relocated parser module
+            from legacy.parser import S2IParser
             parser = S2IParser()
             ibis, global_, mList = parser.parse(path)
 

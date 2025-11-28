@@ -3,7 +3,7 @@ import os
 import sys
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0, PROJECT_ROOT)
-from parser import S2IParser
+from legacy.parser import S2IParser
 from models import IbisTOP, IbisGlobal, IbisModel, IbisComponent, IbisPin, IbisDiffPin, IbisSeriesPin, \
     IbisSeriesSwitchGroup
 from s2i_constants import ConstantStuff as CS

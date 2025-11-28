@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "s2ibispy"
+version = "0.0.0"
+description = "SPICE → IBIS conversion toolkit (refactored)"
+requires-python = ">=3.10"
+dependencies = [
+  "PyYAML",
+  "jinja2",
+]

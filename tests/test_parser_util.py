@@ -4,7 +4,7 @@ import os
 import sys
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0, PROJECT_ROOT)
-from parser import S2IParser
+from legacy.parser import S2IParser
 from s2iutil import S2IUtil
 from models import IbisTOP, IbisGlobal, IbisModel, IbisComponent, IbisPin, IbisDiffPin, IbisSeriesPin, \
     IbisSeriesSwitchGroup

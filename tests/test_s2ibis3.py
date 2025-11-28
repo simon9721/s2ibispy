@@ -1,6 +1,6 @@
 import logging
 from typing import List
-from parser import S2IParser
+from legacy.parser import S2IParser
 from s2iutil import S2IUtil
 from models import IbisTOP, IbisGlobal, IbisComponent, IbisPin, IbisModel, IbisDiffPin, IbisSeriesPin, IbisSeriesSwitchGroup, IbisWaveTable, IbisTypMinMax, SeriesModel
 from s2i_constants import ConstantStuff as CS

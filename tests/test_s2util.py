@@ -3,7 +3,7 @@ import os
 import sys
 sys.path.append("C:\\Users\\sh3qm\\PycharmProjects\\s2ibispy")
 from s2iutil import S2IUtil
-from parser import S2IParser
+from legacy.parser import S2IParser
 from models import IbisTOP, IbisGlobal, IbisModel
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")

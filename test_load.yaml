@@ -1,0 +1,96 @@
+ibis_version: '6.0'
+file_name: test_component.ibs
+file_rev: '1.0'
+date: November 27, 2025
+copyright: Test Lab
+spice_type: hspice
+iterate: '1'
+cleanup: '0'
+source: Test netlist from simulation
+notes: This is a test component
+disclaimer: For testing purposes only
+component: TestIC
+manufacturer: Test Company
+spiceFile: /path/to/test.sp
+global_defaults:
+  sim_time: '1e-8'
+  r_load: '75'
+  temp_range:
+    typ: '25'
+    min: '0'
+    max: '85'
+  voltage_range:
+    typ: '3.3'
+    min: '3.0'
+    max: '3.6'
+  pullup_ref:
+    typ: '3.3'
+    min: null
+    max: null
+  pulldown_ref:
+    typ: '0'
+    min: null
+    max: null
+  power_clamp_ref:
+    typ: '3.3'
+    min: null
+    max: null
+  gnd_clamp_ref:
+    typ: '0'
+    min: null
+    max: null
+  vil:
+    typ: '0.8'
+    min: null
+    max: null
+  vih:
+    typ: '2.0'
+    min: null
+    max: null
+  pin_parasitics:
+    R_pkg:
+      typ: '0.2'
+      min: '0.1'
+      max: '0.3'
+    L_pkg:
+      typ: '5e-9'
+      min: '3e-9'
+      max: '8e-9'
+    C_pkg:
+      typ: '1e-12'
+      min: '0.5e-12'
+      max: '2e-12'
+models:
+  - name: input_buffer
+    type: Input
+    enable: null
+    polarity: Non-Inverting
+  - name: output_buffer
+    type: Output
+    enable: OE
+    polarity: Non-Inverting
+components:
+  - component: TestIC
+    manufacturer: Test Company
+    spiceFile: /path/to/test.sp
+    pList:
+      - pinName: '1'
+        signalName: DIN
+        modelName: input_buffer
+        inputPin: in
+        enablePin: null
+      - pinName: '2'
+        signalName: DOUT
+        modelName: output_buffer
+        inputPin: null
+        enablePin: OE
+      - pinName: '3'
+        signalName: VDD
+        modelName: POWER
+        inputPin: null
+        enablePin: null
+      - pinName: '4'
+        signalName: VSS
+        modelName: GND
+        inputPin: null
+        enablePin: null

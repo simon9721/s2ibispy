@@ -5,7 +5,7 @@
 import argparse
 from pathlib import Path
 # Reuse your existing parser temporarily — just this once!
-from parser import S2IParser  # ← yes, we bring it back for 10 seconds
+from legacy.parser import S2IParser
 
 def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
     parser = S2IParser()

@@ -6,7 +6,7 @@ from datetime import datetime
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0, PROJECT_ROOT)
 # Import your code
-from parser import S2IParser
+from legacy.parser import S2IParser
 
 SAMPLE_S2I = r"""|
 | ex1 -   An example of how to create a model for a simple output-only
