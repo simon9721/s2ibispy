@@ -3,6 +3,12 @@ import os
 import logging
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+try:
+    from jinja2 import PackageLoader, ChoiceLoader
+except Exception:  # older jinja2 fallback
+    PackageLoader = None
+    ChoiceLoader = None
+from importlib.resources import files, as_file
 from typing import Optional, Dict, Any
 from s2ibispy.models import IbisModel, IbisTOP
 from s2ibispy.s2ispice import S2ISpice
@@ -210,8 +216,43 @@ VENA2 oe2 0 DC 3.3   $ Quiet line — change to DC 0 for true high-Z
 VENA3 oe3 0 DC 3.3
 """
 
-    env = Environment(loader=FileSystemLoader("templates"))
-    template = env.get_template("compare_correlation.sp.j2")
+    template_dir = None
+    if isinstance(config, dict):
+        template_dir = config.get("template_dir") or config.get("templates") or config.get("template_path")
+
+    loaders = []
+    if template_dir and os.path.isdir(template_dir):
+        loaders.append(FileSystemLoader(template_dir))
+    # packaged templates
+    if PackageLoader is not None:
+        try:
+            loaders.append(PackageLoader("s2ibispy", "templates"))
+        except Exception:
+            pass
+    # repo-relative fallback
+    loaders.append(FileSystemLoader("templates"))
+    loaders.append(FileSystemLoader(os.path.join(os.path.dirname(__file__), "..", "..", "templates")))
+
+    if ChoiceLoader is not None and loaders:
+        env = Environment(loader=ChoiceLoader(loaders))
+    else:
+        env = Environment(loader=loaders[0])
+
+    try:
+        template = env.get_template("compare_correlation.sp.j2")
+    except TemplateNotFound:
+        # last resort: direct filesystem
+        fallback_env = Environment(loader=FileSystemLoader("templates"))
+        template = fallback_env.get_template("compare_correlation.sp.j2")
+
+    # packaged RLGC file path
+    rlgc_path = None
+    try:
+        r = files("s2ibispy").joinpath("data").joinpath("Z50_406.lc3")
+        with as_file(r) as p:
+            rlgc_path = str(p)
+    except Exception:
+        rlgc_path = os.path.abspath(os.path.join(os.getcwd(), "Z50_406.lc3"))
 
     context = {
         "model": model,
@@ -222,6 +263,10 @@ VENA3 oe3 0 DC 3.3
         "pin_list": pin_list,
         "x_instances": x_instances,
         "oe_stimuli": oe_stimuli,
+        "pullup_pin": pullup_pin,
+        "pulldown_pin": pulldown_pin,
+        "ibis_fullpath": os.path.abspath(os.path.join(outdir, ibis.thisFileName)),
+        "rlgc_path": rlgc_path,
     }
 
     out_path = os.path.join(outdir, f"correlate_{model.modelName}.sp")
@@ -233,7 +278,19 @@ VENA3 oe3 0 DC 3.3
     # Run the spice tool if provided
     if s2ispice is not None:
         try:
-            rc = s2ispice.run_deck(out_path)
+            out_base = os.path.join(outdir, f"correlate_{model.modelName}")
+            msg_file = out_base + ".msg"
+            rc = s2ispice.call_spice(
+                iterate=ibis.iterate if hasattr(ibis, 'iterate') else 0,
+                spice_command=ibis.spiceCommand if hasattr(ibis, 'spiceCommand') else "",
+                spice_in=out_path,
+                spice_out=out_base + ".tr0",
+                spice_msg=msg_file,
+            )
+            if rc == 0:
+                logging.info(f"Correlation SPICE run succeeded for {model.modelName}")
+            else:
+                logging.error(f"Correlation SPICE run failed for {model.modelName} — see {msg_file}")
             return out_path, rc
         except Exception as e:
             logging.error(f"Correlation run failed: {e}")

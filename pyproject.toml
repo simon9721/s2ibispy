@@ -11,3 +11,15 @@ dependencies = [
   "PyYAML",
   "jinja2",
 ]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"s2ibispy" = [
+  "templates/*.j2",
+  "data/*",
+]

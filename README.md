@@ -18,6 +18,44 @@ This project is **under active development** and requires extensive real-world v
 
 ---
 
+### Quickstart (Windows PowerShell)
+
+```powershell
+# 1) Clone and enter the repo
+git clone https://github.com/simon9721/s2ibispy.git
+cd s2ibispy
+
+# 2) Create and activate a virtual environment
+python -m venv .venv
+.venv\Scripts\activate
+
+# 3) Install in editable mode (recommended for dev)
+python -m pip install -U pip
+pip install -e .
+
+# 4) Run the tool (module form)
+python -m s2ibispy tests/real_test.yaml --outdir tests/1127test --iterate 0 --cleanup 0
+
+# Optional: include ibischk and correlation once paths are set
+# python -m s2ibispy tests/real_test.yaml --outdir tests/1127test \
+#   --iterate 0 --cleanup 0 --ibischk "C:\Path\to\ibischk7_64.exe" --correlate
+
+# Alternative (backward compatible):
+python main.py tests/real_test.yaml --outdir tests/1127test --iterate 0 --cleanup 0
+```
+
+Linux/macOS users: use the same steps but activate with `source .venv/bin/activate` and invoke `python -m s2ibispy ...` similarly.
+
+---
+
+### Templates and Data
+
+- Packaged: The Jinja2 correlation template (`templates/compare_correlation.sp.j2`) and the example RLGC file (`Z50_406.lc3`) are bundled inside the package (`src/s2ibispy/templates/`, `src/s2ibispy/data/`).
+- Loading: The tool loads packaged templates by default; if a `templates/` folder exists in the working directory, it will be used as a fallback/override.
+- Override: Advanced users can pass an internal `template_dir` via the programmatic API; a CLI switch can be added if needed.
+
+---
+
 ### Features (Current)
 
 - Full `.s2i` file parsing with `[Include]` support and line continuations
@@ -33,12 +71,25 @@ This project is **under active development** and requires extensive real-world v
 
 ### Installation (Development)
 
+Use an editable install so the `src/` package is importable and `python -m s2ibispy` works.
+
+Linux/macOS (bash):
 ```bash
-git clone <https://github.com/simon9721/s2ibispy.git>
+git clone https://github.com/simon9721/s2ibispy.git
 cd s2ibispy
-python -m venv venv
-source venv/bin/activate  # Linux/macOS
-# venv\\Scripts\\activate   # Windows
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -U pip
+pip install -e .
+```
+
+Windows (PowerShell):
+```powershell
+git clone https://github.com/simon9721/s2ibispy.git
+cd s2ibispy
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -U pip
 pip install -e .
 ```
 
@@ -48,9 +99,19 @@ pip install -e .
 
 ### Command Line Usage
 
+Recommended (after editable install):
 ```bash
-python main.py input.s2i [options]`
+python -m s2ibispy input.s2i [options]
 ```
+
+Also supported (backward compatible):
+```bash
+python main.py input.s2i [options]
+```
+
+Tip (without install): temporarily add the package to `PYTHONPATH`.
+- Linux/macOS: `export PYTHONPATH=src`
+- Windows PowerShell: `$env:PYTHONPATH = "src"`
 
 ### Required
 
@@ -72,7 +133,7 @@ python main.py input.s2i [options]`
 ### Example
 
 ```bash
-python main.py tests/buffer.s2i --outdir tests/output --spice-type hspice --iterate 1 --cleanup 0 --verbose      
+python -m s2ibispy tests/buffer.s2i --outdir tests/output --spice-type hspice --iterate 1 --cleanup 0 --verbose
 ```
 
 **Output includes**:
@@ -103,17 +164,26 @@ python gui_main.py
 
 ### Architecture
 
-| Module | Responsibility |
+Core code now lives in a proper package at `src/s2ibispy/`.
+
+| Module (package) | Responsibility |
 | --- | --- |
-| main.py | CLI entry point and pipeline orchestration |
-| parser.py | Parses .s2i files with full syntax support |
-| models.py | Dataclasses for all IBIS structures (typ/min/max aware) |
-| s2i_constants.py | Constants and enums matching original behavior |
-| s2iutil.py | Default propagation and pin to model linking |
-| s2ianaly.py | Determines which simulations to run |
-| s2ispice.py | Generates and runs SPICE decks, parses output |
-| s2ioutput.py | Writes final .ibs file |
-| correlation.py | Generates self-validating SPICE+IBIS testbench |
+| `s2ibispy/cli.py` | CLI entry point (`python -m s2ibispy`) |
+| `s2ibispy/models.py` | Dataclasses for all IBIS structures |
+| `s2ibispy/s2i_constants.py` | Constants and enums (polarity, types, sentinels) |
+| `s2ibispy/schema.py` | YAML schema for modern configs |
+| `s2ibispy/loader.py` | Loads YAML into IBIS model objects |
+| `s2ibispy/s2ianaly.py` | Simulation plan and analysis orchestration |
+| `s2ibispy/s2ispice.py` | Generates/runs SPICE, parses results |
+| `s2ibispy/s2ioutput.py` | Writes the final `.ibs` (full original, patched) |
+| `s2ibispy/correlation.py` | SPICE↔IBIS correlation deck generation |
+| `s2ibispy/legacy/parser.py` | Legacy `.s2i` file parser |
+
+Compatibility shims remain at the repo root (e.g., `main.py`) so older workflows keep working, but new development should target `src/s2ibispy/`.
+
+#### Source of Truth
+- Update core code under `src/s2ibispy/`.
+- GUI code (`gui/`, `yaml_editor*.py`, `gui_main.py`) currently remains at the repository root.
 
 ---
 
