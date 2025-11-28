@@ -1,7 +1,7 @@
 * "simulator" "PrimeSim HSPICE"
 * "version" "T-2022.06 win64"
 * "format" "HSP"
-* "rundate" "13:24:30 11/27/2025 "
+* "rundate" "18:21:04 11/27/2025 "
 * "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\compare_driver.sp "
 * "runtitle" "* ============================================================================="
 * time =    0.            
@@ -13,7 +13,7 @@
 + end1ibis =   3.3000        
 + end1spice =   3.3000        
 + end2ibis =   8.0521n       
-+ end2spice =  29.0109n       
++ end2spice =  28.6613n       
 + end3ibis =   3.3000        
 + end3spice =   3.3000        
 + gnd1_clamp =   0.            
@@ -30,7 +30,7 @@
 + out1ibis =   3.3000        
 + out1spice =   3.3000        
 + out2ibis =   8.0521n       
-+ out2spice =  29.0109n       
++ out2spice =  28.6613n       
 + out3ibis =   3.3000        
 + out3spice =   3.3000        
 + rcv1 = 500.0000m       

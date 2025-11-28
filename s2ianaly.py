@@ -167,6 +167,20 @@ def this_pin_needs_analysis(model_name: str) -> bool:
     # Skip pseudo/special pins and explicit [NoModel]
     return model_name.upper() not in {"POWER", "GND", "NC", "NOMODEL", "DUMMY"}
 
+# In s2ianaly.py — add this helper
+def this_model_needs_isso_data(model: IbisModel, ibis_version: str) -> bool:
+    """Return True if we should generate [ISSO_PU]/[ISSO_PD] tables"""
+    if not model:
+        return False
+    # Must be IBIS 5.0 or newer
+    try:
+        ver_float = float(ibis_version.split()[0]) if ibis_version else 0.0
+        if ver_float < 5.0:
+            return False
+    except:
+        return False
+    # Only models that have pullup/pulldown (i.e. not pure input)
+    return this_model_needs_pullup_data(model.modelType) or this_model_needs_pulldown_data(model.modelType)
 
 # ---------- setupVoltages (mirrors Java behavior for CMOS paths) ----------
 @dataclass
@@ -460,6 +474,8 @@ class SortVIData:
             pulldown_data: Optional[IbisVItable],
             power_clamp_data: Optional[IbisVItable],
             gnd_clamp_data: Optional[IbisVItable],
+            isso_pullup_data: Optional[IbisVItable] = None,
+            isso_pulldown_data: Optional[IbisVItable] = None,
     ) -> int:
         setup_v = SetupVoltages()
 
@@ -581,6 +597,67 @@ class SortVIData:
                     if not is_use_na(vi.min): vi.min -= vi.min * (model.derateVIPct / 100.0)
                     if not is_use_na(vi.max): vi.max += vi.max * (model.derateVIPct / 100.0)
 
+        # --- ISSO_PU ---
+        if isso_pullup_data is not None and isso_pullup_data.size > 0:
+            # Same processing as regular pullup: Vcc-relative, reversed, derated
+            setup_v.setup_voltages(CS.CurveType.PULLUP, model)
+            sweep_step = setup_v.sweep_step
+            sweep_range = setup_v.sweep_range
+            vcc = setup_v.vcc
+
+            # Vcc-relative in place
+            for i in range(isso_pullup_data.size):
+                isso_pullup_data.VIs[i].v = vcc.typ - isso_pullup_data.VIs[i].v
+
+            # Truncate/reverse like pullup
+            num_table_pts = int(abs(sweep_range / sweep_step)) + 1
+            vt_size = min(isso_pullup_data.size, num_table_pts, CS.MAX_TABLE_SIZE)
+            model.isso_pullup = IbisVItable(
+                VIs=[IbisVItableEntry(v=0.0, i=IbisTypMinMax()) for _ in range(vt_size)],
+                size=vt_size,
+            )
+            j = isso_pullup_data.size - 1
+            for i in range(vt_size):
+                if j < 0: break
+                model.isso_pullup.VIs[i] = isso_pullup_data.VIs[j]
+                j -= 1
+
+            # Apply derating if enabled
+            if model.derateVIPct:
+                for i in range(model.isso_pullup.size):
+                    vi = model.isso_pullup.VIs[i].i
+                    if not is_use_na(vi.min): vi.min -= vi.min * (model.derateVIPct / 100.0)
+                    if not is_use_na(vi.max): vi.max += vi.max * (model.derateVIPct / 100.0)
+
+        # --- ISSO_PD ---
+        if isso_pulldown_data is not None and isso_pulldown_data.size > 0:
+            # Same processing as regular pulldown: forward order, no reversal
+            setup_v.setup_voltages(CS.CurveType.PULLDOWN, model)
+            sweep_step = setup_v.sweep_step
+            sweep_range = setup_v.sweep_range
+
+            num_table_pts = int(abs(sweep_range / sweep_step)) + 1
+            vt_size = min(isso_pulldown_data.size, num_table_pts, CS.MAX_TABLE_SIZE)
+            model.isso_pulldown = IbisVItable(
+                VIs=[IbisVItableEntry(v=0.0, i=IbisTypMinMax()) for _ in range(vt_size)],
+                size=vt_size,
+            )
+            j = 0
+            for i in range(vt_size):
+                if j >= isso_pulldown_data.size: break
+                model.isso_pulldown.VIs[i] = isso_pulldown_data.VIs[j]
+                j += 1
+
+            # Ensure last point matches
+            model.isso_pulldown.VIs[model.isso_pulldown.size - 1] = isso_pulldown_data.VIs[isso_pulldown_data.size - 1]
+
+            # Apply derating
+            if model.derateVIPct:
+                for i in range(model.isso_pulldown.size):
+                    vi = model.isso_pulldown.VIs[i].i
+                    if not is_use_na(vi.min): vi.min -= vi.min * (model.derateVIPct / 100.0)
+                    if not is_use_na(vi.max): vi.max += vi.max * (model.derateVIPct / 100.0)
+
         return 0
 
 
@@ -644,6 +721,7 @@ class AnalyzePin:
         spice_command: str,
         iterate: int,
         cleanup: int,
+        ibis_version: str = "",
     ) -> int:
         self.current_pin = current_pin
         #logging.info("INSIDE ANALYZE_PIN — WE MADE IT — PIN %s", current_pin.pinName)
@@ -783,6 +861,31 @@ class AnalyzePin:
             res_total += rc
             current_pin.model.gndClampData = gnd_clamp_data
 
+        # ---------- ISSO (v5.0+) ----------
+        # === [ISSO_PU] and [ISSO_PD] — Power-Aware Tables (IBIS 5.0+) ===
+        if this_model_needs_isso_data(current_pin.model, ibis_version):
+            logging.info("Analyzing [ISSO_PU] and [ISSO_PD] data (IBIS >=5.0)")
+
+            # ISSO_PU: Output forced HIGH, sweep across pullup reference
+            rc, isso_pu_raw = run_vi_curve(
+                curve_type=CS.CurveType.ISSO_PULLUP,
+                enable_output=CS.ENABLE_OUTPUT,
+                output_state=CS.OUTPUT_RISING,        # Force HIGH
+                file=spice_file,
+            )
+            current_pin.model.isso_pullupData = isso_pu_raw
+            res_total += rc
+
+            # ISSO_PD: Output forced LOW, sweep across pulldown reference
+            rc, isso_pd_raw = run_vi_curve(
+                curve_type=CS.CurveType.ISSO_PULLDOWN,
+                enable_output=CS.ENABLE_OUTPUT,
+                output_state=CS.OUTPUT_FALLING,       # Force LOW
+                file=spice_file,
+            )
+            current_pin.model.isso_pulldownData = isso_pd_raw
+            res_total += rc
+
         # ---------- Sort VI tables ----------
         sort_rc = sort_vi.sort_vi_data(
             current_pin.model,
@@ -790,6 +893,8 @@ class AnalyzePin:
             pulldown_data,
             power_clamp_data,
             gnd_clamp_data,
+            getattr(current_pin.model, 'isso_pullupData', None),
+            getattr(current_pin.model, 'isso_pulldownData', None),
         )
         if sort_rc:
             logging.error("Failed to sort VI data: rc=%d", sort_rc)
@@ -1042,6 +1147,7 @@ class AnalyzeComponent:
                     spice_command,
                     iterate,
                     cleanup,
+                    ibis.ibisVersion,
                 )
                 if rc:
                     logging.error("Error in analysis for pin %s: rc=%d", pin.pinName, rc)

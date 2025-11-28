@@ -127,6 +127,8 @@ class ConstantStuff:
         FALLING_WAVE = 9
         DISABLED_PULLUP = 10
         DISABLED_PULLDOWN = 11
+        ISSO_PULLUP = 12
+        ISSO_PULLDOWN = 13
 
     curve_name_string = {
         CurveType.PULLUP: "pullup",
@@ -140,6 +142,8 @@ class ConstantStuff:
         CurveType.FALLING_WAVE: "falling_wave",
         CurveType.DISABLED_PULLUP: "pullup_disabled",
         CurveType.DISABLED_PULLDOWN: "pulldown_disabled",
+        CurveType.ISSO_PULLUP:     "isso_pullup",
+        CurveType.ISSO_PULLDOWN:   "isso_pulldown",
     }
 
 
@@ -182,6 +186,8 @@ class ConstantStuff:
         CurveType.RISING_WAVE: "b",  # <-- from Java
         CurveType.FALLING_WAVE: "y",  # <-- from Java
         CurveType.SERIES_VI: "vin",
+        CurveType.ISSO_PULLUP: "iun",
+        CurveType.ISSO_PULLDOWN: "idn",
     }
     spice_file_max_prefix = {
         CurveType.PULLUP: "pux",
@@ -195,6 +201,8 @@ class ConstantStuff:
         CurveType.RISING_WAVE: "c",  # <-- from Java
         CurveType.FALLING_WAVE: "z",  # <-- from Java
         CurveType.SERIES_VI: "vix",
+        CurveType.ISSO_PULLUP: "iux",
+        CurveType.ISSO_PULLDOWN: "idx",
     }
     spice_file_typ_prefix = {
         CurveType.PULLUP: "put",
@@ -208,6 +216,8 @@ class ConstantStuff:
         CurveType.RISING_WAVE: "a",  # <-- from Java
         CurveType.FALLING_WAVE: "x",  # <-- from Java
         CurveType.SERIES_VI: "vit",
+        CurveType.ISSO_PULLUP: "iut",
+        CurveType.ISSO_PULLDOWN: "idt",
     }
 
     # Helpers used by parsers (optional but nice to keep tidy)
@@ -243,3 +253,8 @@ class ConstantStuff:
     VERSION_TWO_ZERO = 200
     VERSION_TWO_ONE = 201
     VERSION_THREE_TWO = 302
+    # Additional IBIS versions (add as-needed)
+    VERSION_FIVE_ZERO = 500
+    VERSION_FIVE_ONE = 501
+    VERSION_SIX_ZERO = 600
+    VERSION_SEVEN_ZERO = 700

@@ -1319,10 +1319,40 @@ class S2ISpice:
             size=0,
         )
 
-        if curve_type == CS.CurveType.SERIES_VI:
-            load_buffer = f"VOUTS2I {current_pin.seriesPin2name} 0 DC 0\n"
+        # ===================================================================
+        # [ISSO_PU] and [ISSO_PD] — FINAL PERFECT VERSION
+        # Exact match to commercial tools (your examples)
+        # ===================================================================
+        vtable_name = "VTABLE_ISSO"
+        dummy_node = "DUMMY_ISSO"
+
+        if curve_type == CS.CurveType.ISSO_PULLDOWN:
+            # Figure 10: Output LOW → tied to VCC
+            power_node = self._pin_node(power_pin) or "vdd"
+            gnd_node   = self._pin_node(gnd_pin)   or "vss"
+            load_buffer = f"VOUTS2I {current_pin.pinName} {power_node} DC 0\n"
+
+            sweep_start_val = -abs(vcc.typ)
+            sweep_range_val = 2 * abs(vcc.typ)
+
+        elif curve_type == CS.CurveType.ISSO_PULLUP:
+            # Figure 11: Output HIGH → tied to GND
+            power_node = self._pin_node(power_pin) or "vdd"
+            gnd_node   = self._pin_node(gnd_pin)   or "vss"
+            load_buffer = f"VOUTS2I {current_pin.pinName} {gnd_node} DC 0\n"
+
+            sweep_start_val = +abs(vcc.typ)
+            sweep_range_val = -2 * abs(vcc.typ)  # negative → decreasing sweep
+
         else:
-            load_buffer = f"VOUTS2I {current_pin.pinName} 0 DC 0\n"
+            # Normal curves
+            if curve_type == CS.CurveType.SERIES_VI:
+                load_buffer = f"VOUTS2I {current_pin.seriesPin2name} 0 DC 0\n"
+            else:
+                load_buffer = f"VOUTS2I {current_pin.pinName} 0 DC 0\n"
+
+            sweep_start_val = sweep_start.typ
+            sweep_range_val = sweep_range
 
         corners = [
             ("typ", sweep_start.typ, model.modelFile, model.tempRange.typ, vcc.typ, gnd.typ, vcc_clamp.typ,
@@ -1369,12 +1399,47 @@ class S2ISpice:
                     input_buffer += f"RIN_WEAK {input_node} {gnd_node} {weak_r}\n"
                     #input_buffer += f"* Weak tie to ground reference for clamp/disabled curve\n"
 
-            power_buffer = self.setup_power_temp_cmds(
-                curve_type, power_pin, gnd_pin, power_clamp_pin, gnd_clamp_pin,
-                vcc_val, gnd_val, vcc_clamp_val, gnd_clamp_val, temp
-            )
+            # For ISSO curves: build custom sources with corner-specific vcc_val
+            if curve_type in (CS.CurveType.ISSO_PULLUP, CS.CurveType.ISSO_PULLDOWN):
+                isso_sources = ""
+                if curve_type == CS.CurveType.ISSO_PULLDOWN:
+                    isso_sources += f"{vtable_name} 0 {dummy_node} DC 0\n"
+                    isso_sources += f"VCC_ISSO {power_node} {dummy_node} DC {abs(vcc_val):.6g}\n"
+                    isso_sources += f"VGND_ISSO {gnd_node} 0 DC 0\n"
+                else:  # ISSO_PULLUP
+                    isso_sources += f"{vtable_name} {power_node} {dummy_node} DC 0\n"
+                    isso_sources += f"VCC_ISSO {dummy_node} 0 DC {abs(vcc_val):.6g}\n"
+                    isso_sources += f"VGND_ISSO {gnd_node} 0 DC 0\n"
+                power_buffer = isso_sources
+            else:
+                power_buffer = self.setup_power_temp_cmds(
+                    curve_type, power_pin, gnd_pin, power_clamp_pin, gnd_clamp_pin,
+                    vcc_val, gnd_val, vcc_clamp_val, gnd_clamp_val, temp
+                )
 
-            analysis_buffer = self.setup_dc_sweep_cmds(curve_type, start, sweep_end, sweep_step)
+            # ===================================================================
+            # POWER & ANALYSIS — ISSO curves use custom sources + manual .DC
+            # ===================================================================
+            if curve_type in (CS.CurveType.ISSO_PULLUP, CS.CurveType.ISSO_PULLDOWN):
+                temp_line = self._temp_string(temp)
+                opts_line = self._spice_options()
+                power_buffer += temp_line
+
+                # Start/End for ISSO sweeps must use the TYPical VCC only (do not vary by corners)
+                # Fall back to 3.3 V if typ is not available
+                vcc_typ = abs(vcc.typ) if not math.isnan(vcc.typ) else 3.3
+                start_val = -vcc_typ if curve_type == CS.CurveType.ISSO_PULLDOWN else +vcc_typ
+                end_val   = +vcc_typ if curve_type == CS.CurveType.ISSO_PULLDOWN else -vcc_typ
+
+                analysis_buffer = f".DC {vtable_name} {start_val:.6g} {end_val:.6g} {sweep_step:.6g}\n"
+                analysis_buffer += ".PRINT DC I(VOUTS2I)\n"
+            else:
+                power_buffer = self.setup_power_temp_cmds(
+                    curve_type, power_pin, gnd_pin, power_clamp_pin, gnd_clamp_pin,
+                    vcc_val, gnd_val, vcc_clamp_val, gnd_clamp_val, temp
+                )
+                sweep_end = start + sweep_range_val
+                analysis_buffer = self.setup_dc_sweep_cmds(curve_type, start, sweep_end, sweep_step)
 
             if corner == "typ":
                 prefix = CS.spice_file_typ_prefix.get(curve_type, "")

@@ -37,6 +37,12 @@ class IbisWriter:
             "1.0": CS.VERSION_ONE_ZERO, "1.1": CS.VERSION_ONE_ONE,
             "2.0": CS.VERSION_TWO_ZERO, "2.1": CS.VERSION_TWO_ONE,
             "3.2": CS.VERSION_THREE_TWO,
+            # IBIS 5.x+ support (commonly used for ISSO and new keywords)
+            "5.0": CS.VERSION_FIVE_ZERO,
+            "5.1": CS.VERSION_FIVE_ONE,
+            # Future-proof mappings
+            "6.0": CS.VERSION_SIX_ZERO,
+            "7.0": CS.VERSION_SEVEN_ZERO,
         }
         ibis_ver_int = ver_map.get(self.ibis_head.ibisVersion, CS.VERSION_THREE_TWO)
         version_str = {v: k for k, v in ver_map.items()}.get(ibis_ver_int, "3.2")
@@ -147,9 +153,9 @@ class IbisWriter:
         self._print_keyword(f, "Enable", enable_str)
 
         if not self._is_na(model.Vinl.typ):
-            self._print_keyword(f, "Vinl", f"{model.Vinl.typ:.10g}V")
+            self._print_keyword(f, "Vinl", f" = {model.Vinl.typ:.10g}V")
         if not self._is_na(model.Vinh.typ):
-            self._print_keyword(f, "Vinh", f"{model.Vinh.typ:.10g}V")
+            self._print_keyword(f, "Vinh", f" = {model.Vinh.typ:.10g}V")
 
         self._print_keyword(f, "C_comp", self._fmt_tmm(model.c_comp, "F"))
 
@@ -176,6 +182,11 @@ class IbisWriter:
         self._print_vi_table(f, "[Pullup]", model.pullup)
         self._print_clamp_table(f, "[GND Clamp]", model.gnd_clamp, model.clampTol)
         self._print_clamp_table(f, "[POWER Clamp]", model.power_clamp, model.clampTol)
+
+        # [ISSO PU], [ISSO PD] Tables — IBIS 5.0+ only
+        if ibis_ver >= CS.VERSION_FIVE_ZERO:
+            self._print_vi_table(f, "[ISSO_PU]", model.isso_pullup)
+            self._print_vi_table(f, "[ISSO_PD]", model.isso_pulldown)
 
         # Ramp
         if model.ramp and not self._is_na(model.ramp.dv_r.typ):

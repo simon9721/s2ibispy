@@ -265,17 +265,18 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
         chk = run_ibischk(str(out_file), args.ibischk)
 
         # Save logs exactly like you already do...
-        log_path = out_file + ".ibischk_log.txt"
+        out_file_str = str(out_file)
+        log_path = out_file_str + ".ibischk_log.txt"
         with open(log_path, "w", encoding="utf-8") as f:
             f.write(chk["output"])
 
         if chk["warnings"]:
-            warn_path = out_file + ".ibischk_warnings.txt"
+            warn_path = out_file_str + ".ibischk_warnings.txt"
             with open(warn_path, "w", encoding="utf-8") as f:
                 f.write("\n".join(chk["warnings"]))
 
         import json
-        json_path = out_file + ".ibischk_report.json"
+        json_path = out_file_str + ".ibischk_report.json"
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump({
                 "returncode": chk["returncode"],

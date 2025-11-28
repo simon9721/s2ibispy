@@ -112,6 +112,8 @@ class ModelConfig(BaseModel):
     rising_waveforms: List[Dict[str, Any]] = field(default_factory=list)
     falling_waveforms: List[Dict[str, Any]] = field(default_factory=list)
 
+    enable_isso_tables: bool = False   # new flag
+
 
 @dataclass
 class GlobalDefaults:

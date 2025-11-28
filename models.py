@@ -169,18 +169,23 @@ class IbisModel:
     Cac: IbisTypMinMax = field(default_factory=IbisTypMinMax)
 
     # Data / results
-    #ramp: Optional[IbisRamp] = None
     ramp: IbisRamp = field(default_factory=IbisRamp)  # ← CORRECT
     pullupData: Optional[IbisVItable] = None
     pulldownData: Optional[IbisVItable] = None
+    pullupDisabledData: Optional[IbisVItable] = None
+    pulldownDisabledData: Optional[IbisVItable] = None
     powerClampData: Optional[IbisVItable] = None
     gndClampData: Optional[IbisVItable] = None
+    isso_pullupData:   Optional[IbisVItable] = None
+    isso_pulldownData: Optional[IbisVItable] = None
 
     # --- NEW: final (IBIS-ready) tables after sorting/normalization ---
     pullup: Optional[IbisVItable] = None
     pulldown: Optional[IbisVItable] = None
     power_clamp: Optional[IbisVItable] = None
     gnd_clamp: Optional[IbisVItable] = None
+    isso_pullup:   Optional[IbisVItable] = None
+    isso_pulldown: Optional[IbisVItable] = None
 
     risingWaveList: List[IbisWaveTable] = field(default_factory=list)
     fallingWaveList: List[IbisWaveTable] = field(default_factory=list)
@@ -195,9 +200,6 @@ class IbisModel:
     powerClampRef: IbisTypMinMax = field(default_factory=IbisTypMinMax)
     gndClampRef: IbisTypMinMax = field(default_factory=IbisTypMinMax)
 
-    # in class IbisModel (near other *Data fields)
-    pullupDisabledData: Optional[IbisVItable] = None
-    pulldownDisabledData: Optional[IbisVItable] = None
 
     hasBeenAnalyzed: int = 0
 
