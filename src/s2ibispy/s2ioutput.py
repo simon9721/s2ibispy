@@ -57,8 +57,7 @@ class IbisWriter:
         f.write("[End]\n")
 
     def _print_component(self, f, comp: IbisComponent, ibis_ver: str) -> None:
-        self._print_header(f, comp.component, "Component")
-        self._print_keyword(f, "[Component]", comp.component)
+        f.write(f"[Component] {comp.component}\n")
         self._print_keyword(f, "[Manufacturer]", comp.manufacturer)
 
         # Print [Package]
@@ -91,9 +90,10 @@ class IbisWriter:
         self._print_footer(f, "Component")
 
     def _print_model(self, f, model: IbisModel, ibis_ver: str) -> None:
-        self._print_header(f, model.modelName, "Model")
-        self._print_keyword(f, "[Model]", model.modelName)
-        self._print_keyword(f, "Model_type", str(model.modelType))
+        f.write(f"[Model] {model.modelName}\n")
+        # Print model type as string name, not enum value
+        model_type_str = getattr(model.modelType, 'name', str(model.modelType)).replace('_', '-')
+        self._print_keyword(f, "Model_type", model_type_str)
         polarity_str = getattr(model, 'polarity', 'Non-Inverting')
         self._print_keyword(f, "Polarity", polarity_str)
         enable_str = getattr(model, 'enable', 'Active-High')
@@ -135,7 +135,10 @@ class IbisWriter:
     def _fmt_tmm(self, tmm: IbisTypMinMax, unit: str = "") -> str:
         if tmm is None:
             return "NA"
-        return f"{getattr(tmm, 'typ', 'NA')} {getattr(tmm, 'min', 'NA')} {getattr(tmm, 'max', 'NA')} {unit}"
+        typ_val = self._fmt_float(getattr(tmm, 'typ', float('nan')))
+        min_val = self._fmt_float(getattr(tmm, 'min', float('nan')))
+        max_val = self._fmt_float(getattr(tmm, 'max', float('nan')))
+        return f"{typ_val} {min_val} {max_val} {unit}"
 
     def _print_vi_table(self, f, keyword: str, table) -> None:
         if not table or not getattr(table, 'VIs', None):
@@ -148,12 +151,32 @@ class IbisWriter:
 
     def _fmt_float(self, v: float) -> str:
         try:
+            if math.isnan(v):
+                return "NA"
             return f"{v:.6g}"
         except Exception:
             return str(v)
+    
+    def _fmt_pin_value(self, v) -> str:
+        """Format pin parasitic value, handling nan/None"""
+        if v is None:
+            return "NA"
+        try:
+            # Check for NOT_USED sentinel value
+            if abs(v) > 1e17:  # CS.NOT_USED is ~-1.33e18
+                return "NA"
+            if math.isnan(v):
+                return "NA"
+            return f"{v:.6g}"
+        except (ValueError, TypeError):
+            return "NA"
 
     def _print_pin(self, f, pin: IbisPin) -> None:
-        f.write(f"{pin.pinName:>4}  {getattr(pin,'signalName',''):>20}  {getattr(pin,'modelName',''):>20}  {getattr(pin,'R_pin',''):>8}  {getattr(pin,'L_pin',''):>8}  {getattr(pin,'C_pin',''):>8}\n")
+        # Handle nan values properly
+        r_pin = self._fmt_pin_value(getattr(pin, 'R_pin', None))
+        l_pin = self._fmt_pin_value(getattr(pin, 'L_pin', None))
+        c_pin = self._fmt_pin_value(getattr(pin, 'C_pin', None))
+        f.write(f"{pin.pinName:>4}  {getattr(pin,'signalName',''):>20}  {getattr(pin,'modelName',''):>20}  {r_pin:>8}  {l_pin:>8}  {c_pin:>8}\n")
 
     def _print_pin_map(self, f, pm) -> None:
         f.write(" ")
