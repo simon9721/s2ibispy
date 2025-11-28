@@ -17,9 +17,6 @@
 [Copyright] Missouri S&T EMC Lab
 
 
-|******************************************************************************
-|                            Component MCM Driver 1
-|******************************************************************************
 [Component] MCM Driver 1
 [Manufacturer] MegaFLOPS Inc.
 [Package]
@@ -37,9 +34,6 @@ out    out                  driver
 
 | End of Component
 
-|******************************************************************************
-|                                 Model driver
-|******************************************************************************
 [Model] driver
 Model_type I/O
 Polarity Non-Inverting

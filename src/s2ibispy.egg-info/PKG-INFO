@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: s2ibispy
+Version: 0.0.0
+Summary: SPICE → IBIS conversion toolkit (refactored)
+Requires-Python: >=3.10
+Requires-Dist: PyYAML
+Requires-Dist: jinja2

@@ -5,13 +5,13 @@
   with the terms and conditions of a written license agreement with
   Synopsys, Inc. All other use, reproduction, or distribution of
   this software is strictly prohibited.
-  Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\compare
-  Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\compare_driver.sp -o C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\compare_driver
-  Start time: Thu Nov 27 19:01:53 2025
+  Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correla
+  Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correlate_driver.sp -o C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correlate_driver.tr0
+  Start time: Thu Nov 27 21:54:42 2025
   lic:  
   lic: FLEXlm: SDK_12.10 
   lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
-  lic: HOSTID: 00ff89f5aa52         PID:      1252 
+  lic: HOSTID: 00ff89f5aa52         PID:      17856 
   lic: Using FLEXlm license file: 
   lic: 1704@synopsys.lic.mst.edu 
   lic: Checkout 1 hspice 
@@ -19,7 +19,7 @@
   lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.e
  du 
   lic:   
-  **warning** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\compare_driver.sp:10) runlvl smaller than 5, reset to 5 when accurate turned on
+  **warning** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correlate_driver.sp:10) runlvl smaller than 5, reset to 5 when accurate turned on
 
  **warning**  runlvl smaller than 5, reset to 5 when accurate turned on
 1****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******
@@ -574,12 +574,12 @@
           pu0=   -2.36398                 pua=-8.41675e-11         
           pub=      1e-21               pvsat=        -50         
         prdsw=     4.4192         
-  **info** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\compare_driver.sp:28) DC voltage reset to initial transient source value in source 0:vin_ibis. new dc=0.3300D+01
+  **info** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correlate_driver.sp:28) DC voltage reset to initial transient source value in source 0:vin_ibis. new dc=0.3300D+01
  
 
  Warning: Pd = 0 is less than Weff = 1.7864e-06 in BSIM3 model 1:nfet element mx2 with W = 1.79e-06, L = 5.8e-07
 
-  **warning** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\compare_driver.sp:17) Current is not zero at voltage = Vcc for ISSO PU, where File = C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\test.ibs, Model = driver
+  **warning** (C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correlate_driver.sp:17) Current is not zero at voltage = Vcc for ISSO PU, where File = C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\test.ibs, Model = driver
   
   
              
@@ -603,7 +603,7 @@
  ******
  runlvl  = 5         bypass  = 2.0000    
   Opening plot unit= 79
- file=C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\compare_driver.pa0
+ file=C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\correlate_driver.tr0.pa0
 
 
  **info** rebuilding matrix with pivot option
@@ -667,19 +667,19 @@
 
   analysis           time    # points   tot. iter  conv.iter
   op point           0.01           1          39
-  transient          0.23       10001        2607        1093 rev=       181
+  transient          0.21       10001        2607        1093 rev=       181
   readin             0.05
-  errchk             0.04
+  errchk             0.02
   setup              0.00
   output             0.00
 
 
-           peak memory used         73.41 megabytes
-           total cpu time            0.33 seconds
-           total elapsed time        0.43 seconds
-           job started at     19:01:53 11/27/2025
-           job ended   at     19:01:53 11/27/2025
-           job total runtime         0.43 seconds
+           peak memory used         73.34 megabytes
+           total cpu time            0.30 seconds
+           total elapsed time        0.40 seconds
+           job started at     21:54:42 11/27/2025
+           job ended   at     21:54:42 11/27/2025
+           job total runtime         0.40 seconds
 
 
   lic: Release hspice token(s) 

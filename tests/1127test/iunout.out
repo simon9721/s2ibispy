@@ -7,11 +7,11 @@
   this software is strictly prohibited.
   Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\iunout.
   Command line options: C:\synopsys\Hspice_T-2022.06\WIN64\hspice.com -i C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\iunout.spi -o C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\1127test\iunout.out
-  Start time: Thu Nov 27 19:01:36 2025
+  Start time: Thu Nov 27 21:54:22 2025
   lic:  
   lic: FLEXlm: SDK_12.10 
   lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
-  lic: HOSTID: 00ff89f5aa52         PID:      16612 
+  lic: HOSTID: 00ff89f5aa52         PID:      19888 
   lic: Using FLEXlm license file: 
   lic: 1704@synopsys.lic.mst.edu 
   lic: Checkout 1 hspice 
@@ -327,11 +327,11 @@ y
   output             0.00
 
 
-           peak memory used         72.10 megabytes
+           peak memory used         72.05 megabytes
            total cpu time            0.03 seconds
            total elapsed time        0.12 seconds
-           job started at     19:01:36 11/27/2025
-           job ended   at     19:01:36 11/27/2025
+           job started at     21:54:22 11/27/2025
+           job ended   at     21:54:22 11/27/2025
            job total runtime         0.12 seconds
 
 
