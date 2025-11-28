@@ -157,7 +157,7 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
             manufacturer=ccfg.manufacturer,
             spiceFile=ccfg.spiceFile,
             seriesSpiceFile=ccfg.seriesSpiceFile,
-            pinParasitics=ccfg.pin_parasitics,
+            pinParasitics=ccfg.pinParasitics,
             pList=pins,
         )
 
