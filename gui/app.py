@@ -16,8 +16,21 @@ class S2IBISpyGUI:
     def __init__(self, root):
         self.root = root
         self.root.title(f"s2ibispy — SPICE to IBIS Converter v{self.VERSION}")
-        self.root.geometry("1450x960")
-        self.root.minsize(1200, 750)
+        # Adaptive sizing: 90% of screen, with sensible minimums
+        try:
+            sw = self.root.winfo_screenwidth()
+            sh = self.root.winfo_screenheight()
+            w = max(1200, int(sw * 0.9))
+            h = max(750, int(sh * 0.9))
+            # Center window
+            x = max(0, (sw - w) // 2)
+            y = max(0, (sh - h) // 2)
+            self.root.geometry(f"{w}x{h}+{x}+{y}")
+            self.root.minsize(1000, 700)
+        except Exception:
+            # Fallback defaults
+            self.root.geometry("1450x960")
+            self.root.minsize(1200, 750)
 
         # ←←← ADD THESE 3 LINES HERE ←←←
         self.ibis = None       # Will hold the parsed IbisTOP object

@@ -1,6 +1,6 @@
 # gui/tabs/plots_tab.py — FINAL, PERFECT, 100% WORKING
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from pathlib import Path
 
 class PlotsTab:
@@ -27,6 +27,14 @@ class PlotsTab:
 
         top_pane = ttk.PanedWindow(top_frame, orient=tk.VERTICAL)
         top_pane.pack(fill="both", expand=True)
+
+        # Quick loader for IBIS files
+        loader = ttk.Frame(top_pane)
+        top_pane.add(loader, weight=0)
+        ttk.Label(loader, text="Load IBIS (.ibs):").pack(side="left", padx=(8, 0), pady=(6, 0))
+        self.ibs_path_var = tk.StringVar()
+        ttk.Entry(loader, textvariable=self.ibs_path_var, width=60).pack(side="left", padx=6, pady=(6, 0), fill="x", expand=True)
+        ttk.Button(loader, text="Browse…", command=self.browse_and_load_ibs).pack(side="left", pady=(6, 0))
 
         # Table Section
         table_container = ttk.LabelFrame(top_pane, text=" Plottable Tables ")
@@ -80,6 +88,7 @@ class PlotsTab:
         try:
             from plotter.ibis_plotter import parse_ibis_tables
             self.blocks = parse_ibis_tables(str(ibs_path))
+            self.ibs_path_var.set(str(ibs_path))
             self.refresh_list()
 
             # PRE-WARM MATPLOTLIB
@@ -128,6 +137,14 @@ class PlotsTab:
             self.item_to_var[iid] = var
 
         self.gui.log(f"Plots tab: {visible} curve(s) visible", "INFO")
+
+    def browse_and_load_ibs(self):
+        file_path = filedialog.askopenfilename(
+            title="Select IBIS file",
+            filetypes=[("IBIS files", "*.ibs"), ("All files", "*.*")]
+        )
+        if file_path:
+            self.load_ibs(Path(file_path))
 
     def on_row_click(self, event):
         item = self.tree.identify_row(event.y)

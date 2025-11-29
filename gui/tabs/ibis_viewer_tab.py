@@ -1,6 +1,7 @@
 # gui/tabs/ibis_viewer_tab.py — FINAL, PERFECT NAVIGATION
 import tkinter as tk
-from tkinter import ttk, scrolledtext
+from tkinter import ttk, scrolledtext, filedialog
+from pathlib import Path
 import re
 
 class IbisViewerTab:
@@ -8,6 +9,15 @@ class IbisViewerTab:
         self.gui = gui
         self.frame = ttk.Frame(notebook)
         #notebook.add(self.frame, text="  IBIS Viewer  ")
+
+        # Top controls
+        controls = ttk.Frame(self.frame)
+        controls.pack(fill="x", padx=8, pady=(8, 0))
+        ttk.Label(controls, text="Load IBIS (.ibs):").pack(side="left")
+        self.path_var = tk.StringVar()
+        entry = ttk.Entry(controls, textvariable=self.path_var, width=60)
+        entry.pack(side="left", padx=6, fill="x", expand=True)
+        ttk.Button(controls, text="Browse…", command=self.browse_and_load).pack(side="left")
 
         paned = ttk.PanedWindow(self.frame, orient=tk.HORIZONTAL)
         paned.pack(fill="both", expand=True, padx=8, pady=8)
@@ -26,11 +36,29 @@ class IbisViewerTab:
         self.tree.bind("<Double-1>", self.jump_to_section)
 
     def load_ibs(self, path):
-        with open(path, "r", encoding="utf-8", errors="ignore") as f:
+        p = Path(path)
+        if not p.exists():
+            self.gui.log(f"IBIS file not found: {p}", "ERROR")
+            return
+        with open(p, "r", encoding="utf-8", errors="ignore") as f:
             content = f.read()
         self.text.delete(1.0, tk.END)
         self.text.insert(tk.END, content)
         self.parse_sections(content)
+        self.path_var.set(str(p))
+        # Also feed Plots tab if available
+        try:
+            self.gui.plots_tab.load_ibs(p)
+        except Exception:
+            pass
+
+    def browse_and_load(self):
+        file_path = filedialog.askopenfilename(
+            title="Select IBIS file",
+            filetypes=[("IBIS files", "*.ibs"), ("All files", "*.*")]
+        )
+        if file_path:
+            self.load_ibs(file_path)
 
     def parse_sections(self, content):
         self.tree.delete(*self.tree.get_children())
