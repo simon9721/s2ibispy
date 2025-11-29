@@ -1361,8 +1361,20 @@ class MainEntryTab:
             self.gui.status_var.set(f"Success • {elapsed}")
         else:
             self.gui.status_var.set(f"Failed (code {rc})")
-            self.gui.log(f"Conversion failed with return code {rc}", "ERROR")
-            messagebox.showerror("Failed", f"Conversion failed with return code {rc}")
+            if rc == 11:
+                # Simulator not found — show clear guidance
+                self.gui.log("SPICE simulator executable not found — aborted before conversion.", "ERROR")
+                messagebox.showerror(
+                    "Simulator Not Found",
+                    "The selected SPICE simulator executable was not found.\n\n"
+                    "Resolution:\n"
+                    "- Install the simulator (e.g. HSPICE / Spectre / Eldo), or\n"
+                    "- Set the full path via the 'SPICE Command' field, or\n"
+                    "- Choose another simulator type if available."
+                )
+            else:
+                self.gui.log(f"Conversion failed with return code {rc}", "ERROR")
+                messagebox.showerror("Failed", f"Conversion failed with return code {rc}")
 
     def terminate_simulation(self):
         """Terminate the running simulation."""
