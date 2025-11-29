@@ -99,8 +99,29 @@ class S2IBISpyGUI:
             compound="left",
             accelerator="Ctrl+O"
         )
-        file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=self.root.quit)
+            file_menu.add_command(
+                label="Open IBIS (.ibs) in Viewer",
+                command=lambda: self.viewer_tab.browse_and_load(),
+                image=self.icons.get("open"),
+                compound="left",
+                accelerator="Ctrl+I"
+            )
+            file_menu.add_command(
+                label="Open IBIS (.ibs) in Plots",
+                command=lambda: self.plots_tab.browse_and_load_ibs(),
+                image=self.icons.get("open"),
+                compound="left",
+                accelerator="Ctrl+P"
+            )
+            file_menu.add_command(
+                label="Open Correlation (.tr0)",
+                command=lambda: self.corr_tab.browse_and_load_tr0(),
+                image=self.icons.get("open"),
+                compound="left",
+                accelerator="Ctrl+T"
+            )
+            file_menu.add_separator()
+            file_menu.add_command(label="Exit", command=self.root.quit)
 
         # 6. Log panel
         log_frame = ttk.LabelFrame(main_pane, text=" Log Output ")
@@ -129,7 +150,9 @@ class S2IBISpyGUI:
 
         # 8. Shortcut
         self.root.bind("<Control-o>", lambda e: self.main_tab.load_input_file())
-
+            self.root.bind("<Control-i>", lambda e: self.viewer_tab.browse_and_load())
+            self.root.bind("<Control-p>", lambda e: self.plots_tab.browse_and_load_ibs())
+            self.root.bind("<Control-t>", lambda e: self.corr_tab.browse_and_load_tr0())
     def setup_logging(self):
         self.log_text.tag_config("INFO", foreground="#88ff88")
         self.log_text.tag_config("WARNING", foreground="#ffff88")
