@@ -152,6 +152,7 @@ class ConfigSchema(BaseModel):
     iterate: int = 0
     cleanup: int = 0
 
-    global_defaults: GlobalDefaults = field(default_factory=GlobalDefaults)
-    components: List[ComponentConfig] = field(default_factory=list)
-    models: List[ModelConfig] = field(default_factory=list)
+    # Use pydantic Field(), not dataclasses.field(), inside BaseModel
+    global_defaults: GlobalDefaults = Field(default_factory=GlobalDefaults)
+    components: List[ComponentConfig] = Field(default_factory=list)
+    models: List[ModelConfig] = Field(default_factory=list)

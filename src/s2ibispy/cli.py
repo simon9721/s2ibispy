@@ -12,10 +12,15 @@ from s2ibispy.legacy.parser import S2IParser
 from s2ibispy.s2ianaly import S2IAnaly
 from s2ibispy.s2ioutput import IbisWriter as S2IOutput
 
+_YAML_IMPORT_ERROR = None
 try:
     from s2ibispy.loader import load_yaml_config
     YAML_SUPPORT = True
-except Exception:
+except Exception as e:
+    # Record the import error so we can explain later why a .yaml file was
+    # treated as legacy .s2i. Previously we silently fell back which was
+    # confusing to users.
+    _YAML_IMPORT_ERROR = e
     YAML_SUPPORT = False
 
 import re
@@ -172,8 +177,14 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
             logging.error("Failed to load YAML: %s", e)
             return 2
     else:
+        # Clarify why a .yaml fell back to legacy path.
+        if input_path.suffix.lower() == ".yaml" and not YAML_SUPPORT:
+            logging.warning(
+                "YAML support disabled (loader import failed): %s — falling back to legacy parser stub",
+                _YAML_IMPORT_ERROR
+            )
         parser = S2IParser()
-        logging.info("Parsing legacy .s2i file: %s", input_path.name)
+        logging.info("Parsing legacy .s2i file (or stub for .yaml fallback): %s", input_path.name)
         try:
             ibis, global_, mList = parser.parse(input_file)
             for comp in ibis.cList:
