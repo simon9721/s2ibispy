@@ -160,6 +160,36 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
     logging.getLogger('').setLevel(logging.DEBUG if args.verbose else logging.INFO)
     logging.debug("Starting main with args: %s", argv)
 
+    # -------------------------------------------------------------
+    # Preflight simulator executable availability BEFORE any parsing
+    # -------------------------------------------------------------
+    import shutil
+    default_prog_map = {"hspice": "hspice", "spectre": "spectre", "eldo": "eldo"}
+    requested_prog = args.spice_cmd.strip() or default_prog_map.get(args.spice_type, "hspice")
+    prog_display = requested_prog
+    # If user passed a path, test existence; else rely on PATH lookup.
+    missing = False
+    if os.path.sep in requested_prog or requested_prog.startswith("."):
+        # Treat as explicit path
+        if not os.path.exists(requested_prog):
+            missing = True
+        else:
+            # Optional: could test executable bit on POSIX; on Windows existence is fine.
+            pass
+    else:
+        if shutil.which(requested_prog) is None:
+            missing = True
+
+    if missing:
+        logging.error(
+            "SPICE simulator '%s' not found. Aborting before conversion.\n"
+            "Resolution: Install the simulator or pass --spice-cmd <full path>.\n"
+            "Examples:\n  --spice-cmd C:/Apps/HSPICE/hspice.exe\n  --spice-cmd C:/Cadence/SPECTRE/bin/spectre\n",
+            prog_display,
+        )
+        # Distinct non-zero code for 'simulator missing'
+        return 11
+
     input_file = os.path.abspath(args.input)
     outdir = os.path.abspath(args.outdir)
     os.makedirs(outdir, exist_ok=True)
