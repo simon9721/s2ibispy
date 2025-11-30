@@ -5,3 +5,5 @@ Summary: SPICE → IBIS conversion toolkit (refactored)
 Requires-Python: >=3.10
 Requires-Dist: PyYAML
 Requires-Dist: jinja2
+Requires-Dist: matplotlib
+Requires-Dist: pydantic

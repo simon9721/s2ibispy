@@ -6,7 +6,7 @@ import time
 
 # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
 # CONFIG: Change this to control minimum splash time
-MINIMUM_SPLASH_TIME = 10   # seconds (2.5 is perfect)
+MINIMUM_SPLASH_TIME = 1.5   # seconds (1.5 is smooth and professional)
 # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
 
 _start_time = None
@@ -25,7 +25,7 @@ def show_splash(root):
     splash.geometry(f"{width}x{height}+{x}+{y}")
 
     # Logo
-    icon_path = Path(__file__).parent.parent / "resources" / "icons" / "s2ibispy.ico"
+    icon_path = Path(__file__).parent.parent.parent / "resources" / "icons" / "s2ibispy.png"
     try:
         img = Image.open(icon_path)
         img = img.resize((280, 280), Image.LANCZOS)
@@ -33,7 +33,8 @@ def show_splash(root):
         label = tk.Label(splash, image=photo, bg='#0a0a0a', bd=0)
         label.image = photo
         label.pack(pady=(40, 20))
-    except Exception:
+    except Exception as e:
+        print(f"Splash icon load failed: {e}")
         tk.Label(splash, text="S2IBISpy", font=("Segoe UI", 36, "bold"),
                  fg="#00ffff", bg='#0a0a0a').pack(pady=(80, 20))
 
@@ -59,8 +60,7 @@ def hide_splash(splash):
         # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
         elapsed = time.time() - _start_time
         if elapsed < MINIMUM_SPLASH_TIME:
-            remaining = (MINIMUM_SPLASH_TIME - elapsed) * 1000  # ms
-            splash.after(int(remaining), splash.destroy)
-        else:
-            splash.destroy()
+            remaining = MINIMUM_SPLASH_TIME - elapsed
+            time.sleep(remaining)  # Actually wait the remaining time
+        splash.destroy()
         # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←

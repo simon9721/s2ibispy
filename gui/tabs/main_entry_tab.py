@@ -994,6 +994,106 @@ class MainEntryTab:
         # Direct mapping: sim_time, r_load
         else:
             global_defaults[key] = value
+    
+    def _detect_changes(self, old_data: dict, new_data: dict) -> list:
+        """Detect what fields changed between old and new data."""
+        changes = []
+        
+        def compare_values(old_val, new_val, path=""):
+            """Recursively compare nested dictionaries and lists."""
+            if isinstance(old_val, dict) and isinstance(new_val, dict):
+                all_keys = set(old_val.keys()) | set(new_val.keys())
+                for key in all_keys:
+                    key_path = f"{path}.{key}" if path else key
+                    old_sub = old_val.get(key)
+                    new_sub = new_val.get(key)
+                    if old_sub != new_sub:
+                        compare_values(old_sub, new_sub, key_path)
+            elif isinstance(old_val, list) and isinstance(new_val, list):
+                if len(old_val) != len(new_val):
+                    changes.append(path)
+                else:
+                    for i, (old_item, new_item) in enumerate(zip(old_val, new_val)):
+                        compare_values(old_item, new_item, f"{path}[{i}]")
+            else:
+                if old_val != new_val:
+                    changes.append(path)
+        
+        compare_values(old_data, new_data)
+        
+        # Convert technical paths to human-readable names
+        readable_changes = [self._humanize_field_path(path) for path in sorted(set(changes))]
+        return readable_changes
+    
+    def _humanize_field_path(self, path: str) -> str:
+        """Convert technical field paths to human-readable names."""
+        # Handle nested paths
+        parts = path.split('.')
+        
+        # Component fields
+        if path.startswith('component'):
+            if 'name' in parts:
+                return 'Component Name'
+            elif 'manufacturer' in parts:
+                return 'Manufacturer'
+            elif 'spiceFile' in parts:
+                return 'SPICE File'
+        
+        # Global defaults
+        if path.startswith('global_defaults'):
+            field_mappings = {
+                'sim_time': 'Global Sim Time',
+                'r_load': 'Global R Load',
+                'temp_range.typ': 'Temp Typ',
+                'temp_range.min': 'Temp Min',
+                'temp_range.max': 'Temp Max',
+                'voltage_range.typ': 'Voltage Typ',
+                'voltage_range.min': 'Voltage Min',
+                'voltage_range.max': 'Voltage Max',
+                'vil.typ': 'VIL Typ',
+                'vil.min': 'VIL Min',
+                'vil.max': 'VIL Max',
+                'vih.typ': 'VIH Typ',
+                'vih.min': 'VIH Min',
+                'vih.max': 'VIH Max',
+                'pullup.typ': 'Pullup Typ',
+                'pullup.min': 'Pullup Min',
+                'pullup.max': 'Pullup Max',
+                'pulldown.typ': 'Pulldown Typ',
+                'pulldown.min': 'Pulldown Min',
+                'pulldown.max': 'Pulldown Max',
+                'power_clamp.typ': 'Power Clamp Typ',
+                'power_clamp.min': 'Power Clamp Min',
+                'power_clamp.max': 'Power Clamp Max',
+                'gnd_clamp.typ': 'GND Clamp Typ',
+                'gnd_clamp.min': 'GND Clamp Min',
+                'gnd_clamp.max': 'GND Clamp Max',
+            }
+            # Remove 'global_defaults.' prefix
+            subpath = '.'.join(parts[1:]) if len(parts) > 1 else ''
+            return field_mappings.get(subpath, subpath.replace('_', ' ').title())
+        
+        # Models
+        if 'models[' in path:
+            return path.replace('models[', 'Model #').replace(']', '')
+        
+        # Pins
+        if 'pins[' in path:
+            return path.replace('pins[', 'Pin #').replace(']', '')
+        
+        # General settings
+        field_mappings = {
+            'ibis_ver': 'IBIS Version',
+            'file_rev': 'File Revision',
+            'file_name': 'File Name',
+            'date': 'Date',
+            'source': 'Source',
+            'notes': 'Notes',
+            'disclaimer': 'Disclaimer',
+            'copyright': 'Copyright',
+        }
+        
+        return field_mappings.get(path, path.replace('_', ' ').title())
 
     # ===== MODELS & PINS EDITING =====
     
@@ -1298,9 +1398,22 @@ class MainEntryTab:
         # Save current data before simulation
         if self.current_yaml_file:
             try:
+                # Capture original data before collecting changes
+                old_data = self.yaml_model.data.copy() if hasattr(self.yaml_model, 'data') else {}
+                
                 self._collect_and_sync_data()
+                
+                # Track what changed
+                changes = self._detect_changes(old_data, self.yaml_model.data)
+                
                 self.yaml_model.save_to_file(self.current_yaml_file)
                 self.gui.log("Auto-saved YAML before simulation", "INFO")
+                
+                # Log changes if any
+                if changes:
+                    self.gui.log(f"Modified fields: {', '.join(changes)}", "INFO")
+                else:
+                    self.gui.log("No changes detected", "INFO")
             except Exception as e:
                 self.gui.log(f"Warning: Could not auto-save: {e}", "WARNING")
         

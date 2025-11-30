@@ -22,14 +22,3 @@ src/s2ibispy/data/Z50_406.lc3
 src/s2ibispy/legacy/parser.py
 src/s2ibispy/legacy/s2iutil.py
 src/s2ibispy/templates/compare_correlation.sp.j2
-tests/test_hspice.py
-tests/test_imports.py
-tests/test_no_transients_for_input_model.py
-tests/test_parser_basic.py
-tests/test_parser_dump.py
-tests/test_parser_util.py
-tests/test_s2ianaly.py
-tests/test_s2ibis3.py
-tests/test_s2iutil_basic.py
-tests/test_s2util.py
-tests/test_spice.py
