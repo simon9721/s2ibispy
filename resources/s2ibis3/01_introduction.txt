@@ -1,0 +1,71 @@
+INTRODUCTION
+
+    s2ibis3 is the latest version of the SPICE-to-IBIS conversion
+    utility from North Carolina State University. It produces IBIS
+    files which conform to the IBIS v3.2 specification.
+
+    s2ibis3 is similar to s2ibis2. The main difference to it is that
+    it is written in JAVA as compared to C and Lex and Yacc.
+    s2ibis3 has its own command language, which is similar to the
+    IBIS language in many respects, and can be easily extended to
+    include new functionality. Because s2ibis3 creates a full IBIS 
+    model in an internal data structure, and then writes the resulting
+    information to the output file after all processing is done, s2ibis3
+    can easily be extended to comply with future versions of the IBIS 
+    specification.
+
+    This document will describe the s2ibis3 command language
+    and how to properly use it. I would strongly suggest examining
+    the files in the examples/ directory to get a feel for how these
+    commands are used.
+
+
+THE COMMAND LANGUAGE
+
+    -To run s2ibis3, type the following on the command line:
+       
+        % s2ibis3.csh -s2ibis3 buffer.s2i
+
+     where buffer.s2i is the s2i command file as discussed later in
+     the s2ibis3.txt
+			
+    -If there is a 'permission denied' error when running the .csh file, 
+     change permissions by doing 
+
+     	  % chmod 744 s2ibis3.csh
+
+    -If it is desired, s2ibis3 could be run from a different directory 
+     from the installation directory by using the
+     '-root' switch with s2ibis3.csh as this example suggest:
+			
+        % s2ibis3 -root ../../s2i_install_dir -s2ibis3 buffer.s2i
+			
+			
+windows
+    
+    -most of the instruction for unix apply for windows users as well.
+    -To run s2ibis3, type the following on the command prompt:
+
+  	  % s2ibis3.bat -s2ibis3 buffer.s2i
+    
+    -If the path variables are not set for java and the spice engines, 
+     read instructions at http://java.sun.com/j2se/1.4.2/install-windows.html
+     on how to set path variables for windows. s2ibis3 would not run if paths have
+     not been set properly.
+
+[note] % is not needed to be inserted in the command line.			
+
+    
+    The command file consists of two main sections: the header and
+    the component description.
+
+    Note that the command parser ignores case when it reads the
+    command file, so you may specify the commands in upper or lower
+    case, or a mix of the two.
+
+    Also note that s2ibis3 has several reserved words:
+
+        NA  specifies that the value is undefined
+        NC  specifies no connection; can be used as model name
+        +   line continuation character when found in first
+            column of line

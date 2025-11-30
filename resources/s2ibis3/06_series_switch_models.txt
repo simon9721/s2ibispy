@@ -1,0 +1,51 @@
+SERIES SWITCH MODELS PARAMETERS
+
+    [On] [Off]
+
+        Required if Model type is Series_Switch.
+ 
+        'On' state electrical models are positioned under [On] 
+	      Only [Series MOSFET] is implemented under [On].
+
+        'Off' state electrical models are positioned under [Off] 
+	      Only [R Series] are implemented under [Off]
+
+	  These keywords are only valid for the Series Switch Model
+        types only.
+
+    [series MOSFET]
+    [vds] v1
+    [vds] v2
+      .
+      .
+      .
+
+	  Required for Series MOSFET Switches.
+
+	  v1,v2,.. = Vds values. For each Vds value, there will be a VI
+                  table associated with it. 
+			VI table has voltage values = vtable = Vcc - Vs                    
+		      where Vcc is the voltage from [voltage range] keyword
+                  and Vs is varied.
+
+	 The table entries are Vgs of the NMOS device and Vcc - Vgs of the 
+	 PMOS device, if present.
+
+    [R Series] R_typ 	R_min		R_max
+
+       Not Required
+       Default Values for R_typ, R_min, R_max = 1.00M
+
+	 C_comp values are ignored for [series MOSFET] models.
+
+	
+NOTE: in IBIS ver3.2, only nMOSFET are taken into consideration. BIRD 72.3 
+corrected that and modified IBIS spec to take into consideration a 
+pMOSFET and an n and p in parallel. This change was reflected in IBIS
+ver4.0 Hence, this keyword is, strictly speaking, ver 4.0 compatible.
+
+Please refer to http://www.vhdl.org/pub/ibis/birds/bird72.3 for more
+information.
+
+More information on this keyword can be obtained from the IBIS v3.2 
+specification.

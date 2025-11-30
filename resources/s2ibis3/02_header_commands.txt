@@ -1,0 +1,357 @@
+THE HEADER
+
+    The header contains information that is applicable to the entire
+    file, such as the type of SPICE simulator to use, the IBIS version,
+    etc. It can also contain global specifications. For example, if
+    you want a particular temperature range to apply to all models in
+    your file, specify it in the header. Note, however, that global
+    definitions are overridden by local definitions; in this way, you
+    can specify (e.g.) a global temperature range, but override it for a
+    particular component or model where necessary.
+
+    The following commands can be used in the header:
+
+    [IBIS Ver]  version
+
+        version = 1.1, 2.1 or 3.2
+        
+        Required.
+        
+        THIS MUST BE THE FIRST COMMAND IN THE COMMAND FILE. (It may be
+        preceded by comments.)  This describes the version of IBIS to be
+        produced by s2ibis3. Legal version values are 1.1 and 2.1.
+
+    [File name] filename
+
+        filename = name of IBIS file to produce
+        
+        Optional.  
+        Default: First 8 chars of command filename followed by ".ibs".
+
+        This tells s2ibis3 what the output file name should be. NOTE:
+        this must conform to DOS conventions, i.e. it must be in the
+        form "xxxxxxxx.xxx". If this command is not used, s2ibis3
+        creates the output file name by taking the first part of the
+        command file name, and appending ".ibs" to it. So, for the
+        command file name "tryme.s2i", the output file name would be
+        "tryme.ibs".
+
+    [File rev]  rev
+
+        rev = revision number
+        
+        Optional.
+        Default: none.
+
+        This describes the current file revision. Note that s2ibis3
+        will accept any legal string for the revision number, although
+        the IBIS specification suggests a standard for revision
+        numbering.
+
+    [Date]      date
+
+        date = file date
+        
+        Optional.
+        Default: Current system date.
+
+        Gives the file date. If this command is not present, s2ibis3
+        will use the current system date as the file date.
+
+    [Source]    source
+
+        source = file source
+        
+        Optional.
+        Default: none.
+        
+        Describes the file source. Truncated if longer than 1K byte in
+        length.
+
+    [Notes]     notes
+
+        notes = file notes
+        
+        Optional.
+        Default: none.
+        
+        Describes any optional notes that may be necessary. Truncated
+        if longer than 1K byte in length.
+
+    [Disclaimer]    disclaimer
+
+        disclaimer = file disclaimer
+        
+        Optional.
+        Default: none.
+        
+        This is where you put the legalese. Truncated if longer than 1K
+        byte in length.
+
+    [Copyright] copyright
+
+        source = file copyright
+        
+        Optional.
+        Default: none.
+        
+        Describes the copyright info. Truncated if longer than 1K byte
+        in length.
+
+    [Spice type]    spicetype
+
+        spicetype = HSpice, PSpice, Spice2, Spice3, or Spectre
+
+        Required.
+        
+        Describes which flavor of Spice to use when simulating the
+        circuits.
+
+    [Spice command] command
+
+        command = command to use when invoking Spice.
+
+        Optional.
+        Default: specified in s2iHeader.java
+        
+        This string specifies, in java syntax, how you would call Spice
+        from the command line. See the string variable defaultSpiceCommand           
+	in the file src/s2iHeader.java for an example of the correct format.         
+	(Note that the command line switches used to invoke spice3 and               
+	spectre MUST be used.)
+
+    [Iterate]
+
+        Optional.
+        Default: none.
+        
+        This works the same way as the *[Iterate] command in s2ibis
+        v1.2. If a Spice output file for the curve in question already
+        exists, s2ibis3 will read the data from that file without
+        re-running the simulation. In this way, you can make
+        incremental changes to your s2ibis3 files without having to
+        re-simulate the entire set of models.
+
+    [Cleanup]
+    
+        Optional.
+        Default: none.
+        
+        When this command is specified, s2ibis3 will delete all of the
+        spice input, output and message files as it proceeds. This is
+        good to use when you think the IBIS file is done and you want to
+        clean up the working directory.
+
+    [Temperature range] T_typ   T_min   T_max
+
+        T_typ = temperature for TYP curves
+        T_min = temperature for MIN curves
+        T_max = temperature for MAX curves
+
+        Optional.
+        Default: T_typ = 27C, T_min = 100C, T_max = 0C.
+
+        Specifies the temperature, in degrees C, under which to run the
+        TYP, MIN and MAX simulations.
+
+    [Voltage range]     V_typ   V_min   V_max
+
+        V_typ = supply voltage for TYP curves
+        V_min = supply voltage for MIN curves
+        V_max = supply voltage for MAX curves
+
+        Optional.
+        Default: V_typ = 5.0V, V_min = 4.5V, V_max = 5.5V
+
+        Specifies the supply rail voltage. See the IBIS v3.2
+        specification for a thorough treatment of this.
+
+        NOTE:  You MUST specify a voltage range for all models, either
+        with this command or with ALL FOUR of the following commands.
+
+    [Pullup reference]  V_typ   V_min   V_max
+
+        V_typ = pullup supply voltage for TYP curves
+        V_min = pullup supply voltage for MIN curves
+        V_max = pullup supply voltage for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies the pullup reference supply. See IBIS v3.2
+        specification for details.
+
+    [Pulldown reference]    V_typ   V_min   V_max
+
+        V_typ = pulldown supply voltage for TYP curves
+        V_min = pulldown supply voltage for MIN curves
+        V_max = pulldown supply voltage for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies the pulldown reference supply. See IBIS v3.2
+        specification for details.
+
+    [POWER clamp reference] V_typ   V_min   V_max
+
+        V_typ = power clamp supply voltage for TYP curves
+        V_min = power clamp supply voltage for MIN curves
+        V_max = power clamp supply voltage for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies the power clamp reference supply. See IBIS v3.2
+        specification for details.
+
+    [GND clamp reference]   V_typ   V_min   V_max
+
+        V_typ = ground clamp supply voltage for TYP curves
+        V_min = ground clamp supply voltage for MIN curves
+        V_max = ground clamp supply voltage for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies the ground clamp reference supply. See IBIS v3.2
+        specification for details.
+
+    [R_pkg]     r
+    
+        r = parasitic pin resistance
+
+        Optional.
+        Default: 0
+
+        Describes the default pin resistance for the package.
+
+    [L_pkg]     l
+    
+        l = parasitic pin inductance
+
+        Optional.
+        Default: 0
+
+        Describes the default pin inductance for the package.
+
+    [C_pkg]     c
+    
+        c = parasitic pin capacitance
+
+        Optional.
+        Default: 0
+
+        Describes the default pin capacitance for the package.
+
+    [C_comp]    C_typ   C_min   C_max
+    
+        C_typ = silicon die capacitance for TYP curves
+        C_min = silicon die capacitance for MIN curves
+        C_max = silicon die capacitance for MAX curves
+
+        Optional.
+        Default: C_typ = 5pF, C_min = 5pF, C_max = 5pF
+
+        Describes the silicon die capacitance.
+
+    [Rload]     r
+
+        r = load resistance for ramp rate
+
+        Optional.
+        Default: r = 50 ohms.
+
+        Describes the load resistance to use when performing the
+        simulations for the ramp rate data.
+
+    [Sim time]  t
+
+        t = Spice transient simulation time
+
+        Optional.
+        Default: t = 10ns.
+
+        Describes the transient simulation time to be used by Spice.
+
+    [Vil]       v_typ   v_min   v_max
+
+        v_typ = low stimulus input voltage for TYP curves
+        v_min = low stimulus input voltage for MIN curves
+        v_max = low stimulus input voltage for MAX curves
+
+        Optional.
+        Default: [Pulldown reference] voltage if defined; 0 otherwise.
+
+        Describes the low stimulus input voltage. Note that this is NOT
+        the logic low voltage, but the physical Vil.
+
+    [Vih]       v_typ   v_min   v_max
+
+        v_typ = high stimulus input voltage for TYP curves
+        v_min = high stimulus input voltage for MIN curves
+        v_max = high stimulus input voltage for MAX curves
+
+        Optional.
+        Default: [Pullup reference] voltage if defined; [Voltage range]
+                 voltage otherwise.
+
+        Describes the high stimulus input voltage. Note that this is NOT
+        the logic high voltage, but the physical Vih.
+
+    [Tr]        t_typ   t_min   t_max
+
+        t_typ = stimulus input voltage risetime for TYP curves
+        t_min = stimulus input voltage risetime for MIN curves
+        t_max = stimulus input voltage risetime for MAX curves
+
+        Optional.
+        Default: [Sim time] / 100.
+
+        Describes the stimulus input voltage risetime.
+
+    [Tf]        t_typ   t_min   t_max
+
+        t_typ = stimulus input voltage falltime for TYP curves
+        t_min = stimulus input voltage falltime for MIN curves
+        t_max = stimulus input voltage falltime for MAX curves
+
+        Optional.
+        Default: [Sim time] / 100.
+
+        Describes the stimulus input voltage falltime.
+
+    [Clamp tolerance]   i
+
+        i = threshold for clamp curve printing
+
+        Optional.
+        Default: i = 0
+
+        Describes the threshold for printing lines in the clamp curves.
+        s2ibis3 suppresses printing of current values whose absolute
+        value is below the threshold. 
+
+    [Derate VI] x
+
+        x = percent to derate VI curves
+
+        Optional.
+        Default: x = 0%
+
+        Describes the percentage to derate the VI curves, as described
+        in the IBIS v3.2 spec. Note that x should be expressed as a
+        percentage, not a fraction. For example, to derate 15%, use
+        [Derate VI] 15, _not_ [Derate VI] 0.15. 
+
+    [Derate ramp]   y
+
+        y = percent to derate ramp rates
+
+        Optional.
+        Default: y = 0%
+
+        Describes the percentage to derate the ramp rates, as described
+        in the IBIS v3.2 spec. Note that y should be expressed as a
+        percentage, not a fraction. For example, to derate 15%, use
+        [Derate VI] 15, _not_ [Derate VI] 0.15.

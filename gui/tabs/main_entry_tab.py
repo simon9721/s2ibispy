@@ -670,6 +670,10 @@ class MainEntryTab:
     
     def _collect_and_sync_data(self):
         """Collect data from UI widgets and sync to model."""
+        # Save spice_type from simulation options
+        if hasattr(self, 'spice_type_var'):
+            self.yaml_model.set_field("spice_type", self.spice_type_var.get())
+        
         # General settings
         component_fields = {"component", "manufacturer", "spiceFile"}
         for key, widget in self.entries.items():
@@ -833,6 +837,11 @@ class MainEntryTab:
                 m.get("polarity", ""),
                 "Yes" if m.get("nomodel", False) else ""
             ))
+        
+        # Load spice_type into simulation options
+        if hasattr(self, 'spice_type_var'):
+            spice_type = data.get("spice_type", "hspice")
+            self.spice_type_var.set(spice_type)
         
         # Pins
         for item in self.pins_tree.get_children():
@@ -1227,6 +1236,66 @@ class MainEntryTab:
                       command=lambda e=entries[field_name]: self._browse_model_file(e)).grid(row=0, column=1, padx=(5,0))
             row += 1
         
+        # Separator
+        ttk.Separator(dialog, orient="horizontal").grid(row=row, column=0, columnspan=2, sticky="ew", pady=15)
+        row += 1
+        
+        # Waveform Tables Section
+        ttk.Label(dialog, text="Transient Waveforms (Optional)", font=("", 10, "bold")).grid(row=row, column=0, columnspan=2, pady=5)
+        row += 1
+        
+        ttk.Label(dialog, text="Rising Waveforms:", font=("", 9, "bold")).grid(row=row, column=0, columnspan=2, pady=(5,0), sticky="w", padx=10)
+        row += 1
+        
+        # Rising waveforms frame
+        rising_frame = ttk.Frame(dialog)
+        rising_frame.grid(row=row, column=0, columnspan=2, padx=10, pady=5, sticky="ew")
+        entries["rising_waveforms"] = []
+        
+        existing_rising = current_data.get("rising_waveforms", [{"R_fixture": 50, "V_fixture": 0}, {"R_fixture": 50, "V_fixture": 3.3}])
+        for i, wave in enumerate(existing_rising):
+            wave_row = ttk.Frame(rising_frame)
+            wave_row.pack(fill="x", pady=2)
+            ttk.Label(wave_row, text=f"#{i+1}", width=4).pack(side="left")
+            ttk.Label(wave_row, text="R_fixture:").pack(side="left", padx=(5,2))
+            r_entry = ttk.Entry(wave_row, width=10)
+            r_entry.insert(0, str(wave.get("R_fixture", 50)))
+            r_entry.pack(side="left", padx=2)
+            ttk.Label(wave_row, text="V_fixture:").pack(side="left", padx=(10,2))
+            v_entry = ttk.Entry(wave_row, width=10)
+            v_entry.insert(0, str(wave.get("V_fixture", 0)))
+            v_entry.pack(side="left", padx=2)
+            entries["rising_waveforms"].append({"R_fixture": r_entry, "V_fixture": v_entry})
+        row += 1
+        
+        ttk.Label(dialog, text="Falling Waveforms:", font=("", 9, "bold")).grid(row=row, column=0, columnspan=2, pady=(10,0), sticky="w", padx=10)
+        row += 1
+        
+        # Falling waveforms frame
+        falling_frame = ttk.Frame(dialog)
+        falling_frame.grid(row=row, column=0, columnspan=2, padx=10, pady=5, sticky="ew")
+        entries["falling_waveforms"] = []
+        
+        existing_falling = current_data.get("falling_waveforms", [{"R_fixture": 50, "V_fixture": 0}, {"R_fixture": 50, "V_fixture": 3.3}])
+        for i, wave in enumerate(existing_falling):
+            wave_row = ttk.Frame(falling_frame)
+            wave_row.pack(fill="x", pady=2)
+            ttk.Label(wave_row, text=f"#{i+1}", width=4).pack(side="left")
+            ttk.Label(wave_row, text="R_fixture:").pack(side="left", padx=(5,2))
+            r_entry = ttk.Entry(wave_row, width=10)
+            r_entry.insert(0, str(wave.get("R_fixture", 50)))
+            r_entry.pack(side="left", padx=2)
+            ttk.Label(wave_row, text="V_fixture:").pack(side="left", padx=(10,2))
+            v_entry = ttk.Entry(wave_row, width=10)
+            v_entry.insert(0, str(wave.get("V_fixture", 0)))
+            v_entry.pack(side="left", padx=2)
+            entries["falling_waveforms"].append({"R_fixture": r_entry, "V_fixture": v_entry})
+        row += 1
+        
+        ttk.Label(dialog, text="Note: Leave empty to use defaults. R_fixture in Ω, V_fixture in V.", 
+                 font=("", 8), foreground="gray").grid(row=row, column=0, columnspan=2, pady=(0,10), padx=10, sticky="w")
+        row += 1
+        
         # Buttons
         btn_frame = ttk.Frame(dialog)
         btn_frame.grid(row=row, column=0, columnspan=2, pady=20)
@@ -1260,11 +1329,34 @@ class MainEntryTab:
                         val = entries[field].get().strip()
                         if val:
                             model_dict[field] = val
+                    
+                    # Save waveform data
+                    rising_waves = []
+                    for wave_entries in entries.get("rising_waveforms", []):
+                        try:
+                            r_val = float(wave_entries["R_fixture"].get().strip())
+                            v_val = float(wave_entries["V_fixture"].get().strip())
+                            rising_waves.append({"R_fixture": r_val, "V_fixture": v_val})
+                        except:
+                            pass
+                    if rising_waves:
+                        model_dict["rising_waveforms"] = rising_waves
+                    
+                    falling_waves = []
+                    for wave_entries in entries.get("falling_waveforms", []):
+                        try:
+                            r_val = float(wave_entries["R_fixture"].get().strip())
+                            v_val = float(wave_entries["V_fixture"].get().strip())
+                            falling_waves.append({"R_fixture": r_val, "V_fixture": v_val})
+                        except:
+                            pass
+                    if falling_waves:
+                        model_dict["falling_waveforms"] = falling_waves
                 else:
-                    # Preserve existing modelFile data
+                    # Preserve existing modelFile and waveform data
                     for m in self.yaml_model.data.get("models", []):
                         if m.get("name") == vals[0]:
-                            for field in ["modelFile", "modelFileMin", "modelFileMax"]:
+                            for field in ["modelFile", "modelFileMin", "modelFileMax", "rising_waveforms", "falling_waveforms"]:
                                 if m.get(field):
                                     model_dict[field] = m[field]
                             break

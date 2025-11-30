@@ -1,0 +1,142 @@
+THE COMPONENT DESCRIPTION
+
+    The component description provides s2ibis3 with a model of your
+    component. You may have multiple component descriptions per
+    file--all components will be written to the same output file. (If
+    multiple components are specified, please use unique pin names for
+    each component--s2ibis3 uses the pin names to construct the SPICE
+    file names and may become confused if different components use the
+    same pin names.)
+
+    As in the header, you may have component-wide specifications of
+    certain values. Also as in the header, these component-wide values
+    will be overridden by a more local definition (i.e. one within a
+    particular model). As an example, you could specify a
+    component-wide voltage range, and then override this within (for
+    example) an ECL model.
+
+    The component description consists of several parts. It starts with
+    the [Component] keyword, which specifies the name of the component
+    (see below). This is followed by the component header, which
+    contains information which pertains to the entire component. The
+    header is followed by the differential pin list (optional), pin
+    mapping (optional), pin list (required) and model specifications
+    (required). These four need not be in any particular order.
+
+
+THE [Component] KEYWORD
+
+    This keyword specifies the start of the component. It takes the
+    following form:
+
+    [Component] name
+
+        name = component name
+
+        Required.
+
+        This command specifies the start of a new component. The
+        component name may contain spaces. It will be truncated to 40
+        characters in length.
+
+
+THE COMPONENT HEADER
+
+    This is where you specify variables that will apply to the entire
+    component.
+
+    The following commands may be used in the component header:
+
+    [Manufacturer]  name
+
+        name = manufacturer's name
+
+        Optional.
+        Default: "Manufacturer name"
+
+        This describes the manufacturer's name, which may contain
+        spaces. It will be truncated to 40 characters in length.
+
+    [Package model] name
+
+        name = package name
+
+        Optional.
+        Default: none
+
+        This describes the package model to use for the component
+        packaging--see the IBIS v3.2 specification for more detail. May
+        contain spaces. Will be truncated to 40 characters.
+
+    [Spice file]    filename
+
+        filename = name of Spice file which describes component
+
+        Required.
+
+        This gives the name of the Spice file which describes the
+        component topology. Must conform to DOS naming conventions.
+
+    [Series Spice file]    filename
+
+        filename = name of Series Spice file which describes series MOSFET
+        for the [Series Mosfet] keyword.
+
+        Required if series MOSFET analysis is done. Not required otherwise.
+
+    [Temperature range] T_typ   T_min   T_max
+        See section "THE HEADER" (above) for description.
+
+    [Voltage range]     V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [Pullup reference]  V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [Pulldown reference]    V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [POWER clamp reference] V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [GND clamp reference]   V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [R_pkg]     r
+        See section "THE HEADER" (above) for description.
+
+    [L_pkg]     l
+        See section "THE HEADER" (above) for description.
+
+    [C_pkg]     c
+        See section "THE HEADER" (above) for description.
+
+    [C_comp]    C_typ   C_min   C_max
+        See section "THE HEADER" (above) for description.
+
+    [Rload]     r
+        See section "THE HEADER" (above) for description.
+
+    [Sim time]  t
+        See section "THE HEADER" (above) for description.
+
+    [Vil]       v_typ   v_min   v_max
+        See section "THE HEADER" (above) for description.
+
+    [Vih]       v_typ   v_min   v_max
+        See section "THE HEADER" (above) for description.
+
+    [Tr]        t_typ   t_min   t_max
+        See section "THE HEADER" (above) for description.
+
+    [Tf]        t_typ   t_min   t_max
+        See section "THE HEADER" (above) for description.
+
+    [Clamp tolerance]   i
+        See section "THE HEADER" (above) for description.
+
+    [Derate VI] x
+        See section "THE HEADER" (above) for description.
+
+    [Derate ramp]   y
+        See section "THE HEADER" (above) for description.

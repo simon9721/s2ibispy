@@ -1,0 +1,186 @@
+THE DIFFERENTIAL PIN LIST
+
+    This section contains the differential pin list information, as
+    described in the IBIS v3.2 specification. Note that s2ibis3 does
+    no processing on this information; it merely stores it and writes
+    it to the output file.
+
+    The differential pin list begins with the [Diff pin] keyword:
+
+    [Diff pin]
+
+        Optional.
+        Default: none.
+
+        Begins the differential pin list section.
+
+    This keyword is followed by lines describing the differential pin
+    relationships. Each line may contain either four or six columns.
+    The acceptable formats are:
+
+    pin_name   inv_pin   vdiff   tdelay_typ
+
+    and
+
+    pin_name   inv_pin   vdiff   tdelay_typ   tdelay_min   tdelay_max
+
+    These parameters are fully described in the IBIS v3.2 specification.
+
+
+THE PIN MAPPING
+
+    The pin mapping describes which power and ground buses are connected
+    to each pin's driver and receiver. This information is used in the
+    Spice simulations, if it is supplied.
+
+    The pin mapping begins with the [Pin mapping] keyword:
+
+    [Pin mapping]
+
+        Optional.
+        Default: none.
+
+        Begins the pin mapping section.
+
+    The keyword is followed by lines describing the pin mapping. Each
+    line may contain either three or five columns. Acceptable formats
+    are:
+
+    pin_name   pulldown_bus   pullup_bus
+
+    and
+
+    pin_name   pulldown_bus   pullup_bus   gndclamp_bus powerclamp_bus
+
+    Note that power pins are always connected to a pullup_bus, while
+    ground pins are always connected to a pulldown_bus, even if they
+    only supply power and ground for clamping structures.
+
+    These parameters are fully described in the IBIS v3.2 specification.
+
+
+THE PIN LIST
+
+    This section describes which models connect to which pins, and which
+    pins serve as inputs or enables for other (output) pins.
+
+    The pin list begins with the [Pin] keyword:
+
+    [Pin]
+
+        Required.
+
+        Begins the pin list.
+
+    The keyword is followed by "pin information sets" which describe the
+    pin list. There are six valid formats for each pin information set:
+
+    pin_name  spice_node  signal_name  model_name
+
+    pin_name  spice_node  signal_name  model_name  R_pin  L_pin  C_pin
+
+        These two formats are used for a pin with no input or enable,
+        i.e. an input pin, enable pin, power pin or ground pin. Note
+        that R_pin, L_pin and C_pin override the R_pkg, L_pkg and C_pkg
+        specifications.
+
+    pin_name  spice_node  signal_name  model_name
+    -> input_pin
+
+    pin_name  spice_node  signal_name  model_name  R_pin  L_pin  C_pin
+    -> input_pin
+
+        These two formats are used for a pin with an input pin, but no
+        enable pin. i.e. an output-only pin. Note that the
+        input_pin_name must match a pin in the pin list. Note also that
+        the "->" symbol must begin in the first column of the second
+        line.
+
+    pin_name  spice_node  signal_name  model_name
+    -> input_pin  enable_pin
+
+    pin_name  spice_node  signal_name  model_name  R_pin  L_pin  C_pin
+    -> input_pin  enable_pin
+
+        These two formats are used for a pin with both an input pin and
+        an enable pin, i.e. a tristate or I/O pin. Note that both the
+        input_pin_name and enable_pin_name must match pins in the pin
+        list. Note also that the "->" symbol must begin in the first
+        column of the second line.
+
+    Descriptions for each column are given below:
+
+    pin_name........Name of the pin. Must be 5 characters or less.
+    spice_node......Node name in the spice file which corresponds to
+                    this pin.
+    signal_name.....Name of the signal associated with this pin.
+    model_name......Name of the driver/receiver/terminator model
+                    associated with this pin. The model name must
+                    match one described by the [Model] keyword (see
+                    below), unless the model name is one of POWER,
+                    GND or NC.
+    R_pin...........Parasitic pin resistance. Overrides the R_pkg
+                    value if defined.
+    L_pin...........Parasitic pin inductance. Overrides the L_pkg
+                    value if defined.
+    C_pin...........Parasitic pin capacitance. Overrides the C_pkg
+                    value if defined.
+    input_pin.......Name of the pin which supplies the input signal
+                    to the current pin. Must match the name of
+                    another pin in the pin list. This name is used
+                    in the Spice simulations to determine where to
+                    apply the input stimulus.
+    enable_pin......Name of the pin which enables the current pin.
+                    Must match the name of another pin in the pin
+                    list. This name is used in the Spice
+                    simulations to determine where to apply the
+                    enable signal.
+
+THE SERIES PIN MAPPING
+
+    The series pin mapping is used to associate two pins joined by a 
+    series model. Each pin described under this keyword must match the
+    pin names declared previously in the [Pin] section.
+
+    The series pin mapping begins with the [Series Pin mapping] keyword:
+
+    [Series Pin mapping]
+
+        Optional.
+        Default: none.
+
+        Begins the series pin mapping section.
+
+    The keyword is followed by lines describing the series pin mapping. 
+    Each line may contain either three or four columns. Acceptable formats
+    are:
+
+    pin_name   pin_2	model_name
+
+    and
+
+    pin_name   pin_2	model_name	  function_table_group
+
+    When using 4 columns, the header function_table_group must be listed. 
+    Function_table_group must be defined in order to define the allowable 
+    switching combinations in [Series Switch Group] keyword described below.
+    More information on this keyword can be obtained from the IBIS v3.2 
+    specification.
+
+THE SERIES SWITCH GROUP
+
+    The series switch group is used to define allowable switching combinations
+    of series switches described using the names of the groups in the
+    [Series Pin Mapping] keyword function_table_group column.
+
+    The series switch group begins with the [Series switch groups] keyword:
+
+    [Series Switch Groups]
+
+        Optional.
+        Default: none.
+
+        Begins the series switch group section.
+
+    More information on this keyword can be obtained from the IBIS v3.2 
+    specification.

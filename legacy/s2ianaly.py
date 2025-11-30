@@ -902,9 +902,9 @@ class AnalyzePin:
 
         # ---------- RAMP + WAVEFORMS ----------
         if this_model_needs_transient_data(current_pin.model.modelType):
-            logging.info("Analyzing transient data")
             setup_v.setup_voltages(CS.CurveType.RISING_RAMP, current_pin.model)
 
+            logging.info("Analyzing rising ramp data")
             rc = self.s2ispice.generate_ramp_data(
                 current_pin=current_pin,
                 enable_pin=enable_pin,
@@ -929,6 +929,7 @@ class AnalyzePin:
                 logging.error("Failed to generate rising ramp: rc=%d", rc)
             res_total += rc
 
+            logging.info("Analyzing falling ramp data")
             rc = self.s2ispice.generate_ramp_data(
                 current_pin=current_pin,
                 enable_pin=enable_pin,
@@ -957,6 +958,9 @@ class AnalyzePin:
             rising_waves = current_pin.model.risingWaveList[: CS.MAX_WAVEFORM_TABLES]
             rising_sorted = sorted(rising_waves, key=lambda w: w.R_fixture, reverse=True)
 
+            if rising_sorted:
+                logging.info("Analyzing rising waveform data (%d waveform%s)", len(rising_sorted), "s" if len(rising_sorted) > 1 else "")
+            
             for file_idx, wave in enumerate(rising_sorted):
                 orig_idx = next((i for i, w in enumerate(current_pin.model.risingWaveList)
                                  if w.R_fixture == wave.R_fixture), -1)
@@ -988,6 +992,9 @@ class AnalyzePin:
             falling_waves = current_pin.model.fallingWaveList[: CS.MAX_WAVEFORM_TABLES]
             falling_sorted = sorted(falling_waves, key=lambda w: w.R_fixture, reverse=True)
 
+            if falling_sorted:
+                logging.info("Analyzing falling waveform data (%d waveform%s)", len(falling_sorted), "s" if len(falling_sorted) > 1 else "")
+            
             for file_idx, wave in enumerate(falling_sorted):
                 orig_idx = next((i for i, w in enumerate(current_pin.model.fallingWaveList)
                                  if w.R_fixture == wave.R_fixture), -1)

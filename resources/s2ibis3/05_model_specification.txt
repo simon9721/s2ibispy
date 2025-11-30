@@ -1,0 +1,265 @@
+THE MODEL SPECIFICATION
+
+    The model specification is used to describe a model and its
+    attributes. There must be a model specification for each model
+    specified in the pin list, with the exception of the reserved model
+    names POWER, GND and NC.
+
+    Each model specification begins with the [Model] keyword:
+
+    [Model]     name
+
+        name = model name
+
+        Required.
+        
+        Begins a model specification. The model name may not contain
+        spaces, and will be truncated to 20 characters.
+
+    The [Model] keyword may be followed by these commands:
+
+    [NoModel]
+
+        Optional.
+
+        Suppresses printing of the model. Useful when one wishes to
+        create a "dummy" input pin to drive an output model.
+
+    [Model type]    type
+
+        type =  Input, Output, I/O, 3-State, Open_drain,
+                I/O_open_drain, Open_sink, I/O_open_sink,
+                Open_source, I/O_open_source, Input_ECL,
+                Output_ECL, I/O_ECL, Terminator, Series
+                or Series_switch.
+
+        Required.
+
+        Specifies the model type.
+
+    [Polarity]  polarity
+
+        polarity = Inverting or Non-Inverting
+
+        Optional.
+        Default: Non-Inverting.
+
+        Defines the model polarity.
+
+    [Enable]    enable
+
+        enable = Active-High or Active-Low
+
+        Optional.
+        Default: Active-High.
+
+        Defines how the model is enabled.
+
+    [Vinl]      v
+
+        v = low input threshold voltage
+
+        Optional.
+        Default: 0.8V for non-ECL, -1.475V for ECL
+
+        Defines the low input threshold voltage.
+
+    [Vinh]      v
+
+        v = high input threshold voltage
+
+        Optional.
+        Default: 2.0V for non-ECL, -1.165V for ECL
+
+        Defines the high input threshold voltage.
+
+    [Vmeas]     v
+
+        v = reference voltage level
+
+        Optional.
+        Default: none
+
+        Defines the reference voltage level for board-level timing
+        simulation.
+
+    [Cref]      c
+
+        c = capacitive load for timing analysis
+
+        Optional.
+        Default: none
+
+        Defines the capacitive load used when specifying the propagation
+        delay or output switching time.
+
+    [Rref]      r
+
+        r = resistive load for timing analysis
+
+        Optional.
+        Default: none
+
+        Defines the resistive load used when specifying the propagation
+        delay or output switching time.
+
+    [Vref]      v
+
+        v = load voltage for timing analysis
+
+        Optional.
+        Default: none
+
+        Defines the load voltage used when specifying the propagation
+        delay or output switching time.
+
+    [Rgnd]      R_typ   R_min   R_max
+
+        R_typ = terminator ground resistance for TYP curves 
+        R_min = terminator ground resistance for MIN curves 
+        R_max = terminator ground resistance for MAX curves 
+
+        Optional.
+        Default: none.
+
+        Defines the terminator ground resistance. Only valid for models
+        of type Terminator.
+
+    [Rpower]    R_typ   R_min   R_max
+
+        R_typ = terminator power resistance for TYP curves 
+        R_min = terminator power resistance for MIN curves 
+        R_max = terminator power resistance for MAX curves 
+
+        Optional.
+        Default: none.
+
+        Defines the terminator power resistance. Only valid for models
+        of type Terminator.
+
+    [Rac]       R_typ   R_min   R_max
+
+        R_typ = terminator RC resistance for TYP curves 
+        R_min = terminator RC resistance for MIN curves 
+        R_max = terminator RC resistance for MAX curves 
+
+        Optional.
+        Default: none.
+
+        Defines the terminator RC resistance. Only valid for models of
+        type Terminator.
+
+    [Cac]       C_typ   C_min   C_max
+
+        C_typ = terminator RC capacitance for TYP curves 
+        C_min = terminator RC capacitance for MIN curves 
+        C_max = terminator RC capacitance for MAX curves 
+
+        Optional.
+        Default: none.
+
+        Defines the terminator RC capacitance. Only valid for models of
+        type Terminator.
+
+    [Model file]    F_typ   F_min   F_max
+
+        F_typ = filename for model file for TYP curves
+        F_min = filename for model file for MIN curves
+        F_max = filename for model file for MAX curves
+
+        Optional.
+        Default: none.
+
+        Specifies model files to be used for Spice simulations. Note
+        that the model files may include any valid Spice constructs--
+        s2ibis3 simply copies the named file into the Spice input file
+        before calling Spice.
+
+    [ExtSpiceCmd] filename
+	
+	filename: Name of file that have additional spice setup commands.
+	Optional.
+	Default: none.
+
+	The spice commands must conform to the spice engine in use.
+
+
+    [Rising waveform]  R_f  V_f  V_f_min  V_f_max  L_f  C_f  R_d  L_d  C_d
+    [Falling waveform] R_f  V_f  V_f_min  V_f_max  L_f  C_f  R_d  L_d  C_d
+
+        R_f =     test fixture resistance
+        V_f =     test fixture load voltage
+        V_f_min = test fixture load voltage for MIN curve
+        V_f_max = test fixture load voltage for MAX curve
+        L_f =     test fixture inductance
+        C_f =     test fixture capacitance
+        R_d =     package parasitic resistance
+        L_d =     package parasitic inductance
+        C_d =     package parasitic capacitance
+
+        Optional.
+        Default: none.
+
+        These keywords specify that s2ibis3 is to generate a rising or
+        falling waveform using the parameters listed. Note that _all_
+        columns must be filled, although only R_f and V_f must be
+        specified. Please use the reserved word NA to fill a column
+        whose value you do not wish to specify. You may have up to 100
+        rising waveforms and 100 falling waveforms per model.
+
+    [Temperature range] T_typ   T_min   T_max
+        See section "THE HEADER" (above) for description.
+
+    [Voltage range]     V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [Pullup reference]  V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [Pulldown reference]    V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [POWER clamp reference] V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [GND clamp reference]   V_typ   V_min   V_max
+        See section "THE HEADER" (above) for description.
+
+    [R_pkg]     r
+        See section "THE HEADER" (above) for description.
+
+    [L_pkg]     l
+        See section "THE HEADER" (above) for description.
+
+    [C_pkg]     c
+        See section "THE HEADER" (above) for description.
+
+    [C_comp]    C_typ   C_min   C_max
+        See section "THE HEADER" (above) for description.
+
+    [Rload]     r
+        See section "THE HEADER" (above) for description.
+
+    [Sim time]  t
+        See section "THE HEADER" (above) for description.
+
+    [Vil]       v_typ   v_min   v_max
+        See section "THE HEADER" (above) for description.
+
+    [Vih]       v_typ   v_min   v_max
+        See section "THE HEADER" (above) for description.
+
+    [Tr]        t_typ   t_min   t_max
+        See section "THE HEADER" (above) for description.
+
+    [Tf]        t_typ   t_min   t_max
+        See section "THE HEADER" (above) for description.
+
+    [Clamp tolerance]   i
+        See section "THE HEADER" (above) for description.
+
+    [Derate VI] x
+        See section "THE HEADER" (above) for description.
+
+    [Derate ramp]   y
+        See section "THE HEADER" (above) for description.

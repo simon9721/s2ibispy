@@ -30,7 +30,6 @@ UI_SCHEMA = {
             ("Source", "source", "Origin of the data", False, WIDGET_ENTRY, None),
             ("Notes", "notes", "Be honest about limitations", False, WIDGET_ENTRY, None),
             ("Disclaimer", "disclaimer", "Legal text", False, WIDGET_ENTRY, None),
-            ("Spice Type", "spice_type", "hspice, spectre, ltspice...", False, WIDGET_ENTRY, None),
             ("Iterate", "iterate", "Enable iterative solving", False, WIDGET_CHECKBOX, ("1", "0")),
             ("Cleanup", "cleanup", "Delete intermediate SPICE files", False, WIDGET_CHECKBOX, ("1", "0"))
         ],
@@ -186,7 +185,20 @@ DEFAULTS = {
 
 # Example data for new files
 EXAMPLE_MODELS = [
-    {"name": "buffer", "type": "I/O", "enable": "oe", "polarity": "Non-Inverting"}
+    {
+        "name": "buffer", 
+        "type": "I/O", 
+        "enable": "oe", 
+        "polarity": "Non-Inverting",
+        "rising_waveforms": [
+            {"R_fixture": 50, "V_fixture": 0},
+            {"R_fixture": 50, "V_fixture": 3.3}
+        ],
+        "falling_waveforms": [
+            {"R_fixture": 50, "V_fixture": 0},
+            {"R_fixture": 50, "V_fixture": 3.3}
+        ]
+    }
 ]
 
 EXAMPLE_PINS = [

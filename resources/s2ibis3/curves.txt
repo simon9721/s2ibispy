@@ -1,0 +1,81 @@
+Here's how s2ibis3 derives the curve data:
+
+I) Pullup/pulldown curves:
+
+    Pullup and pulldown curves are derived for "output" models.
+
+    For both pullup and pulldown curves, s2ibis2 attaches an input
+    voltage source and an output voltage source. The input voltage is
+    set so the output tries to drive high (for the pullup curve) or low
+    (for the pulldown curve). The output voltage is swept from 
+    (Vgnd - Vcc) to (2 * Vcc), and the output current at each output
+    voltage is recorded.
+
+    If the driver has an enable input, this sweep is performed a second
+    time with the driver disabled. (This gives the performance of
+    whatever clamping structures may be present.) This curve is then
+    subtracted from the curve obtained with the output enabled,
+    resulting in a curve that models the performance of only the driver
+    (i.e. it excludes the contributions made by the clamp structures).
+    The 3-stated buffer is swept through the same range as the driving buffer. 
+    The entire 3-stated data is subtracted from the entire driving data. 
+    This is done for both the Pullup and Pulldown curves.
+
+
+II) Clamp curves
+
+    Power and ground clamp curves are derived for "input" models, and
+    for "output" models with enable inputs.
+
+    To find the power and ground clamp curves for "input" models,
+    s2ibis3 simply attaches a voltage source to the associated pin, and
+    sweeps the voltage source. The current at each voltage point is
+    recorded.
+
+    To find the clamp curves for "output" models with enable inputs, a
+    voltage source is attached to the associated pin, the driver is
+    disabled (via a voltage source attached to the enable pin), and the
+    output voltage is swept. The current at each voltage point is
+    recorded.
+    
+    The sweep range is (Vgnd - Vcc) to (Vgnd + Vcc) for ground clamp
+    curves, and (Vcc) to (2 * Vcc) for power clamp curves.
+
+
+III) Ramp rate curves   
+    
+    Ramp rates are derived for all "output" models.
+
+    To find the ramp rates, s2ibis3 attaches the output pin of the
+    driver to the appropriate termination voltage through the resistor
+    Rload, and provides the appropriate stimulus at the input. The
+    output waveform is then examined to find the 20% and 80% voltage
+    points, and the time between them.
+    
+    The termination voltage is sometimes determined by model type: for
+    open drain models, the output is terminated by Vcc; for open source
+    models, the output is terminated by Vgnd; for ECL models, the output
+    is terminated by the default ECL termination voltage. 
+    For other model types, the termination voltage is
+    determined by whether the curve is a rising ramp or falling ramp:
+    for a rising ramp, the output is terminated to Vgnd; for a falling
+    ramp, the output is terminated to Vcc.
+
+    Rload may be specified in the command file with the [Rload] command;
+    if it's not specified, it defaults to 50 Ohms.
+
+    The input stimulus is constructed using the parameters given with
+    the [Tr], [Tf], [Vil] and [Vih] commands or their default values.
+
+
+IV) Rising/Falling Waveform curves
+
+    Rising and falling waveforms are produced for "output" models when
+    they are requested with the [Rising waveform] and [Falling waveform]
+    commands.
+
+    Deriving rising and falling waveforms is similar to deriving ramp
+    rates: the output is attached to a user-specified termination
+    voltage through a user-specified termination network. A user-defined
+    stimulus is provided at the input, and the resulting output waveform
+    is captured and saved.
