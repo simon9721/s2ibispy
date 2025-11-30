@@ -111,14 +111,19 @@ pip install -e .
 
 ### Command Line Usage
 
-Recommended (after editable install):
+Recommended (YAML-first, after editable install):
+```bash
+python -m s2ibispy input.yaml [options]
+```
+
+Legacy `.s2i` configs are still supported (auto-converted internally):
 ```bash
 python -m s2ibispy input.s2i [options]
 ```
 
-Also supported (backward compatible):
+Also supported (backward compatible script entry):
 ```bash
-python main.py input.s2i [options]
+python main.py input.yaml [options]
 ```
 
 Tip (without install): temporarily add the package to `PYTHONPATH`.
@@ -127,7 +132,8 @@ Tip (without install): temporarily add the package to `PYTHONPATH`.
 
 ### Required
 
-- input.s2i — Path to your s2ibis3-style configuration file
+- `input.yaml` — Path to modern YAML configuration
+- or `input.s2i` — Legacy s2ibis3-style configuration (supported)
 
 ### Options
 
@@ -144,11 +150,29 @@ Tip (without install): temporarily add the package to `PYTHONPATH`.
 
 **Note:** The GUI provides a more user-friendly way to configure these options with proper field types and validation.
 
-### Example
+### Examples
 
+YAML input (recommended):
+```bash
+python -m s2ibispy tests/real_test.yaml --outdir tests/output --spice-type hspice --iterate 1 --cleanup 0 --verbose
+```
+
+Legacy `.s2i` input (still supported):
 ```bash
 python -m s2ibispy tests/buffer.s2i --outdir tests/output --spice-type hspice --iterate 1 --cleanup 0 --verbose
 ```
+
+---
+
+### Migration from `.s2i` to YAML
+
+- You can run existing `.s2i` files directly: `python -m s2ibispy input.s2i ...`.
+- Recommended: convert to YAML for clearer structure and future features.
+- GUI helps convert: load `.s2i` in the Main tab; it auto-populates the YAML model. Save via "Save YAML".
+- Benefits of YAML:
+	- Nested `global_defaults`, `models`, `pins`
+	- Typ/Min/Max values grouped logically
+	- Easier diffing/version control
 
 **Output includes**:
 

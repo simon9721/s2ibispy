@@ -30,6 +30,62 @@ python gui_main.py
 
 The GUI will open with default values pre-populated in all fields.
 
+---
+
+## Screenshots (Placeholders)
+
+Add the following screenshots to visually document the workflow. Store images under `resources/screenshots/` (recommended), but any repo-accessible path works. Use the suggested filenames for consistency.
+
+1) Launch & Splash
+- File: `resources/screenshots/01_splash.png`
+- Description: Splash screen with logo shown briefly on startup.
+- Markdown include:
+  ```markdown
+  ![Splash](../resources/screenshots/01_splash.png)
+  ```
+
+2) Main Entry Tab — File Loading
+- File: `resources/screenshots/02_main_file_loading.png`
+- Description: Input type dropdown (YAML/.s2i), file browser, and session restore.
+
+3) General Settings
+- File: `resources/screenshots/03_general_settings.png`
+- Description: IBIS version, file rev/name/date, source/notes/disclaimer.
+
+4) Component & Global Defaults
+- File: `resources/screenshots/04_component_global_defaults.png`
+- Description: Component name/manufacturer/SPICE file; global sim time, voltage/temperature ranges.
+
+5) Models Editor
+- File: `resources/screenshots/05_models_editor.png`
+- Description: Models TreeView, double-click inline edit, NoModel flag.
+
+6) Pins Editor
+- File: `resources/screenshots/06_pins_editor.png`
+- Description: Pins TreeView with Signal/Model mapping, inline edit.
+
+7) Simulation Controls
+- File: `resources/screenshots/07_simulation_controls.png`
+- Description: Start Conversion, progress, status bar; auto-save log.
+
+8) IBIS Viewer Tab
+- File: `resources/screenshots/08_ibis_viewer.png`
+- Description: Section tree with jump-to, content pane.
+
+9) Plots Tab
+- File: `resources/screenshots/09_plots_tab.png`
+- Description: Table filters, plot canvas, pop-out window.
+
+10) Correlation Tab
+- File: `resources/screenshots/10_correlation_tab.png`
+- Description: .tr0 loader, selection checkboxes, overlay plot.
+
+11) YAML Editor Tab (if enabled)
+- File: `resources/screenshots/11_yaml_editor_tab.png`
+- Description: Full YAML form with Save/Save As; models & pins trees.
+
+---
+
 ### Basic Workflow
 
 1. **Load a file**: Choose `.yaml` or `.s2i` from the file type dropdown
@@ -37,6 +93,8 @@ The GUI will open with default values pre-populated in all fields.
 3. **Set paths**: Specify output directory and optional ibischk path
 4. **Start conversion**: Click "Start Conversion" to generate IBIS model
 5. **View results**: Check logs, plots, and generated files
+
+Tip: After starting conversion, the log will include a human-readable list of modified fields (e.g., "Component Name", "Global Sim Time"), followed by "Auto-saved YAML before simulation".
 
 ---
 

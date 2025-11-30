@@ -86,7 +86,7 @@ class PlotsTab:
             self.gui.log(f"IBIS file not found: {ibs_path.name}", "ERROR")
             return
         try:
-            from plotter.ibis_plotter import parse_ibis_tables
+            from s2ibispy.plotter.ibis_plotter import parse_ibis_tables
             self.blocks = parse_ibis_tables(str(ibs_path))
             self.ibs_path_var.set(str(ibs_path))
             self.refresh_list()
