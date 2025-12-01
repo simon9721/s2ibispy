@@ -76,6 +76,7 @@ Linux/macOS users: use the same steps but activate with `source .venv/bin/activa
 - Real-time simulation with progress feedback and abort capability
 - Integrated plotting and correlation analysis
 - Bundled ibischk7.exe with auto-detection
+- **Windows standalone .exe available** (no Python installation required)
 
 See [gui/README.md](gui/README.md) for complete GUI documentation.
 
@@ -186,9 +187,25 @@ python -m s2ibispy tests/buffer.s2i --outdir tests/output --spice-type hspice --
 
 A modern graphical interface is available with unified configuration, real-time simulation, and integrated analysis tools:
 
+**Option 1: Run from source**
 ```bash
 python gui_main.py
 ```
+
+**Option 2: Windows Executable (Standalone)**
+
+A standalone Windows executable is available that requires no Python installation:
+- Download `s2ibispy.exe` from the releases page or build folder (`dist/`)
+- Double-click to launch the GUI
+- All resources (icons, templates, data files) are bundled
+
+To build the executable yourself:
+```powershell
+pip install pyinstaller
+pyinstaller --name s2ibispy --onefile --windowed --icon resources\icons\s2ibispy.ico --add-data "resources;resources" --add-data "templates;templates" --add-data "src\s2ibispy\data;s2ibispy\data" gui_main.py
+```
+
+The built executable will be in `dist\s2ibispy.exe`.
 
 **Key Features**:
 

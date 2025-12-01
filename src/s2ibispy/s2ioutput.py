@@ -56,7 +56,6 @@ class IbisWriter:
         self._print_multiline(f, "[Disclaimer]", self.ibis_head.disclaimer)
         if ibis_ver_int != CS.VERSION_ONE_ONE:
             self._print_multiline(f, "[Copyright]", self.ibis_head.copyright)
-        f.write("\n")
 
         for comp in reversed(self.ibis_head.cList or []):
             self._print_component(f, comp, ibis_ver_int)
@@ -376,17 +375,65 @@ class IbisWriter:
             f.write(f"{keyword} {value}\n")
 
     def _print_multiline(self, f, keyword: str, value: str) -> None:
+        """
+        Print multiline keywords according to IBIS spec.
+        First line: [Keyword] first_line_content
+        Subsequent lines: space + content
+        
+        Automatically wraps long lines to ~78 characters for readability.
+        """
         if not value:
             return
+        
+        # Split by existing newlines first
         lines = value.splitlines()
         if not lines:
             return
-        # Print keyword on first line
-        f.write(f"{keyword} {lines[0]}\n")
-        # Print remaining lines with leading space
-        for line in lines[1:]:
-            f.write(f" {line}\n")
-        f.write("\n")
+        
+        # Process and wrap lines
+        max_width = 78  # Standard IBIS line width
+        wrapped_lines = []
+        
+        for i, line in enumerate(lines):
+            # First line needs space for keyword
+            if i == 0:
+                available = max_width - len(keyword) - 1
+            else:
+                available = max_width - 1  # -1 for leading space
+            
+            # If line fits, add it as-is
+            if len(line) <= available:
+                wrapped_lines.append(line)
+            else:
+                # Wrap long lines
+                words = line.split()
+                current = []
+                current_len = 0
+                
+                for word in words:
+                    word_len = len(word)
+                    # +1 for space between words
+                    if current and current_len + 1 + word_len > available:
+                        wrapped_lines.append(' '.join(current))
+                        current = [word]
+                        current_len = word_len
+                        available = max_width - 1  # Subsequent lines have leading space
+                    else:
+                        if current:
+                            current_len += 1 + word_len
+                        else:
+                            current_len = word_len
+                        current.append(word)
+                
+                if current:
+                    wrapped_lines.append(' '.join(current))
+        
+        # Print keyword with first line
+        if wrapped_lines:
+            f.write(f"{keyword} {wrapped_lines[0]}\n")
+            # Print remaining lines with leading space for continuation
+            for line in wrapped_lines[1:]:
+                f.write(f" {line}\n")
 
     def _print_header(self, f, name: str, kind: str) -> None:
         bar = "|" + "*" * 78 + "\n"

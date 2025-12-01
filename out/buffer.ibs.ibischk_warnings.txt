@@ -1,4 +1,0 @@
-WARNING (line   24) - Component 'MCM Driver 1' contains a blank character.
-WARNING (line   44) - Vinl should not be specified for model type Output
-WARNING (line   45) - Vinh should not be specified for model type Output
-WARNING - Model 'driver': Vmeas timing test load parameter should be specified
