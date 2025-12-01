@@ -175,6 +175,8 @@ python -m s2ibispy tests/buffer.s2i --outdir tests/output --spice-type hspice --
 	- Typ/Min/Max values grouped logically
 	- Easier diffing/version control
 
+For a deeper comparison and migration tips, see [YAML vs .s2i](docs/YAML_VS_S2I.md).
+
 **Output includes**:
 
 - results/my_buffer.ibs
