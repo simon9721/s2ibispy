@@ -9,6 +9,8 @@
 
 ![S2IBISpy](resources//icons/s2ibispy.png)
 
+For detailed changes, see the project changelog: [CHANGELOG.md](CHANGELOG.md).
+
 
 `s2ibis3` was developed by North Carolina State University and has been a widely used reference tool for generating IBIS models from SPICE netlists. Written in Java, it has not received updates in many years.
 
