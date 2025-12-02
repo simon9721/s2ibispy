@@ -901,6 +901,14 @@ class MainEntryTab:
         elif key.startswith("vih_"):
             suffix = key[4:]  # typ, min, max
             return global_defaults.get("vih", {}).get(suffix, "")
+        # Tr: tr_typ -> tr.typ
+        elif key.startswith("tr_"):
+            suffix = key[3:]  # typ, min, max
+            return global_defaults.get("tr", {}).get(suffix, "")
+        # Tf: tf_typ -> tf.typ
+        elif key.startswith("tf_"):
+            suffix = key[3:]  # typ, min, max
+            return global_defaults.get("tf", {}).get(suffix, "")
         # Pullup: pullup_typ -> pullup.typ
         elif key.startswith("pullup_"):
             suffix = key[7:]  # typ, min, max
@@ -969,6 +977,18 @@ class MainEntryTab:
             if "vih" not in global_defaults:
                 global_defaults["vih"] = {}
             global_defaults["vih"][suffix] = value
+        # Tr: tr_typ -> tr.typ
+        elif key.startswith("tr_"):
+            suffix = key[3:]  # typ, min, max
+            if "tr" not in global_defaults:
+                global_defaults["tr"] = {}
+            global_defaults["tr"][suffix] = value
+        # Tf: tf_typ -> tf.typ
+        elif key.startswith("tf_"):
+            suffix = key[3:]  # typ, min, max
+            if "tf" not in global_defaults:
+                global_defaults["tf"] = {}
+            global_defaults["tf"][suffix] = value
         # Pullup: pullup_typ -> pullup.typ
         elif key.startswith("pullup_"):
             suffix = key[7:]  # typ, min, max
@@ -1080,6 +1100,12 @@ class MainEntryTab:
                 'vih.typ': 'VIH Typ',
                 'vih.min': 'VIH Min',
                 'vih.max': 'VIH Max',
+                'tr.typ': 'Tr Typ',
+                'tr.min': 'Tr Min',
+                'tr.max': 'Tr Max',
+                'tf.typ': 'Tf Typ',
+                'tf.min': 'Tf Min',
+                'tf.max': 'Tf Max',
                 'pullup.typ': 'Pullup Typ',
                 'pullup.min': 'Pullup Min',
                 'pullup.max': 'Pullup Max',

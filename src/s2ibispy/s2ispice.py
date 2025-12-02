@@ -1046,8 +1046,21 @@ class S2ISpice:
 
             t_v_pairs: List[Tuple[float, float]] = []
 
-            for raw in lines:
+            # Find the transient data section header
+            in_tran_section = False
+            for i, raw in enumerate(lines):
                 line = raw.strip()
+                
+                # Look for transient data header (e.g., "time         voltage")
+                if not in_tran_section:
+                    if 'time' in line.lower() and 'voltage' in line.lower():
+                        in_tran_section = True
+                        logging.debug(f"Found transient header at line {i}: {line}")
+                        continue
+                    else:
+                        continue
+                
+                # Once in transient section, parse data
                 if not line or line.startswith('*'):
                     continue  # ← SKIP ALL COMMENT LINES
 
@@ -1061,6 +1074,9 @@ class S2ISpice:
                     v = float(toks[1])
                     t_v_pairs.append((t, v))
                 except ValueError:
+                    # If we hit non-numeric data after starting, we may have left the section
+                    if in_tran_section and len(t_v_pairs) > 10:
+                        break
                     continue  # ← SKIP NON-NUMERIC LINES
 
             if not t_v_pairs:
@@ -1391,7 +1407,8 @@ class S2ISpice:
             case_flag = _case_flag(corner)
             if curve_type == CS.CurveType.SERIES_VI:
                 input_buffer = self.set_pin_dc(input_pin, model.polarity, output_high, "gate", case_flag)
-                input_buffer += f"VDS {current_pin.pinName} {current_pin.seriesPin2name} DC {vds}\n"
+                out_node = self._pin_node(current_pin) or current_pin.pinName
+                input_buffer += f"VDS {out_node} {current_pin.seriesPin2name} DC {vds}\n"
             else:
                 # Only drive ENA when an enable pin is defined
                 input_buffer = ""

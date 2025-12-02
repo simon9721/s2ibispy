@@ -69,6 +69,8 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
             "voltage_range": tmm_to_dict(global_.voltageRange),
             "vil": tmm_to_dict(global_.vil),
             "vih": tmm_to_dict(global_.vih),
+            "tr": tmm_to_dict(global_.tr),
+            "tf": tmm_to_dict(global_.tf),
         }
     }
     

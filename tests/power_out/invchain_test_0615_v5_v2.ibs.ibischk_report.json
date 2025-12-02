@@ -1,10 +1,6 @@
 {
   "returncode": 0,
-  "errors": [
-    "ERROR (line  383) - dV must be greater than 0 in a Ramp specification",
-    "ERROR (line  383) - dV must be greater than 0 in a Ramp specification",
-    "ERROR (line  383) - dV must be greater than 0 in a Ramp specification"
-  ],
+  "errors": [],
   "warnings": [
     "WARNING (line   30) - Vinl should not be specified for model type Output",
     "WARNING (line   31) - Vinh should not be specified for model type Output",
@@ -17,6 +13,6 @@
     "WARNING - Model driver3: Maximum ISSO_PU current (-6.325e-02A) at Pulldown reference ( 0.000V) - table value ( 1.900V) is non-zero (> 1.0e-06A)"
   ],
   "notes": [],
-  "total_errors": 3,
+  "total_errors": 0,
   "total_warnings": 9
 }

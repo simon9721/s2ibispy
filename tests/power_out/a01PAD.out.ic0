@@ -1,7 +1,7 @@
 * "simulator" "PrimeSim HSPICE"
 * "version" "T-2022.06 win64"
 * "format" "HSP"
-* "rundate" "19:25:11 12/01/2025 "
+* "rundate" "23:08:53 12/01/2025 "
 * "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\power_out\a01PAD.spi "
 * "runtitle" "nominal full drive"
 * time =  0.000e+00       
