@@ -12,6 +12,25 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
     """Convert .s2i file to YAML format."""
     parser = S2IParser()
     ibis, global_, mList = parser.parse(str(s2i_path))
+
+    # --- Debug instrumentation: verify spiceNodeName presence per pin ---
+    try:
+        total_pins = 0
+        with_spice = 0
+        missing_list = []
+        for comp in getattr(ibis, 'cList', []):
+            for pin in getattr(comp, 'pList', []):
+                total_pins += 1
+                val = getattr(pin, 'spiceNodeName', '')
+                if val:
+                    with_spice += 1
+                else:
+                    missing_list.append(pin.pinName)
+        print(f"[DEBUG] Pins parsed: {total_pins}; with spiceNodeName: {with_spice}; missing: {len(missing_list)}")
+        if missing_list:
+            print(f"[DEBUG] Missing spiceNodeName for pins: {', '.join(missing_list[:25])}{' ...' if len(missing_list) > 25 else ''}")
+    except Exception as e:
+        print(f"[DEBUG] Pin instrumentation error: {e}")
     
     # Helper to convert IbisTypMinMax to dict
     def tmm_to_dict(tmm):
@@ -23,8 +42,15 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
             "max": tmm.max if hasattr(tmm, 'max') else 0,
         }
     
+    # Helper to check if a TMM has actual values (not all NaN)
+    def tmm_has_values(tmm):
+        if tmm is None:
+            return False
+        return not (math.isnan(tmm.typ) and math.isnan(tmm.min) and math.isnan(tmm.max))
+    
     # Build YAML structure
     yaml_data = {
+        "spice_subckt": getattr(global_, 'spice_subckt', None) or None,
         "ibis_version": ibis.ibisVersion,
         "file_name": ibis.thisFileName,
         "file_rev": ibis.fileRev,
@@ -46,14 +72,14 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
         }
     }
     
-    # Add optional reference voltages only if they exist and are not default/empty/nan
-    if hasattr(global_, 'pullupRef') and global_.pullupRef and not math.isnan(global_.pullupRef.typ):
+    # Add optional reference voltages only if they exist and have actual values (not all NaN)
+    if hasattr(global_, 'pullupRef') and tmm_has_values(global_.pullupRef):
         yaml_data["global_defaults"]["pullup_ref"] = tmm_to_dict(global_.pullupRef)
-    if hasattr(global_, 'pulldownRef') and global_.pulldownRef and not math.isnan(global_.pulldownRef.typ):
+    if hasattr(global_, 'pulldownRef') and tmm_has_values(global_.pulldownRef):
         yaml_data["global_defaults"]["pulldown_ref"] = tmm_to_dict(global_.pulldownRef)
-    if hasattr(global_, 'powerClampRef') and global_.powerClampRef and not math.isnan(global_.powerClampRef.typ):
+    if hasattr(global_, 'powerClampRef') and tmm_has_values(global_.powerClampRef):
         yaml_data["global_defaults"]["power_clamp_ref"] = tmm_to_dict(global_.powerClampRef)
-    if hasattr(global_, 'gndClampRef') and global_.gndClampRef and not math.isnan(global_.gndClampRef.typ):
+    if hasattr(global_, 'gndClampRef') and tmm_has_values(global_.gndClampRef):
         yaml_data["global_defaults"]["gnd_clamp_ref"] = tmm_to_dict(global_.gndClampRef)
     
     # Add pin parasitics
@@ -192,6 +218,9 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
                 "signalName": pin.signalName,
                 "modelName": pin.modelName,
             }
+            # Critical fix: emit spiceNodeName so analysis uses correct internal node
+            if hasattr(pin, 'spiceNodeName') and pin.spiceNodeName:
+                p["spiceNodeName"] = pin.spiceNodeName
             if hasattr(pin, 'inputPin') and pin.inputPin:
                 p["inputPin"] = pin.inputPin
             if hasattr(pin, 'enablePin') and pin.enablePin:

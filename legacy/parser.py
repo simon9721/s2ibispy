@@ -213,7 +213,12 @@ class S2IParser:
             if self.compCount > 0 or self.modelCount > 0:
                 logging.error(f"Line {line_num}: [IBIS Ver] must be first")
                 return
-            self.ibis.ibisVersion = args if args in ["1.1", "2.1", "3.2"] else "3.2"
+            ver = (args or "").strip()
+            if re.match(r'^\d+(?:\.\d+)?$', ver):
+                self.ibis.ibisVersion = ver
+            else:
+                logging.warning(f"Line {line_num}: Unrecognized IBIS Ver '{args}', defaulting to 3.2")
+                self.ibis.ibisVersion = "3.2"
             self.globalProc = True
             return
 
@@ -264,6 +269,16 @@ class S2IParser:
         if key == "spice command":
             # Optional explicit simulator command
             self.ibis.spiceCommand = args
+            return
+
+        if key == "spice subckt":
+            # Optional top-level subckt name for the DUT
+            cleaned = args.strip().strip('"').strip("'")
+            if cleaned:
+                try:
+                    setattr(self.global_, "spice_subckt", cleaned)
+                except Exception:
+                    pass
             return
 
         if key == "iterate":
@@ -954,7 +969,7 @@ class S2IParser:
         if text.upper() in {"NA", "N/A", "NAN"}:
             return CS.USE_NA
 
-        text = re.sub(r'\s*(ohms?|Ω|[Vv]|[Hh]|[Ff]|[Ss]|[Aa]|[Hh][Zz])\s*$', '', text)
+        text = re.sub(r'\s*(ohms?|Ω|[Vv]|[Hh]|[Ff]|[Ss]|[Aa]|[Hh][Zz]|[Cc])\s*$', '', text)
 
         # SI-suffixed float (single-letter SI before any unit we stripped)
         m = re.match(

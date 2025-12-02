@@ -18,7 +18,7 @@ if str(root_path) not in sys.path:
 
 from gui.utils.yaml_editor_model import YamlModel, ValidationError
 from gui.utils.yaml_editor_config import UI_SCHEMA, COLORS, FONTS
-from gui.utils.s2i_to_yaml import convert_s2i_to_yaml
+from s2ibispy.s2i_to_yaml import convert_s2i_to_yaml
 from legacy.parser import S2IParser
 from s2ibispy.cli import main as run_conversion
 
@@ -782,6 +782,16 @@ class MainEntryTab:
         
         # Pins
         pins = []
+        # Preserve existing per-pin fields (e.g., spiceNodeName) not exposed in UI columns
+        existing_pin_map = {}
+        try:
+            existing_components = self.yaml_model.data.get("components", [])
+            if existing_components and isinstance(existing_components[0], dict):
+                for _p in existing_components[0].get("pList", []):
+                    if isinstance(_p, dict) and _p.get("pinName"):
+                        existing_pin_map[_p["pinName"]] = _p
+        except Exception:
+            existing_pin_map = {}
         for item in self.pins_tree.get_children():
             vals = self.pins_tree.item(item, "values")
             pin = {
@@ -789,6 +799,11 @@ class MainEntryTab:
                 "signalName": vals[1],
                 "modelName": vals[2],
             }
+            # Reattach preserved fields if they existed originally (e.g. spiceNodeName)
+            original = existing_pin_map.get(vals[0])
+            if original:
+                if "spiceNodeName" in original and original["spiceNodeName"]:
+                    pin["spiceNodeName"] = original["spiceNodeName"]
             if vals[3]:
                 pin["inputPin"] = vals[3]
             if vals[4]:

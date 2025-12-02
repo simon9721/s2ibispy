@@ -1,0 +1,62 @@
+*Min rising waveform curve for model driver2 start_time=0
+*Spice deck created by Layout Workbench Version 24.1.0.10141.541387   000
+.inc 'invchain_top.sp'
+.lib 'HL18G-S3.7S.lib' tt_tn
+.param Wn=1E-6
+.param Wp=2E-6
+.param Ln=180E-9
+.param Lp=180E-9
+
+.PARAM  vccq      = vccq_min
+.PARAM  vccr      = vccr_min
+
+.subckt invchain VIN VOUT8 vccq vssq
+
+MPM_inv1 VOUT1 VIN vccq vccq pch_tn W=Wp L=Lp m=1
+MNM_inv1 VOUT1 VIN vssq vssq nch_tn W=Wn L=Ln m=1
+
+MPM_inv2 VOUT2 VOUT1 vccq vccq pch_tn W=Wp L=Lp m=2
+MNM_inv2 VOUT2 VOUT1 vssq vssq nch_tn W=Wn L=Ln m=2
+
+MPM_inv3 VOUT3 VOUT2 vccq vccq pch_tn W=Wp L=Lp m=4
+MNM_inv3 VOUT3 VOUT2 vssq vssq nch_tn W=Wn L=Ln m=4
+
+MPM_inv4 VOUT4 VOUT3 vccq vccq pch_tn W=Wp L=Lp m=8
+MNM_inv4 VOUT4 VOUT3 vssq vssq nch_tn W=Wn L=Ln m=8
+
+MPM_inv5 VOUT5 VOUT4 vccq vccq pch_tn W=Wp L=Lp m=16
+MNM_inv5 VOUT5 VOUT4 vssq vssq nch_tn W=Wn L=Ln m=16
+
+MPM_inv6 VOUT6 VOUT5 vccq vccq pch_tn W=Wp L=Lp m=32
+MNM_inv6 VOUT6 VOUT5 vssq vssq nch_tn W=Wn L=Ln m=32
+
+MPM_inv7 VOUT7 VOUT6 vccq vccq pch_tn W=Wp L=Lp m=64
+MNM_inv7 VOUT7 VOUT6 vssq vssq nch_tn W=Wn L=Ln m=64
+
+MPM_inv8 VOUT8 VOUT7 vccq vccq pch_tn W=Wp L=Lp m=128
+MNM_inv8 VOUT8 VOUT7 vssq vssq nch_tn W=Wn L=Ln m=128
+
+.ends
+RFIXT2B VOUT8 dum17854 5.000000e+01
+
+VCCT2B vccq 0 DC 1.7
+VGNDT2B vssq 0 DC 0
+
+ 
+
+VINT2B VIN 0  PULSE(0 1.8 0 1e-11 1e-11 1.69e-09 3.4e-09)
+VFIXT2B dum17854 0 DC 1.7
+
+.TEMP 27.000000
+
+.OPTIONS INGOLD=2.000000
+.OPTIONS NUMDGT=8
+
+
+.OPTIONS DELMAX=1.000000e-11
+
+.TRAN 1.000000e-12 1.700000e-09 
+.PRINT TRAN V(VOUT8) I(VCCT2B)
+
+.END
+

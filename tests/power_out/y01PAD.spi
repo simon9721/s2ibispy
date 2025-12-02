@@ -1,0 +1,73 @@
+* Min falling_wave curve for model driver3
+*Spice Deck created by PYS2IBIS3 Version Beta
+*Missouri S&T EMC Lab
+
+.OPTIONS LIST NODE POST
+.OPTIONS METHOD=GEAR
+.OPTIONS GSHUNT=1E-12
+
+.TITLE Nominal Full Drive
+
+.PARAM  vccr_typ  = 1.300V
+.PARAM  vccr_min  = 1.250V
+.PARAM  vccr_max  = 1.350V
+
+.PARAM  vccq_typ  = 1.800V
+.PARAM  vccq_min  = 1.700V
+.PARAM  vccq_max  = 1.900V
+
+.PARAM  gnd       = 0.000V
+.PARAM  vssq      = 0.000V
+.PARAM  vss       = 0.000V
+
+
+XSPI_BUFFER VIN VOUT8 vccq vssq invchain
+
+.lib 'HL18G-S3.7S.lib' tt_tn
+.param Wn=1E-6
+.param Wp=2E-6
+.param Ln=180E-9
+.param Lp=180E-9
+
+.PARAM  vccq      = vccq_min
+.PARAM  vccr      = vccr_min
+
+.subckt invchain VIN VOUT8 vccq vssq
+
+MPM_inv1 VOUT1 VIN vccq vccq pch_tn W=Wp L=Lp m=1
+MNM_inv1 VOUT1 VIN vssq vssq nch_tn W=Wn L=Ln m=1
+
+MPM_inv2 VOUT2 VOUT1 vccq vccq pch_tn W=Wp L=Lp m=2
+MNM_inv2 VOUT2 VOUT1 vssq vssq nch_tn W=Wn L=Ln m=2
+
+MPM_inv3 VOUT3 VOUT2 vccq vccq pch_tn W=Wp L=Lp m=4
+MNM_inv3 VOUT3 VOUT2 vssq vssq nch_tn W=Wn L=Ln m=4
+
+MPM_inv4 VOUT4 VOUT3 vccq vccq pch_tn W=Wp L=Lp m=8
+MNM_inv4 VOUT4 VOUT3 vssq vssq nch_tn W=Wn L=Ln m=8
+
+MPM_inv5 VOUT5 VOUT4 vccq vccq pch_tn W=Wp L=Lp m=16
+MNM_inv5 VOUT5 VOUT4 vssq vssq nch_tn W=Wn L=Ln m=16
+
+MPM_inv6 VOUT6 VOUT5 vccq vccq pch_tn W=Wp L=Lp m=32
+MNM_inv6 VOUT6 VOUT5 vssq vssq nch_tn W=Wn L=Ln m=32
+
+MPM_inv7 VOUT7 VOUT6 vccq vccq pch_tn W=Wp L=Lp m=64
+MNM_inv7 VOUT7 VOUT6 vssq vssq nch_tn W=Wn L=Ln m=64
+
+MPM_inv8 VOUT8 VOUT7 vccq vccq pch_tn W=Wp L=Lp m=128
+MNM_inv8 VOUT8 VOUT7 vssq vssq nch_tn W=Wn L=Ln m=128
+
+.ends
+RFIXS2I VOUT8 dummy0 50.0
+VCCS2I vccq 0 DC 1.7
+VGNDS2I vssq 0 DC 0.0
+.TEMP 27.0
+
+VINS2I VIN 0 PULSE(1.8 0.0 0 1.7000000000000003e-11 1.7000000000000003e-11 3.4000000000000003e-09 6.8680000000000007e-09)
+
+VFIXS2I dummy0 0 DC 0.0
+.OPTION INGOLD=2
+.TRAN 1.700e-11 1.700e-09
+.PRINT TRAN V(VOUT8) I(VCCS2I)
+.END

@@ -154,16 +154,17 @@ DEFAULTS = {
     "voltage_typ": "5.0", # VOLTAGE_RANGE_TYP_DEFAULT
     "voltage_min": "4.5", # VOLTAGE_RANGE_MIN_DEFAULT
     "voltage_max": "5.5", # VOLTAGE_RANGE_MAX_DEFAULT
-    "pullup_typ": "3.3",
+    # Optional power-aware reference voltages - only set when explicitly needed
+    "pullup_typ": None,
     "pullup_min": None,
     "pullup_max": None,
-    "pulldown_typ": "0",
+    "pulldown_typ": None,
     "pulldown_min": None,
     "pulldown_max": None,
-    "power_clamp_typ": "3.3",
+    "power_clamp_typ": None,
     "power_clamp_min": None,
     "power_clamp_max": None,
-    "gnd_clamp_typ": "0",
+    "gnd_clamp_typ": None,
     "gnd_clamp_min": None,
     "gnd_clamp_max": None,
     "vil_typ": "0.8",

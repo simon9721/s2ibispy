@@ -1,5 +1,6 @@
 # s2ioutput.py — FINAL, CORRECT, MERGED VERSION
 import logging
+import re
 import math
 from typing import List, Optional
 from s2ibispy.models import (
@@ -43,12 +44,22 @@ class IbisWriter:
             # Future-proof mappings
             "6.0": CS.VERSION_SIX_ZERO,
             "7.0": CS.VERSION_SEVEN_ZERO,
+            # Print-through for newer minor versions; treat as 7.0 internally
+            "7.1": CS.VERSION_SEVEN_ZERO,
         }
-        ibis_ver_int = ver_map.get(self.ibis_head.ibisVersion, CS.VERSION_THREE_TWO)
+        requested_ver = (self.ibis_head.ibisVersion or "3.2").strip()
+        ibis_ver_int = ver_map.get(requested_ver, CS.VERSION_THREE_TWO)
         version_str = {v: k for k, v in ver_map.items()}.get(ibis_ver_int, "3.2")
 
-        self._print_keyword(f, "[IBIS Ver]", version_str)
-        self._print_keyword(f, "[File Name]", self.ibis_head.thisFileName)
+        # Prefer printing the exact version string if it looks numeric
+        print_ver = requested_ver if re.match(r'^\d+(?:\.\d+)?$', requested_ver) else version_str
+
+        self._print_keyword(f, "[IBIS Ver]", print_ver)
+        # Ensure [File Name] ends with .ibs per ibischk expectation
+        file_name_line = self.ibis_head.thisFileName or "buffer.ibs"
+        if not file_name_line.lower().endswith(".ibs"):
+            file_name_line += ".ibs"
+        self._print_keyword(f, "[File Name]", file_name_line)
         self._print_keyword(f, "[File Rev]", self.ibis_head.fileRev)
         self._print_keyword(f, "[Date]", self.ibis_head.date)
         self._print_multiline(f, "[Source]", self.ibis_head.source)

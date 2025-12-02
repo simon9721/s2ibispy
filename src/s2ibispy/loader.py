@@ -46,12 +46,29 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
     )
 
     gd = config.global_defaults
+    # Capture raw YAML keys to distinguish between explicitly provided vs omitted optional refs.
+    try:
+        # 'raw' still available from earlier yaml.safe_load
+        gd_raw = raw.get('global_defaults', {}) if isinstance(raw, dict) else {}
+    except Exception:
+        gd_raw = {}
 
     def tmm(val, default_typ):
+        """Required TMM: apply default typ only if entire block absent."""
         if val is None:
-            return IbisTypMinMax(typ=default_typ)
+            return IbisTypMinMax(typ=default_typ, min=float("nan"), max=float("nan"))
         return IbisTypMinMax(
-            typ=getattr(val, "typ", default_typ),
+            typ=getattr(val, "typ", float("nan")),
+            min=getattr(val, "min", float("nan")),
+            max=getattr(val, "max", float("nan")),
+        )
+
+    def tmm_optional(val):
+        """Optional reference/clamp TMM: keep all NaN if absent so writer suppresses keyword."""
+        if val is None:
+            return IbisTypMinMax(typ=float("nan"), min=float("nan"), max=float("nan"))
+        return IbisTypMinMax(
+            typ=getattr(val, "typ", float("nan")),
             min=getattr(val, "min", float("nan")),
             max=getattr(val, "max", float("nan")),
         )
@@ -59,10 +76,11 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
     global_ = IbisGlobal()
     global_.tempRange = tmm(gd.temp_range, 27)
     global_.voltageRange = tmm(gd.voltage_range, 3.3)
-    global_.pullupRef = tmm(gd.pullup_ref, 3.3)
-    global_.pulldownRef = tmm(gd.pulldown_ref, 0.0)
-    global_.powerClampRef = tmm(gd.power_clamp_ref, 3.3)
-    global_.gndClampRef = tmm(gd.gnd_clamp_ref, 0.0)
+    # Optional references: no default injection; remain NaN if not provided
+    global_.pullupRef = tmm_optional(gd.pullup_ref if 'pullup_ref' in gd_raw else None)
+    global_.pulldownRef = tmm_optional(gd.pulldown_ref if 'pulldown_ref' in gd_raw else None)
+    global_.powerClampRef = tmm_optional(gd.power_clamp_ref if 'power_clamp_ref' in gd_raw else None)
+    global_.gndClampRef = tmm_optional(gd.gnd_clamp_ref if 'gnd_clamp_ref' in gd_raw else None)
     global_.vil = tmm(gd.vil, 0.8)
     global_.vih = tmm(gd.vih, 2.0)
     global_.c_comp = tmm(getattr(gd,'c_comp', None), 1.2e-12)
@@ -72,6 +90,12 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
     global_.derateVIPct = getattr(gd, "derate_vi_pct", 0.0)
     global_.derateRampPct = getattr(gd, "derate_ramp_pct", 0.0)
     global_.clampTol = getattr(gd, "clamp_tol", 0.0)
+    # Optional global subcircuit name from YAML (captured from [Spice Subckt])
+    if hasattr(config, "spice_subckt") and getattr(config, "spice_subckt"):
+        try:
+            setattr(global_, "spice_subckt", config.spice_subckt)
+        except Exception:
+            pass
 
     mList = []
     for mcfg in config.models:
@@ -121,9 +145,16 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
         else:
             model.polarity = CS.MODEL_POLARITY_NON_INVERTING
 
+        # Enable polarity: prefer explicit enable_polarity, else accept legacy 'enable'
         if mcfg.enable_polarity:
             ep = mcfg.enable_polarity.upper().replace("-", "_")
             if ep == "ACTIVE_LOW" or ep == "ACTIVE-LOW":
+                model.enable = CS.MODEL_ENABLE_ACTIVE_LOW
+            else:
+                model.enable = CS.MODEL_ENABLE_ACTIVE_HIGH
+        elif getattr(mcfg, "enable", None):
+            e = str(mcfg.enable).upper().replace("-", "_")
+            if e == "ACTIVE_LOW" or e == "ACTIVE-LOW":
                 model.enable = CS.MODEL_ENABLE_ACTIVE_LOW
             else:
                 model.enable = CS.MODEL_ENABLE_ACTIVE_HIGH
@@ -140,6 +171,7 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
                 pinName=p.pinName,
                 signalName=p.signalName,
                 modelName=p.modelName,
+                spiceNodeName=getattr(p, "spiceNodeName", None) or "",
                 R_pin=p.R_pin if p.R_pin is not None else CS.NOT_USED,
                 L_pin=p.L_pin if p.L_pin is not None else CS.NOT_USED,
                 C_pin=p.C_pin if p.C_pin is not None else CS.NOT_USED,
@@ -154,7 +186,8 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
 
         comp = IbisComponent(
             component=ccfg.component,
-            manufacturer=ccfg.manufacturer,
+            # Default manufacturer if missing (IBIS requires it)
+            manufacturer=ccfg.manufacturer or "yourcompany",
             spiceFile=ccfg.spiceFile,
             seriesSpiceFile=ccfg.seriesSpiceFile,
             pinParasitics=ccfg.pinParasitics,

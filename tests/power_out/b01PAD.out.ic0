@@ -1,0 +1,25 @@
+* "simulator" "PrimeSim HSPICE"
+* "version" "T-2022.06 win64"
+* "format" "HSP"
+* "rundate" "19:25:11 12/01/2025 "
+* "netlist" "C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\power_out\b01PAD.spi "
+* "runtitle" "nominal full drive"
+* time =  0.000e+00       
+* temperature =  2.700e+01       
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc= 1.000e-12       
+.nodeset
++ dummy0 = 0.000e+00       
++ vccq = 1.700e+00       
++ vin = 0.000e+00       
++ vout8 = 1.276e-08       
++ vssq = 0.000e+00       
++ xspi_buffer.vout1 = 1.700e+00       
++ xspi_buffer.vout2 = 1.420e-08       
++ xspi_buffer.vout3 = 1.700e+00       
++ xspi_buffer.vout4 = 1.420e-08       
++ xspi_buffer.vout5 = 1.700e+00       
++ xspi_buffer.vout6 = 1.420e-08       
++ xspi_buffer.vout7 = 1.700e+00       
+***   END: Saved Operating Point ***                     
