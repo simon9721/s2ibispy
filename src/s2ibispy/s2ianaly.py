@@ -1205,6 +1205,31 @@ class S2IAnaly:
         # Ensure structures are complete before analysis
         #self.util.complete_data_structures(ibis, global_)
 
+        # Version-aware waveform resolution: IBIS >= 4.0 → up to 1000 points; else 100
+        max_wave_points = CS.WAVE_POINTS_DEFAULT
+        try:
+            ver_token = (ibis.ibisVersion or "").strip().split()[0]
+            ver = float(ver_token) if ver_token else 0.0
+            if ver >= 4.0:
+                max_wave_points = 1000
+        except Exception:
+            pass
+
+        # Apply to the spice driver (waveforms only). Also set a fine min transient step (≈1 ps)
+        try:
+            self.spice.max_wave_points = max_wave_points
+            # Keep min_tran_step conservative to prevent runaway runtime on very long sims
+            self.spice.min_tran_step = 1e-12  # 1 ps default cap
+            if max_wave_points > CS.WAVE_POINTS_DEFAULT:
+                logging.info(
+                    "Waveform tables: IBIS %.1f detected → using %d points (was %d)",
+                    ver if 'ver' in locals() else 0.0,
+                    max_wave_points,
+                    CS.WAVE_POINTS_DEFAULT,
+                )
+        except Exception:
+            pass
+
         rc = self.comp_analy.analyze_component(
             ibis=ibis,
             global_=global_,

@@ -45,6 +45,12 @@ class S2ISpice:
         self.outdir = outdir
         self.global_ = global_
         self.s2i_file = s2i_file  # ← ADD THIS
+        # Waveform resolution controls (can be overridden by analyzer)
+        # Number of waveform points to allocate/bin into (IBIS <4.0 → 100, ≥4.0 → up to 1000)
+        self.max_wave_points: int = CS.WAVE_POINTS_DEFAULT
+        # Minimum requested transient step for high-resolution sampling (seconds)
+        # Parity docs show commercial tools often use ~1 ps; use that as a safe default cap.
+        self.min_tran_step: float = 1e-12
 
     def _vil_vih_for_pin(self, pin: Optional[IbisPin], analyze_case: int, vcc_typ: float) -> tuple[float, float]:
         """
@@ -202,7 +208,18 @@ class S2ISpice:
 
     def setup_tran_cmds(self, sim_time: float, output_node: str) -> str:
         S = self.spice_type
-        step = sim_time / 100.0 if sim_time > 0 else 0.01e-9
+        # Requested simulator step: aim for ~5 raw samples per output bin,
+        # capped by a minimum step to approach commercial tool resolution.
+        if sim_time <= 0 or math.isnan(sim_time):
+            sim_time = 10e-9
+        max_bins = getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT
+        # Avoid divide-by-zero; ensure at least 2 bins
+        bins_for_timing = max(2, max_bins)
+        bin_time = sim_time / (bins_for_timing - 1)
+        # Target ~5 raw samples per bin
+        step_target = bin_time / 5.0
+        # Final requested step is the smaller of target and min_tran_step, but never absurdly tiny
+        step = min(step_target, max(1e-15, getattr(self, 'min_tran_step', 1e-12)))
 
         if S == CS.SpiceType.SPECTRE:
             # Spectre syntax
@@ -1174,7 +1191,7 @@ class S2ISpice:
         if sim_time <= 0 or math.isnan(sim_time):
             sim_time = 10e-9
 
-        max_bins = CS.WAVE_POINTS_DEFAULT
+        max_bins = getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT
         bin_time = sim_time / (max_bins - 1)
 
         try:
@@ -1250,7 +1267,7 @@ class S2ISpice:
         if bin_time <= 0:
             return
 
-        max_bins = CS.WAVE_POINTS_DEFAULT
+        max_bins = getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT
         current_bin = min(math.ceil(t / bin_time), max_bins - 1)
 
         #logging.debug(f"[BIN] t={t:.4e} v={v:.4e} current_bin={current_bin}")
@@ -1778,7 +1795,7 @@ class S2ISpice:
             )
             wave.waveData = [
                 IbisWaveTableEntry(t=0.0, v=IbisTypMinMax(0, 0, 0))
-                for _ in range(CS.WAVE_POINTS_DEFAULT)
+                for _ in range(getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT)
             ]
             waves.append(wave)
             if curve_type == CS.CurveType.RISING_WAVE:
@@ -1791,7 +1808,7 @@ class S2ISpice:
         for wave in waves:
             wave.waveData = [
                 IbisWaveTableEntry(t=0.0, v=IbisTypMinMax(0, 0, 0))
-                for _ in range(CS.WAVE_POINTS_DEFAULT)
+                for _ in range(getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT)
             ]
 
         output_state = CS.OUTPUT_RISING if curve_type == CS.CurveType.RISING_WAVE else CS.OUTPUT_FALLING
