@@ -83,6 +83,8 @@ def load_yaml_config(path: str | Path) -> tuple[IbisTOP, IbisGlobal, list[IbisMo
     global_.gndClampRef = tmm_optional(gd.gnd_clamp_ref if 'gnd_clamp_ref' in gd_raw else None)
     global_.vil = tmm(gd.vil, 0.8)
     global_.vih = tmm(gd.vih, 2.0)
+    global_.tr = tmm(gd.tr, 1e-9)
+    global_.tf = tmm(gd.tf, 1e-9)
     global_.c_comp = tmm(getattr(gd,'c_comp', None), 1.2e-12)
     global_.Rload = getattr(gd, "r_load", 50.0)
     global_.simTime = getattr(gd, "sim_time", 10e-9)

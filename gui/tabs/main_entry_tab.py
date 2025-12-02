@@ -195,8 +195,10 @@ class MainEntryTab:
             ttk.Button(btn_frame, text="Parse SPICE", command=self.open_spice).pack(side=tk.LEFT, padx=5)
         row += 1
         
-        parent.grid_columnconfigure(1, weight=1)
-        parent.grid_columnconfigure(2, weight=1)
+        # Make entry columns expandable for even spacing
+        parent.grid_columnconfigure(1, weight=1)  # First entry column
+        parent.grid_columnconfigure(3, weight=1)  # Second entry column  
+        parent.grid_columnconfigure(5, weight=1)  # Third entry column
         
         return row
 
@@ -909,22 +911,22 @@ class MainEntryTab:
         elif key.startswith("tf_"):
             suffix = key[3:]  # typ, min, max
             return global_defaults.get("tf", {}).get(suffix, "")
-        # Pullup: pullup_typ -> pullup.typ
+        # Pullup: pullup_typ -> pullup_ref.typ
         elif key.startswith("pullup_"):
             suffix = key[7:]  # typ, min, max
-            return global_defaults.get("pullup", {}).get(suffix, "")
-        # Pulldown: pulldown_typ -> pulldown.typ
+            return global_defaults.get("pullup_ref", {}).get(suffix, "")
+        # Pulldown: pulldown_typ -> pulldown_ref.typ
         elif key.startswith("pulldown_"):
             suffix = key[9:]  # typ, min, max
-            return global_defaults.get("pulldown", {}).get(suffix, "")
-        # Power clamp: power_clamp_typ -> power_clamp.typ
+            return global_defaults.get("pulldown_ref", {}).get(suffix, "")
+        # Power clamp: power_clamp_typ -> power_clamp_ref.typ
         elif key.startswith("power_clamp_"):
             suffix = key[12:]  # typ, min, max
-            return global_defaults.get("power_clamp", {}).get(suffix, "")
-        # GND clamp: gnd_clamp_typ -> gnd_clamp.typ
+            return global_defaults.get("power_clamp_ref", {}).get(suffix, "")
+        # GND clamp: gnd_clamp_typ -> gnd_clamp_ref.typ
         elif key.startswith("gnd_clamp_"):
             suffix = key[10:]  # typ, min, max
-            return global_defaults.get("gnd_clamp", {}).get(suffix, "")
+            return global_defaults.get("gnd_clamp_ref", {}).get(suffix, "")
         # Pin parasitics: r_pkg_typ -> pin_parasitics.R_pkg.typ
         elif key.startswith("r_pkg_"):
             suffix = key[6:]  # typ, min, max
@@ -989,30 +991,30 @@ class MainEntryTab:
             if "tf" not in global_defaults:
                 global_defaults["tf"] = {}
             global_defaults["tf"][suffix] = value
-        # Pullup: pullup_typ -> pullup.typ
+        # Pullup: pullup_typ -> pullup_ref.typ
         elif key.startswith("pullup_"):
             suffix = key[7:]  # typ, min, max
-            if "pullup" not in global_defaults:
-                global_defaults["pullup"] = {}
-            global_defaults["pullup"][suffix] = value
-        # Pulldown: pulldown_typ -> pulldown.typ
+            if "pullup_ref" not in global_defaults:
+                global_defaults["pullup_ref"] = {}
+            global_defaults["pullup_ref"][suffix] = value
+        # Pulldown: pulldown_typ -> pulldown_ref.typ
         elif key.startswith("pulldown_"):
             suffix = key[9:]  # typ, min, max
-            if "pulldown" not in global_defaults:
-                global_defaults["pulldown"] = {}
-            global_defaults["pulldown"][suffix] = value
-        # Power clamp: power_clamp_typ -> power_clamp.typ
+            if "pulldown_ref" not in global_defaults:
+                global_defaults["pulldown_ref"] = {}
+            global_defaults["pulldown_ref"][suffix] = value
+        # Power clamp: power_clamp_typ -> power_clamp_ref.typ
         elif key.startswith("power_clamp_"):
             suffix = key[12:]  # typ, min, max
-            if "power_clamp" not in global_defaults:
-                global_defaults["power_clamp"] = {}
-            global_defaults["power_clamp"][suffix] = value
-        # GND clamp: gnd_clamp_typ -> gnd_clamp.typ
+            if "power_clamp_ref" not in global_defaults:
+                global_defaults["power_clamp_ref"] = {}
+            global_defaults["power_clamp_ref"][suffix] = value
+        # GND clamp: gnd_clamp_typ -> gnd_clamp_ref.typ
         elif key.startswith("gnd_clamp_"):
             suffix = key[10:]  # typ, min, max
-            if "gnd_clamp" not in global_defaults:
-                global_defaults["gnd_clamp"] = {}
-            global_defaults["gnd_clamp"][suffix] = value
+            if "gnd_clamp_ref" not in global_defaults:
+                global_defaults["gnd_clamp_ref"] = {}
+            global_defaults["gnd_clamp_ref"][suffix] = value
         # Pin parasitics: r_pkg_typ -> pin_parasitics.R_pkg.typ
         elif key.startswith("r_pkg_"):
             suffix = key[6:]  # typ, min, max
@@ -1106,18 +1108,18 @@ class MainEntryTab:
                 'tf.typ': 'Tf Typ',
                 'tf.min': 'Tf Min',
                 'tf.max': 'Tf Max',
-                'pullup.typ': 'Pullup Typ',
-                'pullup.min': 'Pullup Min',
-                'pullup.max': 'Pullup Max',
-                'pulldown.typ': 'Pulldown Typ',
-                'pulldown.min': 'Pulldown Min',
-                'pulldown.max': 'Pulldown Max',
-                'power_clamp.typ': 'Power Clamp Typ',
-                'power_clamp.min': 'Power Clamp Min',
-                'power_clamp.max': 'Power Clamp Max',
-                'gnd_clamp.typ': 'GND Clamp Typ',
-                'gnd_clamp.min': 'GND Clamp Min',
-                'gnd_clamp.max': 'GND Clamp Max',
+                'pullup_ref.typ': 'Pullup Typ',
+                'pullup_ref.min': 'Pullup Min',
+                'pullup_ref.max': 'Pullup Max',
+                'pulldown_ref.typ': 'Pulldown Typ',
+                'pulldown_ref.min': 'Pulldown Min',
+                'pulldown_ref.max': 'Pulldown Max',
+                'power_clamp_ref.typ': 'Power Clamp Typ',
+                'power_clamp_ref.min': 'Power Clamp Min',
+                'power_clamp_ref.max': 'Power Clamp Max',
+                'gnd_clamp_ref.typ': 'GND Clamp Typ',
+                'gnd_clamp_ref.min': 'GND Clamp Min',
+                'gnd_clamp_ref.max': 'GND Clamp Max',
             }
             # Remove 'global_defaults.' prefix
             subpath = '.'.join(parts[1:]) if len(parts) > 1 else ''

@@ -96,6 +96,16 @@ UI_SCHEMA = {
                 ("Min", "vih_min", None, False),
                 ("Max", "vih_max", None, False)
             ]),
+            ("Tr [s] - Rise Time", [
+                ("Typ", "tr_typ", "Stimulus rise time (default: sim_time/100)", False),
+                ("Min", "tr_min", None, False),
+                ("Max", "tr_max", None, False)
+            ]),
+            ("Tf [s] - Fall Time", [
+                ("Typ", "tf_typ", "Stimulus fall time (default: sim_time/100)", False),
+                ("Min", "tf_min", None, False),
+                ("Max", "tf_max", None, False)
+            ]),
             ("Pin Parasitics", [
                 ("R_pkg typ (Ω)", "r_pkg_typ", None, False),
                 ("min", "r_pkg_min", None, False),
@@ -173,6 +183,12 @@ DEFAULTS = {
     "vih_typ": "2.0",
     "vih_min": None,
     "vih_max": None,
+    "tr_typ": "1e-9",
+    "tr_min": None,
+    "tr_max": None,
+    "tf_typ": "1e-9",
+    "tf_min": None,
+    "tf_max": None,
     "r_pkg_typ": "0.2",
     "r_pkg_min": "0.1",
     "r_pkg_max": "0.4",
