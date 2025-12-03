@@ -1,0 +1,8 @@
+WARNING (line   15) - Component 'MCM Driver 1' contains a blank character.
+WARNING - Model 'driver': Vmeas timing test load parameter should be specified
+WARNING - Model driver: Typical ISSO_PU current (-1.008e-08A) at 0V is not within  5.00% of Pullup current (-3.628e-02A) at reference ( 0.000V)
+WARNING - Model driver: Typical ISSO_PU current (-3.628e-02A) at Pulldown reference ( 0.000V) - table value ( 3.300V) is non-zero (> 1.0e-06A)
+WARNING - Model driver: Minimum ISSO_PU current (-3.726e-08A) at 0V is not within  5.00% of Pullup current (-2.755e-02A) at reference ( 0.000V)
+WARNING - Model driver: Minimum ISSO_PU current (-3.569e-02A) at Pulldown reference ( 0.000V) - table value ( 3.000V) is non-zero (> 1.0e-06A)
+WARNING - Model driver: Maximum ISSO_PU current (-5.774e-09A) at 0V is not within  5.00% of Pullup current (-4.413e-02A) at reference ( 0.000V)
+WARNING - Model driver: Maximum ISSO_PU current (-3.769e-02A) at Pulldown reference ( 0.000V) - table value ( 3.600V) is non-zero (> 1.0e-06A)

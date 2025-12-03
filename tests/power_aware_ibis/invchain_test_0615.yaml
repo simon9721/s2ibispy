@@ -29,6 +29,14 @@ global_defaults:
     typ: 1.8
     min: .nan
     max: .nan
+  tr:
+    typ: 5.0e-12
+    min: .nan
+    max: .nan
+  tf:
+    typ: 5.0e-12
+    min: .nan
+    max: .nan
   pin_parasitics:
     R_pkg:
       typ: .nan
