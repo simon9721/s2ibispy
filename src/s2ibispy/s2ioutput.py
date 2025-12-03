@@ -35,17 +35,17 @@ class IbisWriter:
         f.write("|************************************************************************\n\n")
 
         ver_map = {
-            "1.0": CS.VERSION_ONE_ZERO, "1.1": CS.VERSION_ONE_ONE,
-            "2.0": CS.VERSION_TWO_ZERO, "2.1": CS.VERSION_TWO_ONE,
+            # Supported official IBIS versions
+            "1.1": CS.VERSION_ONE_ONE,
+            "2.1": CS.VERSION_TWO_ONE,
             "3.2": CS.VERSION_THREE_TWO,
-            # IBIS 5.x+ support (commonly used for ISSO and new keywords)
-            "5.0": CS.VERSION_FIVE_ZERO,
+            "4.2": CS.VERSION_FOUR_TWO,
             "5.1": CS.VERSION_FIVE_ONE,
-            # Future-proof mappings
             "6.0": CS.VERSION_SIX_ZERO,
+            "6.1": CS.VERSION_SIX_ONE,
             "7.0": CS.VERSION_SEVEN_ZERO,
-            # Print-through for newer minor versions; treat as 7.0 internally
-            "7.1": CS.VERSION_SEVEN_ZERO,
+            "7.1": CS.VERSION_SEVEN_ONE,
+            "7.2": CS.VERSION_SEVEN_TWO,
         }
         requested_ver = (self.ibis_head.ibisVersion or "3.2").strip()
         ibis_ver_int = ver_map.get(requested_ver, CS.VERSION_THREE_TWO)
