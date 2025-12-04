@@ -353,8 +353,8 @@ class MainEntryTab:
                      state="readonly", width=12).grid(row=0, column=1, sticky="w", padx=10)
         
         self.iterate_var = tk.BooleanVar(value=False)
-        self.cleanup_var = tk.BooleanVar(value=True)
-        self.verbose_var = tk.BooleanVar(value=True)
+        self.cleanup_var = tk.BooleanVar(value=False)
+        self.verbose_var = tk.BooleanVar(value=False)
         
         ttk.Checkbutton(opts, text="Reuse existing SPICE data (--iterate)", 
                        variable=self.iterate_var).grid(row=1, column=0, columnspan=2, sticky="w", padx=5, pady=3)

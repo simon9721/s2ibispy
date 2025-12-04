@@ -10,6 +10,8 @@ The format is based on Keep a Changelog, and this project aims to follow Semanti
 - **Composite Current sign convention**: Corrected sign of supply current in `[Composite Current]` tables. Now properly converts SPICE passive sign convention (I(Vsource)) to IBIS active convention - positive current represents power supplied from rail into circuit.
 
 ### Changed
+- **GUI: Correlation tab selection buttons**: Updated to crosstalk-focused workflow with aggressor/victim terminology. New buttons: None, Aggressor Driver (out1/out3), Aggressor Load (end1/end3), Victim Driver (out2), Victim Load (end2).
+- **GUI: Simulation options defaults**: Changed default checkboxes to all unchecked (iterate=False, cleanup=False, verbose=False) for better control and debugging visibility.
 - Waveform-only increase: use up to 1000 VT points when IBIS version >= 4.0. VI tables remain capped at 100 points.
 - Refined transient sampling to improve waveform resolution and parity with commercial tools.
 - Added an info log noting the 100 → 1000 waveform point change for IBIS >= 4.0.
