@@ -1221,7 +1221,9 @@ class S2ISpice:
                     if len(parts) >= 3:
                         t = float(parts[0])
                         v = float(parts[1])
-                        i_supply = float(parts[2])  # Keep in Amperes - output formatter will handle units
+                        # Flip sign: SPICE I(Vsource) is positive INTO source,
+                        # but IBIS Composite Current should be positive OUT of supply (into circuit)
+                        i_supply = -float(parts[2])  # Keep in Amperes - output formatter will handle units
                         t_v_pairs.append((t, v, i_supply))
                     else:
                         # Fallback: old files with only V(t)

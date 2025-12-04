@@ -269,7 +269,7 @@ See [gui/README.md](gui/README.md) for detailed GUI documentation.
 | Correlation deck | Functional | Auto subcircuit wrapping |
 | GUI | Available | Basic plotting and control |
 | IBIS 5.0+ features | Partial | [Pin Mapping], [Diff Pin] supported |
-| Composite Current (IBIS 6.1+) | Not started | Planned |
+| Composite Current (IBIS 5.0+) | Implemented | Supply current extraction from waveforms |
 | Full test suite | In development | Real-world cases needed |
 
 This tool is **not yet production-ready**. Contributions, bug reports, and test cases are very welcome.
