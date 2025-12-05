@@ -18,7 +18,7 @@ if str(root_path) not in sys.path:
 
 from gui.utils.yaml_editor_model import YamlModel, ValidationError
 from gui.utils.yaml_editor_config import UI_SCHEMA, COLORS, FONTS
-from gui.utils.s2i_to_yaml import convert_s2i_to_yaml
+from s2ibispy.s2i_to_yaml import convert_s2i_to_yaml
 from legacy.parser import S2IParser
 from s2ibispy.cli import main as run_conversion
 
@@ -195,8 +195,10 @@ class MainEntryTab:
             ttk.Button(btn_frame, text="Parse SPICE", command=self.open_spice).pack(side=tk.LEFT, padx=5)
         row += 1
         
-        parent.grid_columnconfigure(1, weight=1)
-        parent.grid_columnconfigure(2, weight=1)
+        # Make entry columns expandable for even spacing
+        parent.grid_columnconfigure(1, weight=1)  # First entry column
+        parent.grid_columnconfigure(3, weight=1)  # Second entry column  
+        parent.grid_columnconfigure(5, weight=1)  # Third entry column
         
         return row
 
@@ -351,8 +353,8 @@ class MainEntryTab:
                      state="readonly", width=12).grid(row=0, column=1, sticky="w", padx=10)
         
         self.iterate_var = tk.BooleanVar(value=False)
-        self.cleanup_var = tk.BooleanVar(value=True)
-        self.verbose_var = tk.BooleanVar(value=True)
+        self.cleanup_var = tk.BooleanVar(value=False)
+        self.verbose_var = tk.BooleanVar(value=False)
         
         ttk.Checkbutton(opts, text="Reuse existing SPICE data (--iterate)", 
                        variable=self.iterate_var).grid(row=1, column=0, columnspan=2, sticky="w", padx=5, pady=3)
@@ -782,6 +784,16 @@ class MainEntryTab:
         
         # Pins
         pins = []
+        # Preserve existing per-pin fields (e.g., spiceNodeName) not exposed in UI columns
+        existing_pin_map = {}
+        try:
+            existing_components = self.yaml_model.data.get("components", [])
+            if existing_components and isinstance(existing_components[0], dict):
+                for _p in existing_components[0].get("pList", []):
+                    if isinstance(_p, dict) and _p.get("pinName"):
+                        existing_pin_map[_p["pinName"]] = _p
+        except Exception:
+            existing_pin_map = {}
         for item in self.pins_tree.get_children():
             vals = self.pins_tree.item(item, "values")
             pin = {
@@ -789,6 +801,11 @@ class MainEntryTab:
                 "signalName": vals[1],
                 "modelName": vals[2],
             }
+            # Reattach preserved fields if they existed originally (e.g. spiceNodeName)
+            original = existing_pin_map.get(vals[0])
+            if original:
+                if "spiceNodeName" in original and original["spiceNodeName"]:
+                    pin["spiceNodeName"] = original["spiceNodeName"]
             if vals[3]:
                 pin["inputPin"] = vals[3]
             if vals[4]:
@@ -886,22 +903,30 @@ class MainEntryTab:
         elif key.startswith("vih_"):
             suffix = key[4:]  # typ, min, max
             return global_defaults.get("vih", {}).get(suffix, "")
-        # Pullup: pullup_typ -> pullup.typ
+        # Tr: tr_typ -> tr.typ
+        elif key.startswith("tr_"):
+            suffix = key[3:]  # typ, min, max
+            return global_defaults.get("tr", {}).get(suffix, "")
+        # Tf: tf_typ -> tf.typ
+        elif key.startswith("tf_"):
+            suffix = key[3:]  # typ, min, max
+            return global_defaults.get("tf", {}).get(suffix, "")
+        # Pullup: pullup_typ -> pullup_ref.typ
         elif key.startswith("pullup_"):
             suffix = key[7:]  # typ, min, max
-            return global_defaults.get("pullup", {}).get(suffix, "")
-        # Pulldown: pulldown_typ -> pulldown.typ
+            return global_defaults.get("pullup_ref", {}).get(suffix, "")
+        # Pulldown: pulldown_typ -> pulldown_ref.typ
         elif key.startswith("pulldown_"):
             suffix = key[9:]  # typ, min, max
-            return global_defaults.get("pulldown", {}).get(suffix, "")
-        # Power clamp: power_clamp_typ -> power_clamp.typ
+            return global_defaults.get("pulldown_ref", {}).get(suffix, "")
+        # Power clamp: power_clamp_typ -> power_clamp_ref.typ
         elif key.startswith("power_clamp_"):
             suffix = key[12:]  # typ, min, max
-            return global_defaults.get("power_clamp", {}).get(suffix, "")
-        # GND clamp: gnd_clamp_typ -> gnd_clamp.typ
+            return global_defaults.get("power_clamp_ref", {}).get(suffix, "")
+        # GND clamp: gnd_clamp_typ -> gnd_clamp_ref.typ
         elif key.startswith("gnd_clamp_"):
             suffix = key[10:]  # typ, min, max
-            return global_defaults.get("gnd_clamp", {}).get(suffix, "")
+            return global_defaults.get("gnd_clamp_ref", {}).get(suffix, "")
         # Pin parasitics: r_pkg_typ -> pin_parasitics.R_pkg.typ
         elif key.startswith("r_pkg_"):
             suffix = key[6:]  # typ, min, max
@@ -954,30 +979,42 @@ class MainEntryTab:
             if "vih" not in global_defaults:
                 global_defaults["vih"] = {}
             global_defaults["vih"][suffix] = value
-        # Pullup: pullup_typ -> pullup.typ
+        # Tr: tr_typ -> tr.typ
+        elif key.startswith("tr_"):
+            suffix = key[3:]  # typ, min, max
+            if "tr" not in global_defaults:
+                global_defaults["tr"] = {}
+            global_defaults["tr"][suffix] = value
+        # Tf: tf_typ -> tf.typ
+        elif key.startswith("tf_"):
+            suffix = key[3:]  # typ, min, max
+            if "tf" not in global_defaults:
+                global_defaults["tf"] = {}
+            global_defaults["tf"][suffix] = value
+        # Pullup: pullup_typ -> pullup_ref.typ
         elif key.startswith("pullup_"):
             suffix = key[7:]  # typ, min, max
-            if "pullup" not in global_defaults:
-                global_defaults["pullup"] = {}
-            global_defaults["pullup"][suffix] = value
-        # Pulldown: pulldown_typ -> pulldown.typ
+            if "pullup_ref" not in global_defaults:
+                global_defaults["pullup_ref"] = {}
+            global_defaults["pullup_ref"][suffix] = value
+        # Pulldown: pulldown_typ -> pulldown_ref.typ
         elif key.startswith("pulldown_"):
             suffix = key[9:]  # typ, min, max
-            if "pulldown" not in global_defaults:
-                global_defaults["pulldown"] = {}
-            global_defaults["pulldown"][suffix] = value
-        # Power clamp: power_clamp_typ -> power_clamp.typ
+            if "pulldown_ref" not in global_defaults:
+                global_defaults["pulldown_ref"] = {}
+            global_defaults["pulldown_ref"][suffix] = value
+        # Power clamp: power_clamp_typ -> power_clamp_ref.typ
         elif key.startswith("power_clamp_"):
             suffix = key[12:]  # typ, min, max
-            if "power_clamp" not in global_defaults:
-                global_defaults["power_clamp"] = {}
-            global_defaults["power_clamp"][suffix] = value
-        # GND clamp: gnd_clamp_typ -> gnd_clamp.typ
+            if "power_clamp_ref" not in global_defaults:
+                global_defaults["power_clamp_ref"] = {}
+            global_defaults["power_clamp_ref"][suffix] = value
+        # GND clamp: gnd_clamp_typ -> gnd_clamp_ref.typ
         elif key.startswith("gnd_clamp_"):
             suffix = key[10:]  # typ, min, max
-            if "gnd_clamp" not in global_defaults:
-                global_defaults["gnd_clamp"] = {}
-            global_defaults["gnd_clamp"][suffix] = value
+            if "gnd_clamp_ref" not in global_defaults:
+                global_defaults["gnd_clamp_ref"] = {}
+            global_defaults["gnd_clamp_ref"][suffix] = value
         # Pin parasitics: r_pkg_typ -> pin_parasitics.R_pkg.typ
         elif key.startswith("r_pkg_"):
             suffix = key[6:]  # typ, min, max
@@ -1065,18 +1102,24 @@ class MainEntryTab:
                 'vih.typ': 'VIH Typ',
                 'vih.min': 'VIH Min',
                 'vih.max': 'VIH Max',
-                'pullup.typ': 'Pullup Typ',
-                'pullup.min': 'Pullup Min',
-                'pullup.max': 'Pullup Max',
-                'pulldown.typ': 'Pulldown Typ',
-                'pulldown.min': 'Pulldown Min',
-                'pulldown.max': 'Pulldown Max',
-                'power_clamp.typ': 'Power Clamp Typ',
-                'power_clamp.min': 'Power Clamp Min',
-                'power_clamp.max': 'Power Clamp Max',
-                'gnd_clamp.typ': 'GND Clamp Typ',
-                'gnd_clamp.min': 'GND Clamp Min',
-                'gnd_clamp.max': 'GND Clamp Max',
+                'tr.typ': 'Tr Typ',
+                'tr.min': 'Tr Min',
+                'tr.max': 'Tr Max',
+                'tf.typ': 'Tf Typ',
+                'tf.min': 'Tf Min',
+                'tf.max': 'Tf Max',
+                'pullup_ref.typ': 'Pullup Typ',
+                'pullup_ref.min': 'Pullup Min',
+                'pullup_ref.max': 'Pullup Max',
+                'pulldown_ref.typ': 'Pulldown Typ',
+                'pulldown_ref.min': 'Pulldown Min',
+                'pulldown_ref.max': 'Pulldown Max',
+                'power_clamp_ref.typ': 'Power Clamp Typ',
+                'power_clamp_ref.min': 'Power Clamp Min',
+                'power_clamp_ref.max': 'Power Clamp Max',
+                'gnd_clamp_ref.typ': 'GND Clamp Typ',
+                'gnd_clamp_ref.min': 'GND Clamp Min',
+                'gnd_clamp_ref.max': 'GND Clamp Max',
             }
             # Remove 'global_defaults.' prefix
             subpath = '.'.join(parts[1:]) if len(parts) > 1 else ''

@@ -41,6 +41,7 @@ class PinConfig:
     pinName: str
     signalName: str
     modelName: str
+    spiceNodeName: Optional[str] = None
     R_pin: Optional[float] = None
     L_pin: Optional[float] = None
     C_pin: Optional[float] = None
@@ -138,6 +139,7 @@ class GlobalDefaults:
 
 
 class ConfigSchema(BaseModel):
+    spice_subckt: Optional[str] = None
     ibis_version: Optional[str] = "3.2"
     file_name: Optional[str] = None
     file_rev: Optional[str] = "1.0"

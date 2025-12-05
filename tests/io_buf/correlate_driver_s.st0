@@ -1,0 +1,56 @@
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******
+Input File: correlate_driver_s.sp
+lic:
+lic: FLEXlm: SDK_12.10
+lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab
+lic: HOSTID: 00ff89f5aa52         PID:      12184
+lic: Using FLEXlm license file:
+lic: 1704@synopsys.lic.mst.edu
+lic: Checkout 1 hspice
+lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06
+lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.edu
+lic:
+
+ init: begin read circuit files, cpu clock= 1.61E-01
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/
+       option probe
+       option accurate
+       option rmax =    0.500
+       option post_version =    9.601E+03
+       option post =     2.00
+ init: end read circuit files, cpu clock= 2.13E-01 peak memory=      72 mb
+ init: begin check errors, cpu clock= 2.13E-01
+ init: end check errors, cpu clock= 2.61E-01 peak memory=      74 mb
+ init: begin setup matrix, pivot=     0 cpu clock= 2.61E-01
+       establish matrix -- done, cpu clock= 2.62E-01 peak memory=      75 mb
+       re-order matrix -- done, cpu clock= 2.62E-01 peak memory=      75 mb
+ init: end setup matrix, cpu clock= 2.64E-01 peak memory=      75 mb
+ dcop: begin dcop, cpu clock= 2.79E-01
+ dcop: end dcop, cpu clock= 2.88E-01 peak memory=      75 mb tot_iter=      39
+ output: correlate_driver_s.tr0
+ sweep: tran tran0    begin, stop_t=  2.00E-06 #sweeps=**** cpu clock= 2.89E-01
+ tran: time= 2.0010E-07 tot_iter=    4191 conv_iter=    1851 cpu clock= 6.01E-01
+ tran: time= 4.0010E-07 tot_iter=    6066 conv_iter=    2711 cpu clock= 7.48E-01
+ tran: time= 6.0010E-07 tot_iter=   10054 conv_iter=    4464 cpu clock= 1.04E+00
+ tran: time= 8.0010E-07 tot_iter=   12391 conv_iter=    5527 cpu clock= 1.22E+00
+ tran: time= 1.0001E-06 tot_iter=   15961 conv_iter=    7110 cpu clock= 1.49E+00
+ tran: time= 1.2001E-06 tot_iter=   18183 conv_iter=    8126 cpu clock= 1.66E+00
+ tran: time= 1.4001E-06 tot_iter=   21311 conv_iter=    9521 cpu clock= 1.89E+00
+ tran: time= 1.6001E-06 tot_iter=   22943 conv_iter=   10277 cpu clock= 2.02E+00
+ tran: time= 1.8001E-06 tot_iter=   27276 conv_iter=   12177 cpu clock= 2.34E+00
+ tran: time= 2.0000E-06 tot_iter=   29333 conv_iter=   13116 cpu clock= 2.50E+00
+ sweep: tran tran0    end, cpu clock= 2.50E+00 peak memory=      76 mb
+>info:         ***** hspice job concluded
+ lic: Release hspice token(s)

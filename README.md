@@ -9,6 +9,8 @@
 
 ![S2IBISpy](resources//icons/s2ibispy.png)
 
+For detailed changes, see the project changelog: [CHANGELOG.md](CHANGELOG.md).
+
 
 `s2ibis3` was developed by North Carolina State University and has been a widely used reference tool for generating IBIS models from SPICE netlists. Written in Java, it has not received updates in many years.
 
@@ -76,6 +78,7 @@ Linux/macOS users: use the same steps but activate with `source .venv/bin/activa
 - Real-time simulation with progress feedback and abort capability
 - Integrated plotting and correlation analysis
 - Bundled ibischk7.exe with auto-detection
+- **Windows standalone .exe available** (no Python installation required)
 
 See [gui/README.md](gui/README.md) for complete GUI documentation.
 
@@ -174,6 +177,8 @@ python -m s2ibispy tests/buffer.s2i --outdir tests/output --spice-type hspice --
 	- Typ/Min/Max values grouped logically
 	- Easier diffing/version control
 
+For a deeper comparison and migration tips, see [YAML vs .s2i](docs/YAML_VS_S2I.md).
+
 **Output includes**:
 
 - results/my_buffer.ibs
@@ -186,9 +191,25 @@ python -m s2ibispy tests/buffer.s2i --outdir tests/output --spice-type hspice --
 
 A modern graphical interface is available with unified configuration, real-time simulation, and integrated analysis tools:
 
+**Option 1: Run from source**
 ```bash
 python gui_main.py
 ```
+
+**Option 2: Windows Executable (Standalone)**
+
+A standalone Windows executable is available that requires no Python installation:
+- Download `s2ibispy.exe` from the releases page or build folder (`dist/`)
+- Double-click to launch the GUI
+- All resources (icons, templates, data files) are bundled
+
+To build the executable yourself:
+```powershell
+pip install pyinstaller
+pyinstaller --name s2ibispy --onefile --windowed --icon resources\icons\s2ibispy.ico --add-data "resources;resources" --add-data "templates;templates" --add-data "src\s2ibispy\data;s2ibispy\data" gui_main.py
+```
+
+The built executable will be in `dist\s2ibispy.exe`.
 
 **Key Features**:
 
@@ -248,7 +269,7 @@ See [gui/README.md](gui/README.md) for detailed GUI documentation.
 | Correlation deck | Functional | Auto subcircuit wrapping |
 | GUI | Available | Basic plotting and control |
 | IBIS 5.0+ features | Partial | [Pin Mapping], [Diff Pin] supported |
-| Composite Current (IBIS 6.1+) | Not started | Planned |
+| Composite Current (IBIS 5.0+) | Implemented | Supply current extraction from waveforms |
 | Full test suite | In development | Real-world cases needed |
 
 This tool is **not yet production-ready**. Contributions, bug reports, and test cases are very welcome.

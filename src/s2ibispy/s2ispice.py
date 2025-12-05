@@ -45,6 +45,12 @@ class S2ISpice:
         self.outdir = outdir
         self.global_ = global_
         self.s2i_file = s2i_file  # ← ADD THIS
+        # Waveform resolution controls (can be overridden by analyzer)
+        # Number of waveform points to allocate/bin into (IBIS <4.0 → 100, ≥4.0 → up to 1000)
+        self.max_wave_points: int = CS.WAVE_POINTS_DEFAULT
+        # Minimum requested transient step for high-resolution sampling (seconds)
+        # Parity docs show commercial tools often use ~1 ps; use that as a safe default cap.
+        self.min_tran_step: float = 1e-12
 
     def _vil_vih_for_pin(self, pin: Optional[IbisPin], analyze_case: int, vcc_typ: float) -> tuple[float, float]:
         """
@@ -202,7 +208,18 @@ class S2ISpice:
 
     def setup_tran_cmds(self, sim_time: float, output_node: str) -> str:
         S = self.spice_type
-        step = sim_time / 100.0 if sim_time > 0 else 0.01e-9
+        # Requested simulator step: aim for ~5 raw samples per output bin,
+        # capped by a minimum step to approach commercial tool resolution.
+        if sim_time <= 0 or math.isnan(sim_time):
+            sim_time = 10e-9
+        max_bins = getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT
+        # Avoid divide-by-zero; ensure at least 2 bins
+        bins_for_timing = max(2, max_bins)
+        bin_time = sim_time / (bins_for_timing - 1)
+        # Target ~5 raw samples per bin
+        step_target = bin_time / 5.0
+        # Final requested step is the smaller of target and min_tran_step, but never absurdly tiny
+        step = min(step_target, max(1e-15, getattr(self, 'min_tran_step', 1e-12)))
 
         if S == CS.SpiceType.SPECTRE:
             # Spectre syntax
@@ -1046,8 +1063,21 @@ class S2ISpice:
 
             t_v_pairs: List[Tuple[float, float]] = []
 
-            for raw in lines:
+            # Find the transient data section header
+            in_tran_section = False
+            for i, raw in enumerate(lines):
                 line = raw.strip()
+                
+                # Look for transient data header (e.g., "time         voltage")
+                if not in_tran_section:
+                    if 'time' in line.lower() and 'voltage' in line.lower():
+                        in_tran_section = True
+                        logging.debug(f"Found transient header at line {i}: {line}")
+                        continue
+                    else:
+                        continue
+                
+                # Once in transient section, parse data
                 if not line or line.startswith('*'):
                     continue  # ← SKIP ALL COMMENT LINES
 
@@ -1061,6 +1091,9 @@ class S2ISpice:
                     v = float(toks[1])
                     t_v_pairs.append((t, v))
                 except ValueError:
+                    # If we hit non-numeric data after starting, we may have left the section
+                    if in_tran_section and len(t_v_pairs) > 10:
+                        break
                     continue  # ← SKIP NON-NUMERIC LINES
 
             if not t_v_pairs:
@@ -1158,7 +1191,7 @@ class S2ISpice:
         if sim_time <= 0 or math.isnan(sim_time):
             sim_time = 10e-9
 
-        max_bins = CS.WAVE_POINTS_DEFAULT
+        max_bins = getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT
         bin_time = sim_time / (max_bins - 1)
 
         try:
@@ -1188,7 +1221,9 @@ class S2ISpice:
                     if len(parts) >= 3:
                         t = float(parts[0])
                         v = float(parts[1])
-                        i_supply = float(parts[2])  # Keep in Amperes - output formatter will handle units
+                        # Flip sign: SPICE I(Vsource) is positive INTO source,
+                        # but IBIS Composite Current should be positive OUT of supply (into circuit)
+                        i_supply = -float(parts[2])  # Keep in Amperes - output formatter will handle units
                         t_v_pairs.append((t, v, i_supply))
                     else:
                         # Fallback: old files with only V(t)
@@ -1234,7 +1269,7 @@ class S2ISpice:
         if bin_time <= 0:
             return
 
-        max_bins = CS.WAVE_POINTS_DEFAULT
+        max_bins = getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT
         current_bin = min(math.ceil(t / bin_time), max_bins - 1)
 
         #logging.debug(f"[BIN] t={t:.4e} v={v:.4e} current_bin={current_bin}")
@@ -1342,11 +1377,12 @@ class S2ISpice:
         vtable_name = "VTABLE_ISSO"
         dummy_node = "DUMMY_ISSO"
 
+        out_node = self._pin_node(current_pin) or current_pin.pinName
         if curve_type == CS.CurveType.ISSO_PULLDOWN:
             # Figure 10: Output LOW → tied to VCC
             power_node = self._pin_node(power_pin) or "vdd"
             gnd_node   = self._pin_node(gnd_pin)   or "vss"
-            load_buffer = f"VOUTS2I {current_pin.pinName} {power_node} DC 0\n"
+            load_buffer = f"VOUTS2I {out_node} {power_node} DC 0\n"
 
             sweep_start_val = -abs(vcc.typ)
             sweep_range_val = 2 * abs(vcc.typ)
@@ -1355,7 +1391,7 @@ class S2ISpice:
             # Figure 11: Output HIGH → tied to GND
             power_node = self._pin_node(power_pin) or "vdd"
             gnd_node   = self._pin_node(gnd_pin)   or "vss"
-            load_buffer = f"VOUTS2I {current_pin.pinName} {gnd_node} DC 0\n"
+            load_buffer = f"VOUTS2I {out_node} {gnd_node} DC 0\n"
 
             sweep_start_val = +abs(vcc.typ)
             sweep_range_val = -2 * abs(vcc.typ)  # negative → decreasing sweep
@@ -1365,7 +1401,7 @@ class S2ISpice:
             if curve_type == CS.CurveType.SERIES_VI:
                 load_buffer = f"VOUTS2I {current_pin.seriesPin2name} 0 DC 0\n"
             else:
-                load_buffer = f"VOUTS2I {current_pin.pinName} 0 DC 0\n"
+                load_buffer = f"VOUTS2I {out_node} 0 DC 0\n"
 
             sweep_start_val = sweep_start.typ
             sweep_range_val = sweep_range
@@ -1390,9 +1426,15 @@ class S2ISpice:
             case_flag = _case_flag(corner)
             if curve_type == CS.CurveType.SERIES_VI:
                 input_buffer = self.set_pin_dc(input_pin, model.polarity, output_high, "gate", case_flag)
-                input_buffer += f"VDS {current_pin.pinName} {current_pin.seriesPin2name} DC {vds}\n"
+                out_node = self._pin_node(current_pin) or current_pin.pinName
+                input_buffer += f"VDS {out_node} {current_pin.seriesPin2name} DC {vds}\n"
             else:
-                input_buffer = self.set_pin_dc(enable_pin, model.enable, enable_output, "ENA", case_flag) or ""
+                # Only drive ENA when an enable pin is defined
+                input_buffer = ""
+                if enable_pin:
+                    input_buffer = self.set_pin_dc(enable_pin, model.enable, enable_output, "ENA", case_flag) or ""
+                else:
+                    logging.debug("No ENA pin specified; skipping enable DC bias")
                 
                 # === INPUT PIN: Only drive when output buffer is ENABLED ===
                 is_buffer_enabled = (enable_output == 1)
@@ -1617,18 +1659,21 @@ class S2ISpice:
         rload = rload_model if rload_model and not math.isnan(rload_model) and rload_model > 0 else rload_global
         logging.debug(
             f"Using Rload={rload} (model={rload_model}, global={rload_global}) for curve_type={CS.curve_name_string.get(curve_type, 'unknown')}")
+        out_node = self._pin_node(current_pin) or current_pin.pinName
+        pwr_node = self._pin_node(power_pin) if power_pin else '0'
+        gnd_node = self._pin_node(gnd_pin) if gnd_pin else '0'
         if mt in [CS.ModelType.OPEN_DRAIN, CS.ModelType.OPEN_SINK,
                   CS.ModelType.IO_OPEN_DRAIN, CS.ModelType.IO_OPEN_SINK]:
-            load_buffer = f"RLOADS2I {current_pin.pinName} {power_pin.pinName if power_pin else '0'} {rload}\n"
+            load_buffer = f"RLOADS2I {out_node} {pwr_node} {rload}\n"
         elif mt in [CS.ModelType.OPEN_SOURCE, CS.ModelType.IO_OPEN_SOURCE]:
-            load_buffer = f"RLOADS2I {current_pin.pinName} {gnd_pin.pinName if gnd_pin else '0'} {rload}\n"
+            load_buffer = f"RLOADS2I {out_node} {gnd_node} {rload}\n"
         elif mt in [CS.ModelType.OUTPUT_ECL, CS.ModelType.IO_ECL]:
-            load_buffer = f"RLOADS2I {current_pin.pinName} dummy0 {rload}\n"
-            load_buffer += f"VTERMS2I dummy0 {power_pin.pinName if power_pin else '0'} DC {CS.ECL_TERMINATION_VOLTAGE_DEFAULT}\n"
+            load_buffer = f"RLOADS2I {out_node} dummy0 {rload}\n"
+            load_buffer += f"VTERMS2I dummy0 {pwr_node} DC {CS.ECL_TERMINATION_VOLTAGE_DEFAULT}\n"
         elif curve_type == CS.CurveType.RISING_RAMP:
-            load_buffer = f"RLOADS2I {current_pin.pinName} {gnd_pin.pinName if gnd_pin else '0'} {rload}\n"
+            load_buffer = f"RLOADS2I {out_node} {gnd_node} {rload}\n"
         else:
-            load_buffer = f"RLOADS2I {current_pin.pinName} {power_pin.pinName if power_pin else '0'} {rload}\n"
+            load_buffer = f"RLOADS2I {out_node} {pwr_node} {rload}\n"
 
         corners = [
             ("typ", model.modelFile, model.tempRange.typ, vcc.typ, gnd.typ, vcc_clamp.typ, gnd_clamp.typ),
@@ -1641,7 +1686,11 @@ class S2ISpice:
             header_line = f"* {corner.capitalize()} {CS.curve_name_string.get(curve_type, 'unknown')} curve for model {model.modelName}\n"
 
             case_flag = CS.TYP_CASE if corner == "typ" else CS.MIN_CASE if corner == "min" else CS.MAX_CASE
-            input_buffer = self.set_pin_dc(enable_pin, model.enable, CS.ENABLE_OUTPUT, "ENA", case_flag) or ""
+            input_buffer = ""
+            if enable_pin:
+                input_buffer = self.set_pin_dc(enable_pin, model.enable, CS.ENABLE_OUTPUT, "ENA", case_flag) or ""
+            else:
+                logging.debug("No ENA pin specified; skipping enable DC bias")
             if input_pin:
                 pulse = self.set_pin_tran(input_pin, model.polarity, output_state, "IN", case_flag)
                 input_buffer += ("\n" if input_buffer else "") + pulse
@@ -1651,7 +1700,7 @@ class S2ISpice:
                 vcc_val, gnd_val, vcc_clamp_val, gnd_clamp_val, temp
             )
 
-            analysis_buffer = self.setup_tran_cmds(model.simTime, current_pin.pinName)
+            analysis_buffer = self.setup_tran_cmds(model.simTime, out_node)
 
             if corner == "typ":
                 prefix = CS.spice_file_typ_prefix.get(curve_type, "")
@@ -1748,7 +1797,7 @@ class S2ISpice:
             )
             wave.waveData = [
                 IbisWaveTableEntry(t=0.0, v=IbisTypMinMax(0, 0, 0))
-                for _ in range(CS.WAVE_POINTS_DEFAULT)
+                for _ in range(getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT)
             ]
             waves.append(wave)
             if curve_type == CS.CurveType.RISING_WAVE:
@@ -1761,7 +1810,7 @@ class S2ISpice:
         for wave in waves:
             wave.waveData = [
                 IbisWaveTableEntry(t=0.0, v=IbisTypMinMax(0, 0, 0))
-                for _ in range(CS.WAVE_POINTS_DEFAULT)
+                for _ in range(getattr(self, 'max_wave_points', CS.WAVE_POINTS_DEFAULT) or CS.WAVE_POINTS_DEFAULT)
             ]
 
         output_state = CS.OUTPUT_RISING if curve_type == CS.CurveType.RISING_WAVE else CS.OUTPUT_FALLING
@@ -1769,7 +1818,8 @@ class S2ISpice:
         res_total = 0
         for wave_idx, wave in enumerate(waves):
             # === BUILD LOAD BUFFER FOR THIS WAVE ===
-            node_list = [current_pin.pinName] + [f"dummy{i}" for i in range(10)]
+            out_node = self._pin_node(current_pin) or current_pin.pinName
+            node_list = [out_node] + [f"dummy{i}" for i in range(10)]
             node_index = 0
             load_buffer = ""
 
@@ -1807,7 +1857,11 @@ class S2ISpice:
                 header_line = f"* {corner.capitalize()} {CS.curve_name_string.get(curve_type, 'unknown')} curve for model {model.modelName}\n"
                 case_flag = CS.TYP_CASE if corner == "typ" else CS.MIN_CASE if corner == "min" else CS.MAX_CASE
 
-                input_buffer = self.set_pin_dc(enable_pin, model.enable, CS.ENABLE_OUTPUT, "ENA", case_flag) or ""
+                input_buffer = ""
+                if enable_pin:
+                    input_buffer = self.set_pin_dc(enable_pin, model.enable, CS.ENABLE_OUTPUT, "ENA", case_flag) or ""
+                else:
+                    logging.debug("No ENA pin specified; skipping enable DC bias")
                 if input_pin:
                     pulse = self.set_pin_tran(input_pin, model.polarity, output_state, "IN", case_flag)
                     if pulse:

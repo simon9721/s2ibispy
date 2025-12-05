@@ -50,12 +50,11 @@ class CorrelationTab:
         # Selection buttons
         sel = ttk.LabelFrame(controls, text=" Selection ")
         sel.pack(side="left", padx=(0, 20))
-        ttk.Button(sel, text="All", width=6, command=self.select_all).pack(side="left", padx=2)
-        ttk.Button(sel, text="None", width=6, command=self.select_none).pack(side="left", padx=2)
-        ttk.Button(sel, text="SPICE", width=8, command=lambda: self.select_keyword("spice")).pack(side="left", padx=2)
-        ttk.Button(sel, text="IBIS", width=8, command=lambda: self.select_keyword("ibis")).pack(side="left", padx=2)
-        ttk.Button(sel, text="Ch 1&3", width=8, command=self.select_ch13).pack(side="left", padx=2)
-        ttk.Button(sel, text="Ch 2", width=8, command=self.select_ch2).pack(side="left", padx=2)
+        ttk.Button(sel, text="None", width=12, command=self.select_none).pack(side="left", padx=2)
+        ttk.Button(sel, text="Aggressor Driver", width=14, command=self.select_aggressor_driver).pack(side="left", padx=2)
+        ttk.Button(sel, text="Aggressor Load", width=14, command=self.select_aggressor_load).pack(side="left", padx=2)
+        ttk.Button(sel, text="Victim Driver", width=12, command=self.select_victim_driver).pack(side="left", padx=2)
+        ttk.Button(sel, text="Victim Load", width=12, command=self.select_victim_load).pack(side="left", padx=2)
 
         # Action buttons
         actions = ttk.Frame(controls)
@@ -93,11 +92,11 @@ class CorrelationTab:
         self.canvas_frame.pack(fill="both", expand=True, padx=8, pady=8)
 
     # === Selection ===
-    def select_all(self):    self._set_all(True)
     def select_none(self):   self._set_all(False)
-    def select_keyword(self, kw): self._set_filter(lambda name: kw in name.lower())
-    def select_ch13(self):   self._set_filter(lambda name: any(x in name.lower() for x in ["end1", "end3", "out1", "out3"]))
-    def select_ch2(self):    self._set_filter(lambda name: any(x in name.lower() for x in ["end2", "out2"]))
+    def select_aggressor_driver(self):   self._set_filter(lambda name: any(x in name.lower() for x in ["out1", "out3"]))
+    def select_aggressor_load(self):     self._set_filter(lambda name: any(x in name.lower() for x in ["end1", "end3"]))
+    def select_victim_driver(self):      self._set_filter(lambda name: "out2" in name.lower())
+    def select_victim_load(self):        self._set_filter(lambda name: "end2" in name.lower())
 
     def _set_all(self, value: bool):
         for var in self.selected.values():

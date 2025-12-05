@@ -373,6 +373,8 @@ class IbisGlobal:
     clampTol: float = 0.0
     commentChar: str = "|"
     spice_file: Optional[str] = None
+    # Optional: top-level SPICE subckt name ([Spice Subckt])
+    spice_subckt: Optional[str] = None
 
 
 @dataclass

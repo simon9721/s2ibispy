@@ -1,0 +1,77 @@
+* "simulator" "PrimeSim HSPICE"
+* "version" "T-2022.06 win64"
+* "format" "HSP"
+* "rundate" "12:31:29 12/03/2025 "
+* "netlist" "correlate_driver_s.sp "
+* "runtitle" "* ============================================================================="
+* time =    0.            
+* temperature =   50.0000        
+*** BEGIN: Saved Operating Point ***                     
+.option 
++ gmindc=   1.0000p       
+.nodeset
++ end1ibis =   3.3000        
++ end1spice =   3.3000        
++ end2ibis =  13.7786n       
++ end2spice =  28.6613n       
++ end3ibis =   3.3000        
++ end3spice =   3.3000        
++ gnd1_clamp =   0.            
++ gnd1io =   0.            
++ gnd2_clamp =   0.            
++ gnd2io =-3.060e-22       
++ gnd3_clamp =   0.            
++ gnd3io =   0.            
++ in_ibis =   3.3000        
++ in_spice =   3.3000        
++ oe1 =   3.3000        
++ oe2 =   3.3000        
++ oe3 =   3.3000        
++ out1ibis =   3.3000        
++ out1ibis_term =   3.3000        
++ out1spice =   3.3000        
++ out1spice_term =   3.3000        
++ out2ibis =   7.6887n       
++ out2ibis_term =  13.7786n       
++ out2spice =  28.6613n       
++ out2spice_term =  28.6613n       
++ out3ibis =   3.3000        
++ out3ibis_term =   3.3000        
++ out3spice =   3.3000        
++ out3spice_term =   3.3000        
++ rcv1 = 500.0000m       
++ rcv2 = 500.0000m       
++ rcv3 = 500.0000m       
++ sense1 =  56.6308n       
++ sense2 =   3.3000        
++ sense3 =  56.6309n       
++ vcc1_clamp =   3.3000        
++ vcc1io =   3.3000        
++ vcc2_clamp =   3.3000        
++ vcc2io =   3.3000        
++ vcc3_clamp =   3.3000        
++ vcc3io =   3.3000        
++ vdd =   3.3000        
++ vss =   0.            
++ x1spice.n1 =  26.6898n       
++ x1spice.n2 = 374.7750n       
++ x1spice.n3 =  46.8469n       
++ x1spice.n_int1 = 187.3875n       
++ x1spice.n_int2 =   2.6790        
++ x1spice.nand_n3 =   3.3000        
++ x1spice.oe_b =  56.6307n       
++ x2spice.n1 =   3.3000        
++ x2spice.n2 =   3.3000        
++ x2spice.n3 =   3.3000        
++ x2spice.n_int1 =   2.6790        
++ x2spice.n_int2 = 187.3876n       
++ x2spice.nand_n3 = 374.7753n       
++ x2spice.oe_b =  56.6307n       
++ x3spice.n1 =  26.6898n       
++ x3spice.n2 = 374.7750n       
++ x3spice.n3 =  46.8469n       
++ x3spice.n_int1 = 187.3875n       
++ x3spice.n_int2 =   2.6790        
++ x3spice.nand_n3 =   3.3000        
++ x3spice.oe_b =  56.6307n       
+***   END: Saved Operating Point ***                     

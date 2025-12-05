@@ -3,6 +3,7 @@
 # One command: python s2i_to_yaml.py buffer.s2i → buffer.yaml
 
 import argparse
+import math
 import yaml
 from pathlib import Path
 from s2ibispy.legacy.parser import S2IParser
@@ -14,6 +15,7 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
     
     # Helper to convert IbisTypMinMax to dict
     def tmm_to_dict(tmm):
+        import math
         if tmm is None:
             return None
         return {
@@ -22,8 +24,16 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
             "max": tmm.max if hasattr(tmm, 'max') else 0,
         }
     
+    # Helper to check if a TMM has actual values (not all NaN)
+    def tmm_has_values(tmm):
+        import math
+        if tmm is None:
+            return False
+        return not (math.isnan(tmm.typ) and math.isnan(tmm.min) and math.isnan(tmm.max))
+    
     # Build YAML structure
     yaml_data = {
+        "spice_subckt": getattr(global_, 'spice_subckt', None) or None,
         "ibis_version": ibis.ibisVersion,
         "file_name": ibis.thisFileName,
         "file_rev": ibis.fileRev,
@@ -42,17 +52,19 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
             "voltage_range": tmm_to_dict(global_.voltageRange),
             "vil": tmm_to_dict(global_.vil),
             "vih": tmm_to_dict(global_.vih),
+            "tr": tmm_to_dict(global_.tr),
+            "tf": tmm_to_dict(global_.tf),
         }
     }
     
-    # Add optional reference voltages only if they exist and are not default/empty
-    if hasattr(global_, 'pullupRef') and global_.pullupRef and global_.pullupRef.typ:
+    # Add optional reference voltages only if they exist and have actual values (not all NaN)
+    if hasattr(global_, 'pullupRef') and tmm_has_values(global_.pullupRef):
         yaml_data["global_defaults"]["pullup_ref"] = tmm_to_dict(global_.pullupRef)
-    if hasattr(global_, 'pulldownRef') and global_.pulldownRef and global_.pulldownRef.typ:
+    if hasattr(global_, 'pulldownRef') and tmm_has_values(global_.pulldownRef):
         yaml_data["global_defaults"]["pulldown_ref"] = tmm_to_dict(global_.pulldownRef)
-    if hasattr(global_, 'powerClampRef') and global_.powerClampRef and global_.powerClampRef.typ:
+    if hasattr(global_, 'powerClampRef') and tmm_has_values(global_.powerClampRef):
         yaml_data["global_defaults"]["power_clamp_ref"] = tmm_to_dict(global_.powerClampRef)
-    if hasattr(global_, 'gndClampRef') and global_.gndClampRef and global_.gndClampRef.typ:
+    if hasattr(global_, 'gndClampRef') and tmm_has_values(global_.gndClampRef):
         yaml_data["global_defaults"]["gnd_clamp_ref"] = tmm_to_dict(global_.gndClampRef)
     
     # Add pin parasitics
@@ -101,6 +113,74 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
             m["enable"] = model.enable
         if hasattr(model, 'polarity') and model.polarity:
             m["polarity"] = "Inverting" if model.polarity == 1 else "Non-Inverting"
+        
+        # Add model files if they exist
+        if hasattr(model, 'modelFile') and model.modelFile:
+            m["modelFile"] = model.modelFile
+        if hasattr(model, 'modelFileMin') and model.modelFileMin:
+            m["modelFileMin"] = model.modelFileMin
+        if hasattr(model, 'modelFileMax') and model.modelFileMax:
+            m["modelFileMax"] = model.modelFileMax
+        
+        # Add noModel flag if set
+        if hasattr(model, 'noModel') and model.noModel:
+            m["nomodel"] = True
+        
+        # Add waveforms if they exist
+        if hasattr(model, 'risingWaveList') and model.risingWaveList:
+            rising_waveforms = []
+            for wave in model.risingWaveList:
+                if hasattr(wave, 'R_fixture'):
+                    wf = {
+                        "R_fixture": wave.R_fixture,
+                        "V_fixture": wave.V_fixture,
+                    }
+                    # Add optional parameters if they're not NA/NaN
+                    if hasattr(wave, 'V_fixture_min') and not math.isnan(wave.V_fixture_min):
+                        wf["V_fixture_min"] = wave.V_fixture_min
+                    if hasattr(wave, 'V_fixture_max') and not math.isnan(wave.V_fixture_max):
+                        wf["V_fixture_max"] = wave.V_fixture_max
+                    if hasattr(wave, 'L_fixture') and not math.isnan(wave.L_fixture):
+                        wf["L_fixture"] = wave.L_fixture
+                    if hasattr(wave, 'C_fixture') and not math.isnan(wave.C_fixture):
+                        wf["C_fixture"] = wave.C_fixture
+                    if hasattr(wave, 'R_dut') and not math.isnan(wave.R_dut):
+                        wf["R_dut"] = wave.R_dut
+                    if hasattr(wave, 'L_dut') and not math.isnan(wave.L_dut):
+                        wf["L_dut"] = wave.L_dut
+                    if hasattr(wave, 'C_dut') and not math.isnan(wave.C_dut):
+                        wf["C_dut"] = wave.C_dut
+                    rising_waveforms.append(wf)
+            if rising_waveforms:
+                m["rising_waveforms"] = rising_waveforms
+        
+        if hasattr(model, 'fallingWaveList') and model.fallingWaveList:
+            falling_waveforms = []
+            for wave in model.fallingWaveList:
+                if hasattr(wave, 'R_fixture'):
+                    wf = {
+                        "R_fixture": wave.R_fixture,
+                        "V_fixture": wave.V_fixture,
+                    }
+                    # Add optional parameters if they're not NA/NaN
+                    if hasattr(wave, 'V_fixture_min') and not math.isnan(wave.V_fixture_min):
+                        wf["V_fixture_min"] = wave.V_fixture_min
+                    if hasattr(wave, 'V_fixture_max') and not math.isnan(wave.V_fixture_max):
+                        wf["V_fixture_max"] = wave.V_fixture_max
+                    if hasattr(wave, 'L_fixture') and not math.isnan(wave.L_fixture):
+                        wf["L_fixture"] = wave.L_fixture
+                    if hasattr(wave, 'C_fixture') and not math.isnan(wave.C_fixture):
+                        wf["C_fixture"] = wave.C_fixture
+                    if hasattr(wave, 'R_dut') and not math.isnan(wave.R_dut):
+                        wf["R_dut"] = wave.R_dut
+                    if hasattr(wave, 'L_dut') and not math.isnan(wave.L_dut):
+                        wf["L_dut"] = wave.L_dut
+                    if hasattr(wave, 'C_dut') and not math.isnan(wave.C_dut):
+                        wf["C_dut"] = wave.C_dut
+                    falling_waveforms.append(wf)
+            if falling_waveforms:
+                m["falling_waveforms"] = falling_waveforms
+        
         models.append(m)
     yaml_data["models"] = models
     
@@ -114,6 +194,9 @@ def convert_s2i_to_yaml(s2i_path: Path, yaml_path: Path):
                 "signalName": pin.signalName,
                 "modelName": pin.modelName,
             }
+            # Preserve SPICE node mapping from [Pin] (second column)
+            if hasattr(pin, 'spiceNodeName') and pin.spiceNodeName:
+                p["spiceNodeName"] = pin.spiceNodeName
             if hasattr(pin, 'inputPin') and pin.inputPin:
                 p["inputPin"] = pin.inputPin
             if hasattr(pin, 'enablePin') and pin.enablePin:

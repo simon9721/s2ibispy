@@ -22,7 +22,7 @@ UI_SCHEMA = {
     "general_settings": {
         "title": "General Settings",
         "fields": [
-            ("IBIS Version", "ibis_version", "Select IBIS version", False, WIDGET_DROPDOWN, ["4.0", "4.1", "4.2", "5.0", "5.1", "6.0", "6.1", "7.0"]),
+            ("IBIS Version", "ibis_version", "Select IBIS version", False, WIDGET_DROPDOWN, ["1.1", "2.1", "3.2", "4.2", "5.1", "6.0", "6.1", "7.0", "7.1", "7.2"]),
             ("File Name", "file_name", "Output .ibs file", True, WIDGET_ENTRY, None),
             ("File Rev", "file_rev", "File revision", False, WIDGET_DROPDOWN, ["0", "0.1", "0.2", "1.0", "1.1", "2.0"]),
             ("Date", "date", "Auto-filled", False, WIDGET_ENTRY, None),
@@ -96,6 +96,16 @@ UI_SCHEMA = {
                 ("Min", "vih_min", None, False),
                 ("Max", "vih_max", None, False)
             ]),
+            ("Tr [s] - Rise Time", [
+                ("Typ", "tr_typ", "Stimulus rise time (default: sim_time/100)", False),
+                ("Min", "tr_min", None, False),
+                ("Max", "tr_max", None, False)
+            ]),
+            ("Tf [s] - Fall Time", [
+                ("Typ", "tf_typ", "Stimulus fall time (default: sim_time/100)", False),
+                ("Min", "tf_min", None, False),
+                ("Max", "tf_max", None, False)
+            ]),
             ("Pin Parasitics", [
                 ("R_pkg typ (Ω)", "r_pkg_typ", None, False),
                 ("min", "r_pkg_min", None, False),
@@ -154,16 +164,17 @@ DEFAULTS = {
     "voltage_typ": "5.0", # VOLTAGE_RANGE_TYP_DEFAULT
     "voltage_min": "4.5", # VOLTAGE_RANGE_MIN_DEFAULT
     "voltage_max": "5.5", # VOLTAGE_RANGE_MAX_DEFAULT
-    "pullup_typ": "3.3",
+    # Optional power-aware reference voltages - only set when explicitly needed
+    "pullup_typ": None,
     "pullup_min": None,
     "pullup_max": None,
-    "pulldown_typ": "0",
+    "pulldown_typ": None,
     "pulldown_min": None,
     "pulldown_max": None,
-    "power_clamp_typ": "3.3",
+    "power_clamp_typ": None,
     "power_clamp_min": None,
     "power_clamp_max": None,
-    "gnd_clamp_typ": "0",
+    "gnd_clamp_typ": None,
     "gnd_clamp_min": None,
     "gnd_clamp_max": None,
     "vil_typ": "0.8",
@@ -172,6 +183,12 @@ DEFAULTS = {
     "vih_typ": "2.0",
     "vih_min": None,
     "vih_max": None,
+    "tr_typ": "1e-9",
+    "tr_min": None,
+    "tr_max": None,
+    "tf_typ": "1e-9",
+    "tf_min": None,
+    "tf_max": None,
     "r_pkg_typ": "0.2",
     "r_pkg_min": "0.1",
     "r_pkg_max": "0.4",

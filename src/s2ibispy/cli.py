@@ -5,12 +5,13 @@ import logging
 import os
 import sys
 import subprocess
+import shutil
 from typing import Optional, Any
 from pathlib import Path
 
-from s2ibispy.legacy.parser import S2IParser
 from s2ibispy.s2ianaly import S2IAnaly
 from s2ibispy.s2ioutput import IbisWriter as S2IOutput
+from s2ibispy.s2i_to_yaml import convert_s2i_to_yaml
 
 _YAML_IMPORT_ERROR = None
 try:
@@ -25,8 +26,80 @@ except Exception as e:
 
 import re
 from typing import Dict
+import yaml
 
 from s2ibispy.correlation import generate_and_run_correlation
+
+
+def _validate_and_fix_paths(yaml_path: Path) -> None:
+    """Validate and resolve model file and spice file paths (like GUI does)."""
+    yaml_dir = yaml_path.parent.absolute()
+    cwd = Path.cwd()
+    
+    def resolve_file_path(file_path: str, file_type: str) -> tuple[str, bool]:
+        """Try to resolve a file path. Returns (resolved_path, was_modified)."""
+        if not file_path:
+            return None, False
+        
+        file_path_obj = Path(file_path)
+        
+        # Already absolute and exists
+        if file_path_obj.is_absolute() and file_path_obj.exists():
+            logging.debug(f"✓ {file_type}: {file_path}")
+            return file_path, False
+        
+        # Try to resolve relative path
+        search_dirs = [yaml_dir, cwd, yaml_dir.parent]
+        
+        for base_dir in search_dirs:
+            test_path = base_dir / file_path
+            if test_path.exists():
+                resolved_path = str(test_path.absolute())
+                logging.info(f"✓ Resolved {file_type}: {file_path} → {resolved_path}")
+                return resolved_path, True
+        
+        logging.warning(f"⚠ {file_type} not found: {file_path}")
+        return None, False
+    
+    # Load YAML
+    try:
+        with open(yaml_path, 'r') as f:
+            data = yaml.safe_load(f)
+    except Exception as e:
+        logging.error(f"Failed to read YAML for path validation: {e}")
+        return
+    
+    modified = False
+    
+    # Check model files
+    models = data.get("models", [])
+    for model in models:
+        for field in ["modelFile", "modelFileMin", "modelFileMax"]:
+            model_file = model.get(field, "")
+            if model_file:
+                resolved_path, was_resolved = resolve_file_path(model_file, f"Model {field}")
+                if was_resolved and resolved_path:
+                    model[field] = resolved_path
+                    modified = True
+    
+    # Check spice files
+    components = data.get("components", [])
+    for comp in components:
+        spice_file = comp.get("spiceFile", "")
+        if spice_file:
+            resolved_path, was_resolved = resolve_file_path(spice_file, "Spice file")
+            if was_resolved and resolved_path:
+                comp["spiceFile"] = resolved_path
+                modified = True
+    
+    # Save if modified
+    if modified:
+        try:
+            with open(yaml_path, 'w') as f:
+                yaml.dump(data, f, default_flow_style=False, sort_keys=False)
+            logging.info("Auto-saved YAML with resolved paths")
+        except Exception as e:
+            logging.error(f"Failed to save YAML with resolved paths: {e}")
 
 
 def run_ibischk(ibis_file: str, ibischk: str) -> Dict[str, object]:
@@ -93,6 +166,88 @@ def run_ibischk(ibis_file: str, ibischk: str) -> Dict[str, object]:
     except FileNotFoundError:
         logging.warning("ibischk7 executable not found at '%s' — skipping validation", ibischk)
         return {"returncode": 0, "output": "", "errors": [], "warnings": [], "notes": []}
+
+
+def _copy_spice_libraries(src_dir: Path, out_dir: Path, referenced_files: list[str] | None = None) -> int:
+    """Copy common SPICE library files from src_dir to out_dir.
+
+    - Copies files with typical library extensions: .lib, .mod, .inc, .mdl, .scs
+    - Also ensures explicitly referenced model files are copied regardless of extension
+    - Non-recursive (only the same directory as the input file)
+    Returns number of files copied.
+    """
+    try:
+        src_dir = src_dir.resolve()
+        out_dir = out_dir.resolve()
+    except Exception:
+        # Fall back to string-based join if resolve fails
+        pass
+
+    if src_dir == out_dir:
+        logging.debug("Source and output directories are the same → skipping library copy")
+        return 0
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Allow override via env var (comma-separated globs)
+    env_exts = os.getenv("S2IBISPY_LIB_COPY_EXTS", "").strip()
+    if env_exts:
+        patterns = [p.strip() for p in env_exts.split(",") if p.strip()]
+    else:
+        # Default common SPICE library patterns (non-recursive)
+        patterns = ["*.lib", "*.mod", "*.inc", "*.mdl", "*.scs"]
+
+    copied = 0
+
+    def _safe_copy(src: Path, dst_dir: Path) -> None:
+        nonlocal copied
+        try:
+            dst = dst_dir / src.name
+            if not dst.exists():
+                shutil.copy2(src, dst)
+                copied += 1
+                logging.debug("Copied library: %s → %s", src, dst)
+            else:
+                # Optionally update if size or mtime differ
+                try:
+                    if src.stat().st_mtime > dst.stat().st_mtime or src.stat().st_size != dst.stat().st_size:
+                        shutil.copy2(src, dst)
+                        copied += 1
+                        logging.debug("Updated library: %s → %s", src, dst)
+                except Exception:
+                    # If stat fails, just skip to be safe
+                    pass
+        except Exception as e:
+            logging.warning("Failed to copy '%s': %s", src, e)
+
+    # Copy by patterns
+    try:
+        for pat in patterns:
+            for f in src_dir.glob(pat):
+                if f.is_file():
+                    _safe_copy(f, out_dir)
+    except Exception as e:
+        logging.debug("Pattern copy encountered an issue: %s", e)
+
+    # Copy explicitly referenced files (e.g., modelFile/Min/Max)
+    if referenced_files:
+        for rf in referenced_files:
+            if not rf:
+                continue
+            try:
+                p = Path(rf)
+                if not p.is_absolute():
+                    p = (src_dir / rf).resolve()
+                if p.exists() and p.is_file():
+                    _safe_copy(p, out_dir)
+            except Exception as e:
+                logging.debug("Skip copy for referenced '%s': %s", rf, e)
+
+    if copied:
+        logging.info("Copied %d SPICE library file(s) to output directory", copied)
+    else:
+        logging.debug("No SPICE library files needed copying")
+    return copied
 
 
 def run_correlation_for_models(mList, ibis, outdir, s2i_spice, gui=None):
@@ -199,41 +354,57 @@ def main(argv: Optional[list[str]] = None, gui: Optional[Any] = None) -> int:
         logging.error("Input file not found: %s", input_file)
         return 2
 
+    # Convert .s2i to YAML first (just like GUI does)
+    if input_path.suffix.lower() == ".s2i":
+        if not YAML_SUPPORT:
+            logging.error(
+                "YAML support required for .s2i conversion but is disabled: %s\n"
+                "Please install pydantic: pip install pydantic",
+                _YAML_IMPORT_ERROR
+            )
+            return 2
+        
+        logging.info("Converting .s2i to YAML: %s", input_path.name)
+        yaml_path = input_path.with_suffix('.yaml')
+        try:
+            convert_s2i_to_yaml(input_path, yaml_path)
+            logging.info("Converted to: %s", yaml_path.name)
+            
+            # Validate and resolve file paths (like GUI does)
+            _validate_and_fix_paths(yaml_path)
+            
+            input_path = yaml_path
+        except Exception as e:
+            logging.error("Failed to convert .s2i to YAML: %s", e)
+            return 2
+
+    # Now load the YAML file (whether original or converted)
     if YAML_SUPPORT and input_path.suffix.lower() == ".yaml":
-        logging.info("Loading modern YAML config: %s", input_path.name)
+        logging.info("Loading YAML config: %s", input_path.name)
         try:
             ibis, global_, mList = load_yaml_config(input_path)
         except Exception as e:
             logging.error("Failed to load YAML: %s", e)
             return 2
     else:
-        # Clarify why a .yaml fell back to legacy path.
-        if input_path.suffix.lower() == ".yaml" and not YAML_SUPPORT:
-            logging.warning(
-                "YAML support disabled (loader import failed): %s — falling back to legacy parser stub",
-                _YAML_IMPORT_ERROR
-            )
-        parser = S2IParser()
-        logging.info("Parsing legacy .s2i file (or stub for .yaml fallback): %s", input_path.name)
+        logging.error("Unsupported file format: %s (expected .yaml or .s2i)", input_path.suffix)
+        return 2
+
+    # Copy SPICE library files from the config's directory to outdir (non-recursive)
+    try:
+        ref_files = []
         try:
-            ibis, global_, mList = parser.parse(input_file)
-            for comp in ibis.cList:
-                if not getattr(comp, "spiceFile", None):
-                    continue
-                model_names = {
-                    pin.modelName for pin in comp.pList
-                    if hasattr(pin, "modelName") and pin.modelName
-                }
-                for name in model_names:
-                    model = next((m for m in mList if m.modelName == name), None)
-                    if model and not getattr(model, "spice_file", None):
-                        model.spice_file = comp.spiceFile
-                        logging.info(f"Set model.{model.modelName}.spice_file = {comp.spiceFile}")
-            ibis.mList = mList
-            logging.debug(f"Parsed global_: vil={getattr(global_, 'vil', None)}, vih={getattr(global_, 'vih', None)}")
-        except FileNotFoundError as e:
-            logging.error("%s", e)
-            return 2
+            # Collect referenced model files if available on model objects
+            for m in (mList or []):
+                for attr in ("modelFile", "modelFileMin", "modelFileMax"):
+                    val = getattr(m, attr, None)
+                    if val:
+                        ref_files.append(str(val))
+        except Exception:
+            pass
+        _copy_spice_libraries(input_path.parent, Path(outdir), ref_files)
+    except Exception as e:
+        logging.debug("Library copy step skipped due to error: %s", e)
 
     ibis.spiceType = {"hspice": 0, "spectre": 1, "eldo": 2}.get(args.spice_type, 0)
     ibis.spiceCommand = args.spice_cmd or getattr(ibis, "spiceCommand", "")

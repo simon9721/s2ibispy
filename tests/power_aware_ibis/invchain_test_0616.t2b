@@ -1,0 +1,36 @@
+[IBIS Ver]	 3.2	
+[File name]	 t2b_0616.ibs	
+[File rev]	 1.0	
+[Date]	 Jun 16,2021	
+[Spice type]	 Hspice	
+[Waveform nPoints]	 300	
+[Temperature Range]	 27C	 27C	 27C	
+[Voltage Range]	 1.8V	 1.7V	 1.9V	
+[C_comp]	 0.468pF	 NA	 NA	 	 	 	 	
+[Rload]	 50 ohms	
+[Sim time]	 1.7ns	
+[Vil]	 0V	 NA	 NA	
+[Vih]	 1.8V	 NA	 NA	
+[Tr]	 10ps	 NA	 NA	
+[Tf]	 10ps	 NA	 NA	
+[Spice Subckt]	 invchain	
+[Component]	 invchain	
+[Spice file]	 invchain_top.sp	
+[Pin]	
+PAD	 VOUT8	 PAD	 driver2	 	 	 	
+-> IN   
+IN	 VIN	 IN	 dummy	 	 	 	
+VCCQ	 vccq	 VCCQ	 Power	 	 	 	
+VSSQ	 vssq	 VSSQ	 Gnd	 	 	 	
+[Model]	 driver2	
+[Model type]	 Output	
+[Polarity]	 Non-Inverting	
+[Vmeas]	 0.9V	 	 	
+[Model file]	 invchain_subckt_typ.sp	 invchain_subckt_slow.sp	 invchain_subckt_fast.sp	
+[Rising Waveform]	 50ohm	 1.8V	 1.7V	 1.9V	 NA	 NA	 NA	 NA	 NA	
+[Rising Waveform]	 50ohm	 0V	 0V	 0V	 NA	 NA	 NA	 NA	 NA	
+[Falling Waveform]	 50ohm	 1.8V	 1.7V	 1.9V	 NA	 NA	 NA	 NA	 NA	
+[Falling Waveform]	 50ohm	 0V	 0V	 0V	 NA	 NA	 NA	 NA	 NA	
+[Model]	 dummy	
+[NoModel]
+[Model type]	 Input	

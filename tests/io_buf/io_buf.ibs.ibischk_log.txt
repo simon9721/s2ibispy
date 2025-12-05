@@ -1,19 +1,23 @@
 IBISCHK7 V7.2.1
 
-Checking C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\io_buf\io_buf.ibs for IBIS 3.2 Compatibility...
+Checking C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\io_buf\io_buf.ibs for IBIS 6.1 Compatibility...
 
-WARNING (line   27) - Component 'MCM Driver 1' contains a blank character.
-NOTE (line   74) - Pulldown Typical data is non-monotonic
-NOTE (line   74) - Pulldown Maximum data is non-monotonic
-NOTE (line   79) - Pulldown Minimum data is non-monotonic
-NOTE (line  165) - Pullup Typical data is non-monotonic
-NOTE (line  168) - Pullup Maximum data is non-monotonic
-NOTE (line  239) - Pullup Minimum data is non-monotonic
-NOTE (line  279) - GND Clamp Minimum data is non-monotonic
-NOTE (line  289) - GND Clamp Typical data is non-monotonic
-NOTE (line  290) - GND Clamp Maximum data is non-monotonic
-WARNING - Model 'driver': Model_type 'I/O' must have Vinl set
-WARNING - Model 'driver': Model_type 'I/O' must have Vinh set
+WARNING (line   15) - Component 'MCM Driver 1' contains a blank character.
+NOTE (line   61) - Pulldown Typical data is non-monotonic
+NOTE (line   61) - Pulldown Maximum data is non-monotonic
+NOTE (line   66) - Pulldown Minimum data is non-monotonic
+NOTE (line  152) - Pullup Typical data is non-monotonic
+NOTE (line  155) - Pullup Maximum data is non-monotonic
+NOTE (line  226) - Pullup Minimum data is non-monotonic
+NOTE (line  266) - GND Clamp Minimum data is non-monotonic
+NOTE (line  276) - GND Clamp Typical data is non-monotonic
+NOTE (line  277) - GND Clamp Maximum data is non-monotonic
+NOTE (line  494) - ISSO_PU Maximum data is non-monotonic
+NOTE (line  495) - ISSO_PU Typical data is non-monotonic
+NOTE (line  495) - ISSO_PU Minimum data is non-monotonic
+NOTE (line  539) - ISSO_PD Minimum data is non-monotonic
+NOTE (line  542) - ISSO_PD Typical data is non-monotonic
+NOTE (line  542) - ISSO_PD Maximum data is non-monotonic
 WARNING - Model 'driver': Vmeas timing test load parameter should be specified
 NOTE - Combined Pulldown for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation
 NOTE - Combined Pullup for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation
@@ -21,8 +25,14 @@ NOTE - Combined Pulldown for Model: driver Minimum data is non-monotonic based o
 NOTE - Combined Pullup for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation
 NOTE - Combined Pulldown for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation
 NOTE - Combined Pullup for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation
+WARNING - Model driver: Typical ISSO_PU current (-1.008e-08A) at 0V is not within  5.00% of Pullup current (-3.628e-02A) at reference ( 0.000V)
+WARNING - Model driver: Typical ISSO_PU current (-3.628e-02A) at Pulldown reference ( 0.000V) - table value ( 3.300V) is non-zero (> 1.0e-06A)
+WARNING - Model driver: Minimum ISSO_PU current (-3.726e-08A) at 0V is not within  5.00% of Pullup current (-2.755e-02A) at reference ( 0.000V)
+WARNING - Model driver: Minimum ISSO_PU current (-3.569e-02A) at Pulldown reference ( 0.000V) - table value ( 3.000V) is non-zero (> 1.0e-06A)
+WARNING - Model driver: Maximum ISSO_PU current (-5.774e-09A) at 0V is not within  5.00% of Pullup current (-4.413e-02A) at reference ( 0.000V)
+WARNING - Model driver: Maximum ISSO_PU current (-3.769e-02A) at Pulldown reference ( 0.000V) - table value ( 3.600V) is non-zero (> 1.0e-06A)
 
 Errors  : 0
-Warnings: 4
+Warnings: 8
 
 File Passed

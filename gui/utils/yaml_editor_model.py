@@ -147,8 +147,14 @@ class YamlModel:
     def _build_global_defaults_structure(self):
         """Build the nested global_defaults structure."""
         def clean_value(val):
-            """Convert empty strings to None, keep valid numbers including 0."""
+            """Convert empty strings, None, and NaN to None; keep valid numbers including 0."""
+            import math
             if val == "" or val is None:
+                return None
+            # Handle NaN (both float nan and string representations)
+            if isinstance(val, float) and math.isnan(val):
+                return None
+            if isinstance(val, str) and val.lower() in ('nan', '.nan', 'na', 'n/a'):
                 return None
             return val
         

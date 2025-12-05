@@ -1,5 +1,6 @@
 """Package copy of correlation.py with package imports."""
 import os
+import sys
 import logging
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
@@ -14,6 +15,13 @@ from s2ibispy.models import IbisModel, IbisTOP
 from s2ibispy.s2ispice import S2ISpice
 from s2ibispy.s2i_constants import ConstantStuff as CS
 from s2ibispy.s2ianaly import FindSupplyPins
+
+
+def _get_base_path():
+    """Get base path for resources, handling PyInstaller's _MEIPASS."""
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        return sys._MEIPASS
+    return os.path.abspath(".")
 
 
 def find_model_for_correlation(
@@ -223,12 +231,20 @@ VENA3 oe3 0 DC 3.3
     loaders = []
     if template_dir and os.path.isdir(template_dir):
         loaders.append(FileSystemLoader(template_dir))
-    # packaged templates
+    
+    # PyInstaller bundled templates
+    base_path = _get_base_path()
+    bundled_templates = os.path.join(base_path, "templates")
+    if os.path.isdir(bundled_templates):
+        loaders.append(FileSystemLoader(bundled_templates))
+    
+    # packaged templates (for non-frozen runs)
     if PackageLoader is not None:
         try:
             loaders.append(PackageLoader("s2ibispy", "templates"))
         except Exception:
             pass
+    
     # repo-relative fallback
     loaders.append(FileSystemLoader("templates"))
     loaders.append(FileSystemLoader(os.path.join(os.path.dirname(__file__), "..", "..", "templates")))
@@ -236,7 +252,7 @@ VENA3 oe3 0 DC 3.3
     if ChoiceLoader is not None and loaders:
         env = Environment(loader=ChoiceLoader(loaders))
     else:
-        env = Environment(loader=loaders[0])
+        env = Environment(loader=loaders[0] if loaders else FileSystemLoader("."))
 
     try:
         template = env.get_template("compare_correlation.sp.j2")
@@ -247,12 +263,19 @@ VENA3 oe3 0 DC 3.3
 
     # packaged RLGC file path
     rlgc_path = None
-    try:
-        r = files("s2ibispy").joinpath("data").joinpath("Z50_406.lc3")
-        with as_file(r) as p:
-            rlgc_path = str(p)
-    except Exception:
-        rlgc_path = os.path.abspath(os.path.join(os.getcwd(), "Z50_406.lc3"))
+    # Try PyInstaller bundled location first
+    base_path = _get_base_path()
+    bundled_rlgc = os.path.join(base_path, "s2ibispy", "data", "Z50_406.lc3")
+    if os.path.isfile(bundled_rlgc):
+        rlgc_path = bundled_rlgc
+    else:
+        # Try importlib.resources for non-frozen
+        try:
+            r = files("s2ibispy").joinpath("data").joinpath("Z50_406.lc3")
+            with as_file(r) as p:
+                rlgc_path = str(p)
+        except Exception:
+            rlgc_path = os.path.abspath(os.path.join(os.getcwd(), "Z50_406.lc3"))
 
     context = {
         "model": model,

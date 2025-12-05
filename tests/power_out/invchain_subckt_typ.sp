@@ -1,0 +1,36 @@
+.lib 'HL18G-S3.7S.lib' tt_tn
+.param Wn=1E-6
+.param Wp=2E-6
+.param Ln=180E-9
+.param Lp=180E-9
+
+.PARAM  vccq      = vccq_typ
+.PARAM  vccr      = vccr_typ
+
+.subckt invchain VIN VOUT8 vccq vssq
+
+MPM_inv1 VOUT1 VIN vccq vccq pch_tn W=Wp L=Lp m=1
+MNM_inv1 VOUT1 VIN vssq vssq nch_tn W=Wn L=Ln m=1
+
+MPM_inv2 VOUT2 VOUT1 vccq vccq pch_tn W=Wp L=Lp m=2
+MNM_inv2 VOUT2 VOUT1 vssq vssq nch_tn W=Wn L=Ln m=2
+
+MPM_inv3 VOUT3 VOUT2 vccq vccq pch_tn W=Wp L=Lp m=4
+MNM_inv3 VOUT3 VOUT2 vssq vssq nch_tn W=Wn L=Ln m=4
+
+MPM_inv4 VOUT4 VOUT3 vccq vccq pch_tn W=Wp L=Lp m=8
+MNM_inv4 VOUT4 VOUT3 vssq vssq nch_tn W=Wn L=Ln m=8
+
+MPM_inv5 VOUT5 VOUT4 vccq vccq pch_tn W=Wp L=Lp m=16
+MNM_inv5 VOUT5 VOUT4 vssq vssq nch_tn W=Wn L=Ln m=16
+
+MPM_inv6 VOUT6 VOUT5 vccq vccq pch_tn W=Wp L=Lp m=32
+MNM_inv6 VOUT6 VOUT5 vssq vssq nch_tn W=Wn L=Ln m=32
+
+MPM_inv7 VOUT7 VOUT6 vccq vccq pch_tn W=Wp L=Lp m=64
+MNM_inv7 VOUT7 VOUT6 vssq vssq nch_tn W=Wn L=Ln m=64
+
+MPM_inv8 VOUT8 VOUT7 vccq vccq pch_tn W=Wp L=Lp m=128
+MNM_inv8 VOUT8 VOUT7 vssq vssq nch_tn W=Wn L=Ln m=128
+
+.ends

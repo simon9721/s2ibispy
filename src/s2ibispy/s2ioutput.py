@@ -1,5 +1,6 @@
 # s2ioutput.py — FINAL, CORRECT, MERGED VERSION
 import logging
+import re
 import math
 from typing import List, Optional
 from s2ibispy.models import (
@@ -34,21 +35,31 @@ class IbisWriter:
         f.write("|************************************************************************\n\n")
 
         ver_map = {
-            "1.0": CS.VERSION_ONE_ZERO, "1.1": CS.VERSION_ONE_ONE,
-            "2.0": CS.VERSION_TWO_ZERO, "2.1": CS.VERSION_TWO_ONE,
+            # Supported official IBIS versions
+            "1.1": CS.VERSION_ONE_ONE,
+            "2.1": CS.VERSION_TWO_ONE,
             "3.2": CS.VERSION_THREE_TWO,
-            # IBIS 5.x+ support (commonly used for ISSO and new keywords)
-            "5.0": CS.VERSION_FIVE_ZERO,
+            "4.2": CS.VERSION_FOUR_TWO,
             "5.1": CS.VERSION_FIVE_ONE,
-            # Future-proof mappings
             "6.0": CS.VERSION_SIX_ZERO,
+            "6.1": CS.VERSION_SIX_ONE,
             "7.0": CS.VERSION_SEVEN_ZERO,
+            "7.1": CS.VERSION_SEVEN_ONE,
+            "7.2": CS.VERSION_SEVEN_TWO,
         }
-        ibis_ver_int = ver_map.get(self.ibis_head.ibisVersion, CS.VERSION_THREE_TWO)
+        requested_ver = (self.ibis_head.ibisVersion or "3.2").strip()
+        ibis_ver_int = ver_map.get(requested_ver, CS.VERSION_THREE_TWO)
         version_str = {v: k for k, v in ver_map.items()}.get(ibis_ver_int, "3.2")
 
-        self._print_keyword(f, "[IBIS Ver]", version_str)
-        self._print_keyword(f, "[File Name]", self.ibis_head.thisFileName)
+        # Prefer printing the exact version string if it looks numeric
+        print_ver = requested_ver if re.match(r'^\d+(?:\.\d+)?$', requested_ver) else version_str
+
+        self._print_keyword(f, "[IBIS Ver]", print_ver)
+        # Ensure [File Name] ends with .ibs per ibischk expectation
+        file_name_line = self.ibis_head.thisFileName or "buffer.ibs"
+        if not file_name_line.lower().endswith(".ibs"):
+            file_name_line += ".ibs"
+        self._print_keyword(f, "[File Name]", file_name_line)
         self._print_keyword(f, "[File Rev]", self.ibis_head.fileRev)
         self._print_keyword(f, "[Date]", self.ibis_head.date)
         self._print_multiline(f, "[Source]", self.ibis_head.source)
@@ -56,7 +67,6 @@ class IbisWriter:
         self._print_multiline(f, "[Disclaimer]", self.ibis_head.disclaimer)
         if ibis_ver_int != CS.VERSION_ONE_ONE:
             self._print_multiline(f, "[Copyright]", self.ibis_head.copyright)
-        f.write("\n")
 
         for comp in reversed(self.ibis_head.cList or []):
             self._print_component(f, comp, ibis_ver_int)
@@ -376,17 +386,65 @@ class IbisWriter:
             f.write(f"{keyword} {value}\n")
 
     def _print_multiline(self, f, keyword: str, value: str) -> None:
+        """
+        Print multiline keywords according to IBIS spec.
+        First line: [Keyword] first_line_content
+        Subsequent lines: space + content
+        
+        Automatically wraps long lines to ~78 characters for readability.
+        """
         if not value:
             return
+        
+        # Split by existing newlines first
         lines = value.splitlines()
         if not lines:
             return
-        # Print keyword on first line
-        f.write(f"{keyword} {lines[0]}\n")
-        # Print remaining lines with leading space
-        for line in lines[1:]:
-            f.write(f" {line}\n")
-        f.write("\n")
+        
+        # Process and wrap lines
+        max_width = 78  # Standard IBIS line width
+        wrapped_lines = []
+        
+        for i, line in enumerate(lines):
+            # First line needs space for keyword
+            if i == 0:
+                available = max_width - len(keyword) - 1
+            else:
+                available = max_width - 1  # -1 for leading space
+            
+            # If line fits, add it as-is
+            if len(line) <= available:
+                wrapped_lines.append(line)
+            else:
+                # Wrap long lines
+                words = line.split()
+                current = []
+                current_len = 0
+                
+                for word in words:
+                    word_len = len(word)
+                    # +1 for space between words
+                    if current and current_len + 1 + word_len > available:
+                        wrapped_lines.append(' '.join(current))
+                        current = [word]
+                        current_len = word_len
+                        available = max_width - 1  # Subsequent lines have leading space
+                    else:
+                        if current:
+                            current_len += 1 + word_len
+                        else:
+                            current_len = word_len
+                        current.append(word)
+                
+                if current:
+                    wrapped_lines.append(' '.join(current))
+        
+        # Print keyword with first line
+        if wrapped_lines:
+            f.write(f"{keyword} {wrapped_lines[0]}\n")
+            # Print remaining lines with leading space for continuation
+            for line in wrapped_lines[1:]:
+                f.write(f" {line}\n")
 
     def _print_header(self, f, name: str, kind: str) -> None:
         bar = "|" + "*" * 78 + "\n"
