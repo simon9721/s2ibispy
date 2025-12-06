@@ -55,9 +55,9 @@ models:
   type: Output
   enable: active_low
   polarity: Non-Inverting
-  modelFile: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\power_aware_ibis\invchain_subckt_typ.sp
-  modelFileMin: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\power_aware_ibis\invchain_subckt_slow.sp
-  modelFileMax: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\power_aware_ibis\invchain_subckt_fast.sp
+  modelFile: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_aware_ibis\invchain_subckt_typ.sp
+  modelFileMin: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_aware_ibis\invchain_subckt_slow.sp
+  modelFileMax: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_aware_ibis\invchain_subckt_fast.sp
   rising_waveforms:
   - R_fixture: 50.0
     V_fixture: 1.8
@@ -84,7 +84,7 @@ models:
 components:
 - component: invchain
   manufacturer: ''
-  spiceFile: C:\Users\sh3qm\PycharmProjects\s2ibispy_new\tests\power_aware_ibis\invchain_top.sp
+  spiceFile: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_aware_ibis\invchain_top.sp
   pList:
   - pinName: PAD
     signalName: PAD

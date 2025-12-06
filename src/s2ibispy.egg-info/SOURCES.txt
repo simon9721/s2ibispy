@@ -18,7 +18,10 @@ src/s2ibispy.egg-info/SOURCES.txt
 src/s2ibispy.egg-info/dependency_links.txt
 src/s2ibispy.egg-info/requires.txt
 src/s2ibispy.egg-info/top_level.txt
+src/s2ibispy/data/WEL4RS.RLC
 src/s2ibispy/data/Z50_406.lc3
 src/s2ibispy/legacy/parser.py
 src/s2ibispy/legacy/s2iutil.py
+src/s2ibispy/plotter/__init__.py
+src/s2ibispy/plotter/ibis_plotter.py
 src/s2ibispy/templates/compare_correlation.sp.j2

@@ -919,6 +919,7 @@ class S2ISpice:
             spice_out: str,
             command: str,
             retry_count: int = 0,
+            curve_type: int = CS.CurveType.PULLUP,
     ) -> int:
         target_file = spice_out
         if not os.path.exists(target_file):
@@ -1006,7 +1007,15 @@ class S2ISpice:
 
             try:
                 v_val = float(m.group(1))
-                i_val = -float(m.group(2))  # current into DUT
+                i_raw = float(m.group(2))
+                
+                # ISSO curves measure current in opposite direction:
+                # - Regular pullup/pulldown: negate HSPICE output (current OUT of DUT)
+                # - ISSO_PU/ISSO_PD: keep sign as-is (current already correct)
+                if curve_type in [CS.CurveType.ISSO_PULLUP, CS.CurveType.ISSO_PULLDOWN]:
+                    i_val = i_raw  # ISSO: don't negate
+                else:
+                    i_val = -i_raw  # Regular: negate (current into DUT)
             except ValueError:
                 logging.debug(f"Failed to parse numbers: {raw_line}")
                 continue
@@ -1588,7 +1597,7 @@ class S2ISpice:
                 res_total += 1
                 continue
 
-            if self.get_spice_vi_data(vi_cont, num_table_points, spice_out, corner):
+            if self.get_spice_vi_data(vi_cont, num_table_points, spice_out, corner, curve_type=curve_type):
                 logging.error(f"Curve {CS.curve_name_string.get(curve_type, '')} not generated.")
                 res_total += 1  # Fix for Issue 6
                 continue
