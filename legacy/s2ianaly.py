@@ -599,28 +599,35 @@ class SortVIData:
 
         # --- ISSO_PU ---
         if isso_pullup_data is not None and isso_pullup_data.size > 0:
-            # Same processing as regular pullup: Vcc-relative, reversed, derated
+            # ISSO tables use absolute supply voltage - no Vcc-relative transformation
             setup_v.setup_voltages(CS.CurveType.PULLUP, model)
             sweep_step = setup_v.sweep_step
             sweep_range = setup_v.sweep_range
-            vcc = setup_v.vcc
 
-            # Vcc-relative in place
-            for i in range(isso_pullup_data.size):
-                isso_pullup_data.VIs[i].v = vcc.typ - isso_pullup_data.VIs[i].v
-
-            # Truncate/reverse like pullup
-            num_table_pts = int(abs(sweep_range / sweep_step)) + 1
-            vt_size = min(isso_pullup_data.size, num_table_pts, CS.MAX_TABLE_SIZE)
+            # ISSO_PU: filter positive voltages, reverse order (high to low voltage), and negate currents
+            # Commercial tools only include V >= 0 in ISSO tables
+            filtered_data = []
+            for entry in isso_pullup_data.VIs[:isso_pullup_data.size]:
+                if entry.v >= 0.0:
+                    filtered_data.append(entry)
+            
+            num_table_pts = min(len(filtered_data), CS.MAX_TABLE_SIZE)
             model.isso_pullup = IbisVItable(
-                VIs=[IbisVItableEntry(v=0.0, i=IbisTypMinMax()) for _ in range(vt_size)],
-                size=vt_size,
+                VIs=[IbisVItableEntry(v=0.0, i=IbisTypMinMax()) for _ in range(num_table_pts)],
+                size=num_table_pts,
             )
-            j = isso_pullup_data.size - 1
-            for i in range(vt_size):
-                if j < 0: break
-                model.isso_pullup.VIs[i] = isso_pullup_data.VIs[j]
-                j -= 1
+            
+            # Copy in reverse order: filtered_data is sorted low→high, output should be high→low
+            for i in range(num_table_pts):
+                src_idx = len(filtered_data) - 1 - i  # Start from highest voltage
+                if src_idx < 0: break
+                model.isso_pullup.VIs[i] = filtered_data[src_idx]
+                # Negate currents to match commercial tool sign convention
+                model.isso_pullup.VIs[i].i.typ = -model.isso_pullup.VIs[i].i.typ
+                if not is_use_na(model.isso_pullup.VIs[i].i.min):
+                    model.isso_pullup.VIs[i].i.min = -model.isso_pullup.VIs[i].i.min
+                if not is_use_na(model.isso_pullup.VIs[i].i.max):
+                    model.isso_pullup.VIs[i].i.max = -model.isso_pullup.VIs[i].i.max
 
             # Apply derating if enabled
             if model.derateVIPct:
@@ -631,25 +638,32 @@ class SortVIData:
 
         # --- ISSO_PD ---
         if isso_pulldown_data is not None and isso_pulldown_data.size > 0:
-            # Same processing as regular pulldown: forward order, no reversal
+            # ISSO_PD: filter negative voltages, forward order, negate currents per commercial tool format
             setup_v.setup_voltages(CS.CurveType.PULLDOWN, model)
             sweep_step = setup_v.sweep_step
             sweep_range = setup_v.sweep_range
 
-            num_table_pts = int(abs(sweep_range / sweep_step)) + 1
-            vt_size = min(isso_pulldown_data.size, num_table_pts, CS.MAX_TABLE_SIZE)
+            # Commercial tools only include V < 0 in ISSO_PD tables
+            filtered_data = []
+            for entry in isso_pulldown_data.VIs[:isso_pulldown_data.size]:
+                if entry.v < 0.0:
+                    filtered_data.append(entry)
+            
+            num_table_pts = min(len(filtered_data), CS.MAX_TABLE_SIZE)
             model.isso_pulldown = IbisVItable(
-                VIs=[IbisVItableEntry(v=0.0, i=IbisTypMinMax()) for _ in range(vt_size)],
-                size=vt_size,
+                VIs=[IbisVItableEntry(v=0.0, i=IbisTypMinMax()) for _ in range(num_table_pts)],
+                size=num_table_pts,
             )
-            j = 0
-            for i in range(vt_size):
-                if j >= isso_pulldown_data.size: break
-                model.isso_pulldown.VIs[i] = isso_pulldown_data.VIs[j]
-                j += 1
-
-            # Ensure last point matches
-            model.isso_pulldown.VIs[model.isso_pulldown.size - 1] = isso_pulldown_data.VIs[isso_pulldown_data.size - 1]
+            
+            for i in range(num_table_pts):
+                if i >= len(filtered_data): break
+                model.isso_pulldown.VIs[i] = filtered_data[i]
+                # Negate currents to match commercial tool sign convention
+                model.isso_pulldown.VIs[i].i.typ = -model.isso_pulldown.VIs[i].i.typ
+                if not is_use_na(model.isso_pulldown.VIs[i].i.min):
+                    model.isso_pulldown.VIs[i].i.min = -model.isso_pulldown.VIs[i].i.min
+                if not is_use_na(model.isso_pulldown.VIs[i].i.max):
+                    model.isso_pulldown.VIs[i].i.max = -model.isso_pulldown.VIs[i].i.max
 
             # Apply derating
             if model.derateVIPct:

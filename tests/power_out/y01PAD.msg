@@ -736,3 +736,2463 @@
 
 
  lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      17868 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.62E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.69E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.69E-01                                  
+
+ init: end check errors, cpu clock= 2.76E-01 peak memory=      75 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.76E-01                     
+
+       establish matrix -- done, cpu clock= 2.77E-01 peak memory=      75 mb    
+
+       re-order matrix -- done, cpu clock= 2.77E-01 peak memory=      75 mb     
+
+ init: end setup matrix, cpu clock= 2.78E-01 peak memory=      75 mb            
+
+ dcop: begin dcop, cpu clock= 2.78E-01                                          
+
+ dcop: end dcop, cpu clock= 2.80E-01 peak memory=      75 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.81E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.83E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.85E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.85E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.85E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.85E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.85E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.85E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.85E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.85E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.86E-01
+
+ sweep: tran tran0    end, cpu clock= 2.86E-01 peak memory=      75 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.21 seconds                               
+
+           total elapsed time            0.30 seconds                           
+
+           job started at     00:21:48 12/06/2025                               
+
+           job ended   at     00:21:48 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      15888 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.40E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.46E-01 peak memory=      72 mb      
+
+ init: begin check errors, cpu clock= 2.46E-01                                  
+
+ init: end check errors, cpu clock= 2.54E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.54E-01                     
+
+       establish matrix -- done, cpu clock= 2.54E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.54E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.56E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.56E-01                                          
+
+ dcop: end dcop, cpu clock= 2.58E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.60E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.61E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.63E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.63E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.63E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.63E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.64E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.64E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.64E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.64E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.64E-01
+
+ sweep: tran tran0    end, cpu clock= 2.64E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.28 seconds                           
+
+           job started at     00:21:51 12/06/2025                               
+
+           job ended   at     00:21:51 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      14204 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.52E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.62E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.62E-01                                  
+
+ init: end check errors, cpu clock= 2.74E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.74E-01                     
+
+       establish matrix -- done, cpu clock= 2.74E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.75E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.76E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.77E-01                                          
+
+ dcop: end dcop, cpu clock= 2.79E-01 peak memory=      73 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.81E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.83E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.86E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.87E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.87E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.87E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.87E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.87E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.87E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.87E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.87E-01
+
+ sweep: tran tran0    end, cpu clock= 2.88E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.22 seconds                               
+
+           total elapsed time            0.31 seconds                           
+
+           job started at     00:29:49 12/06/2025                               
+
+           job ended   at     00:29:49 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      11744 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.52E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.59E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.59E-01                                  
+
+ init: end check errors, cpu clock= 2.67E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.67E-01                     
+
+       establish matrix -- done, cpu clock= 2.67E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.67E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.69E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.69E-01                                          
+
+ dcop: end dcop, cpu clock= 2.71E-01 peak memory=      73 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.73E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.74E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.76E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.76E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.76E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.76E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.76E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.77E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.77E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.77E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.77E-01
+
+ sweep: tran tran0    end, cpu clock= 2.77E-01 peak memory=      73 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.21 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     00:29:53 12/06/2025                               
+
+           job ended   at     00:29:53 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      15696 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.48E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.54E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.54E-01                                  
+
+ init: end check errors, cpu clock= 2.62E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.62E-01                     
+
+       establish matrix -- done, cpu clock= 2.62E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.62E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.64E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.64E-01                                          
+
+ dcop: end dcop, cpu clock= 2.65E-01 peak memory=      73 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.67E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.69E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.70E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.72E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.72E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.72E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.72E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.72E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.73E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.73E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.73E-01
+
+ sweep: tran tran0    end, cpu clock= 2.73E-01 peak memory=      73 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     00:30:47 12/06/2025                               
+
+           job ended   at     00:30:47 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      4412 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.55E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.63E-01 peak memory=      72 mb      
+
+ init: begin check errors, cpu clock= 2.63E-01                                  
+
+ init: end check errors, cpu clock= 2.71E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.71E-01                     
+
+       establish matrix -- done, cpu clock= 2.71E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.72E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.74E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.74E-01                                          
+
+ dcop: end dcop, cpu clock= 2.76E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.78E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.80E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.81E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.82E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.82E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.82E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.82E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.82E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.82E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.82E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.82E-01
+
+ sweep: tran tran0    end, cpu clock= 2.82E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.21 seconds                               
+
+           total elapsed time            0.30 seconds                           
+
+           job started at     00:30:50 12/06/2025                               
+
+           job ended   at     00:30:50 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      13944 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.56E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.65E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.65E-01                                  
+
+ init: end check errors, cpu clock= 2.72E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.72E-01                     
+
+       establish matrix -- done, cpu clock= 2.72E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.73E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.74E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.74E-01                                          
+
+ dcop: end dcop, cpu clock= 2.76E-01 peak memory=      73 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.78E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.80E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.81E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.82E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.82E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.82E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.82E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.82E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.82E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.82E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.82E-01
+
+ sweep: tran tran0    end, cpu clock= 2.82E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.30 seconds                           
+
+           job started at     00:46:24 12/06/2025                               
+
+           job ended   at     00:46:25 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      16320 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.50E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.57E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.57E-01                                  
+
+ init: end check errors, cpu clock= 2.64E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.64E-01                     
+
+       establish matrix -- done, cpu clock= 2.64E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.64E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.66E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.66E-01                                          
+
+ dcop: end dcop, cpu clock= 2.68E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.70E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.71E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.73E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.73E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.74E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.74E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.74E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.74E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.74E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.74E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.74E-01
+
+ sweep: tran tran0    end, cpu clock= 2.74E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     00:46:28 12/06/2025                               
+
+           job ended   at     00:46:28 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      10828 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.56E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.63E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.63E-01                                  
+
+ init: end check errors, cpu clock= 2.71E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.71E-01                     
+
+       establish matrix -- done, cpu clock= 2.71E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.71E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.72E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.73E-01                                          
+
+ dcop: end dcop, cpu clock= 2.74E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.76E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.77E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.79E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.80E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.80E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.80E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.80E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.80E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.80E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.80E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.80E-01
+
+ sweep: tran tran0    end, cpu clock= 2.80E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.30 seconds                           
+
+           job started at     00:49:29 12/06/2025                               
+
+           job ended   at     00:49:29 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      8776 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.45E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.53E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.53E-01                                  
+
+ init: end check errors, cpu clock= 2.60E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.60E-01                     
+
+       establish matrix -- done, cpu clock= 2.61E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.61E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.62E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.62E-01                                          
+
+ dcop: end dcop, cpu clock= 2.64E-01 peak memory=      73 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.66E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.67E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.69E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.69E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.70E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.70E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.70E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.70E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.70E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.70E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.70E-01
+
+ sweep: tran tran0    end, cpu clock= 2.70E-01 peak memory=      73 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     00:49:31 12/06/2025                               
+
+           job ended   at     00:49:32 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      4776 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.47E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.54E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.54E-01                                  
+
+ init: end check errors, cpu clock= 2.62E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.62E-01                     
+
+       establish matrix -- done, cpu clock= 2.62E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.63E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.64E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.64E-01                                          
+
+ dcop: end dcop, cpu clock= 2.66E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.68E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.69E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.71E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.71E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.71E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.71E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.71E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.71E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.72E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.72E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.72E-01
+
+ sweep: tran tran0    end, cpu clock= 2.72E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     00:53:07 12/06/2025                               
+
+           job ended   at     00:53:08 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      14432 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.55E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.61E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.61E-01                                  
+
+ init: end check errors, cpu clock= 2.69E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.69E-01                     
+
+       establish matrix -- done, cpu clock= 2.69E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.69E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.70E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.71E-01                                          
+
+ dcop: end dcop, cpu clock= 2.72E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.74E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.75E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.77E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.77E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.78E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.78E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.78E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.78E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.78E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.78E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.78E-01
+
+ sweep: tran tran0    end, cpu clock= 2.78E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     00:53:10 12/06/2025                               
+
+           job ended   at     00:53:10 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      12196 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.58E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.64E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.64E-01                                  
+
+ init: end check errors, cpu clock= 2.72E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.72E-01                     
+
+       establish matrix -- done, cpu clock= 2.72E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.72E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.74E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.74E-01                                          
+
+ dcop: end dcop, cpu clock= 2.76E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.77E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.79E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.81E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.81E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.81E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.81E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.81E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.81E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.82E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.82E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.82E-01
+
+ sweep: tran tran0    end, cpu clock= 2.82E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.21 seconds                               
+
+           total elapsed time            0.30 seconds                           
+
+           job started at     00:55:30 12/06/2025                               
+
+           job ended   at     00:55:30 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      14544 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.56E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.63E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.63E-01                                  
+
+ init: end check errors, cpu clock= 2.70E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.70E-01                     
+
+       establish matrix -- done, cpu clock= 2.70E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.71E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.72E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.72E-01                                          
+
+ dcop: end dcop, cpu clock= 2.74E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.76E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.77E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.79E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.79E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.79E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.79E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.80E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.80E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.80E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.80E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.80E-01
+
+ sweep: tran tran0    end, cpu clock= 2.80E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     00:55:32 12/06/2025                               
+
+           job ended   at     00:55:32 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      16028 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.52E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.59E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.59E-01                                  
+
+ init: end check errors, cpu clock= 2.66E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.66E-01                     
+
+       establish matrix -- done, cpu clock= 2.67E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.67E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.68E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.69E-01                                          
+
+ dcop: end dcop, cpu clock= 2.70E-01 peak memory=      73 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.72E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.73E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.75E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.76E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.76E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.76E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.76E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.77E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.77E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.77E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.77E-01
+
+ sweep: tran tran0    end, cpu clock= 2.77E-01 peak memory=      73 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     00:56:31 12/06/2025                               
+
+           job ended   at     00:56:31 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      18520 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.46E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.53E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.53E-01                                  
+
+ init: end check errors, cpu clock= 2.60E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.60E-01                     
+
+       establish matrix -- done, cpu clock= 2.61E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.61E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.62E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.63E-01                                          
+
+ dcop: end dcop, cpu clock= 2.64E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.66E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.67E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.69E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.69E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.70E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.70E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.70E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.70E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.70E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.70E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.70E-01
+
+ sweep: tran tran0    end, cpu clock= 2.70E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.28 seconds                           
+
+           job started at     00:56:33 12/06/2025                               
+
+           job ended   at     00:56:33 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      10068 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.46E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.52E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.52E-01                                  
+
+ init: end check errors, cpu clock= 2.60E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.60E-01                     
+
+       establish matrix -- done, cpu clock= 2.61E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.61E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.62E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.62E-01                                          
+
+ dcop: end dcop, cpu clock= 2.64E-01 peak memory=      73 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.65E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.67E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.69E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.69E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.69E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.69E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.69E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.69E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.69E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.69E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.70E-01
+
+ sweep: tran tran0    end, cpu clock= 2.70E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.28 seconds                           
+
+           job started at     01:01:43 12/06/2025                               
+
+           job ended   at     01:01:43 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      19612 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.49E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.56E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.56E-01                                  
+
+ init: end check errors, cpu clock= 2.64E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.64E-01                     
+
+       establish matrix -- done, cpu clock= 2.65E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.65E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.67E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.67E-01                                          
+
+ dcop: end dcop, cpu clock= 2.69E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.71E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.72E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.74E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.74E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.74E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.74E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.74E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.74E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.75E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.75E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.75E-01
+
+ sweep: tran tran0    end, cpu clock= 2.75E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     01:01:45 12/06/2025                               
+
+           job ended   at     01:01:46 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      11080 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.57E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.64E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.64E-01                                  
+
+ init: end check errors, cpu clock= 2.72E-01 peak memory=      73 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.72E-01                     
+
+       establish matrix -- done, cpu clock= 2.72E-01 peak memory=      73 mb    
+
+       re-order matrix -- done, cpu clock= 2.72E-01 peak memory=      73 mb     
+
+ init: end setup matrix, cpu clock= 2.73E-01 peak memory=      73 mb            
+
+ dcop: begin dcop, cpu clock= 2.74E-01                                          
+
+ dcop: end dcop, cpu clock= 2.75E-01 peak memory=      73 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.77E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.80E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.81E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.82E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.82E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.82E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.82E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.83E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.83E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.83E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.83E-01
+
+ sweep: tran tran0    end, cpu clock= 2.83E-01 peak memory=      73 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.30 seconds                           
+
+           job started at     01:20:44 12/06/2025                               
+
+           job ended   at     01:20:45 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 
+
+
+****** PrimeSim HSPICE -- T-2022.06 win64 (May 20 2022 7637141) ******          
+
+ Input File: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.spi 
+
+ lic:  
+
+ lic: FLEXlm: SDK_12.10 
+
+ lic: USER:   sh3qm                HOSTNAME: rd78ece-emclab 
+
+ lic: HOSTID: 00ff89f5aa52         PID:      2668 
+
+ lic: Using FLEXlm license file: 
+
+ lic: 1704@synopsys.lic.mst.edu 
+
+ lic: Checkout 1 hspice 
+
+ lic: License/Maintenance for hspice will expire on 04-may-2026/2025.06 
+
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER 1704@synopsys.lic.mst.ed
+
+ lic:   
+
+ init: begin read circuit files, cpu clock= 2.48E-01                            
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/behave/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/AD/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/XILINX/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TLINE/                
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/TI/                   
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/SIGNET/               
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PCI/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/LIN_TECH/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/PET/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/DI0/                  
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/COMLINE/              
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BURR_BRM/             
+
+       option search = C:/synopsys/Hspice_T-2022.06/parts/BJT/                  
+
+       option list                                                              
+
+       option node                                                              
+
+       option post                                                              
+
+       option method = gear                                                     
+
+       option gshunt =    1.000E-12                                             
+
+       option ingold =     2.00                                                 
+
+ init: end read circuit files, cpu clock= 2.55E-01 peak memory=      73 mb      
+
+ init: begin check errors, cpu clock= 2.55E-01                                  
+
+ init: end check errors, cpu clock= 2.62E-01 peak memory=      74 mb            
+
+ init: begin setup matrix, pivot=     0 cpu clock= 2.62E-01                     
+
+       establish matrix -- done, cpu clock= 2.62E-01 peak memory=      74 mb    
+
+       re-order matrix -- done, cpu clock= 2.62E-01 peak memory=      74 mb     
+
+ init: end setup matrix, cpu clock= 2.64E-01 peak memory=      74 mb            
+
+ dcop: begin dcop, cpu clock= 2.64E-01                                          
+
+ dcop: end dcop, cpu clock= 2.65E-01 peak memory=      74 mb tot_iter=       7  
+
+ output: C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\y01PAD.out.tr0 
+
+ sweep: tran tran0    begin, stop_t=  1.70E-09 #sweeps=4996 cpu clock= 2.67E-01 
+
+ tran: time= 1.7455E-10 tot_iter=      81 conv_iter=      33 cpu clock= 2.69E-01
+
+ tran: time= 3.4548E-10 tot_iter=     164 conv_iter=      63 cpu clock= 2.70E-01
+
+ tran: time= 5.1869E-10 tot_iter=     188 conv_iter=      74 cpu clock= 2.71E-01
+
+ tran: time= 7.3956E-10 tot_iter=     195 conv_iter=      77 cpu clock= 2.71E-01
+
+ tran: time= 9.0956E-10 tot_iter=     199 conv_iter=      79 cpu clock= 2.71E-01
+
+ tran: time= 1.0796E-09 tot_iter=     203 conv_iter=      81 cpu clock= 2.71E-01
+
+ tran: time= 1.2496E-09 tot_iter=     207 conv_iter=      83 cpu clock= 2.71E-01
+
+ tran: time= 1.4196E-09 tot_iter=     211 conv_iter=      85 cpu clock= 2.71E-01
+
+ tran: time= 1.5896E-09 tot_iter=     215 conv_iter=      87 cpu clock= 2.71E-01
+
+ tran: time= 1.7000E-09 tot_iter=     219 conv_iter=      89 cpu clock= 2.71E-01
+
+ sweep: tran tran0    end, cpu clock= 2.71E-01 peak memory=      74 mb          
+
+>info:         ***** hspice job concluded                                       
+
+           total cpu time            0.20 seconds                               
+
+           total elapsed time            0.29 seconds                           
+
+           job started at     01:20:48 12/06/2025                               
+
+           job ended   at     01:20:48 12/06/2025                               
+>info:         ***** hspice job concluded
+
+
+ lic: Release hspice token(s) 

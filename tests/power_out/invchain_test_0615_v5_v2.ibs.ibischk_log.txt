@@ -1,0 +1,14 @@
+IBISCHK7 V7.2.1
+
+Checking C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\power_out\invchain_test_0615_v5_v2.ibs for IBIS 7.1 Compatibility...
+
+WARNING (line   30) - Vinl should not be specified for model type Output
+WARNING (line   31) - Vinh should not be specified for model type Output
+WARNING - Model 'driver3': Vmeas timing test load parameter should be specified
+WARNING - Model driver3: Typical ISSO_PU current (-1.905e-01A) at Pulldown reference ( 0.000V) - table value ( 1.800V) is non-zero (> 1.0e-06A)
+WARNING - Model driver3: Minimum ISSO_PU current (-1.766e-01A) at Pulldown reference ( 0.000V) - table value ( 1.700V) is non-zero (> 1.0e-06A)
+
+Errors  : 0
+Warnings: 5
+
+File Passed
