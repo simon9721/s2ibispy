@@ -16,6 +16,7 @@ The format is based on Keep a Changelog, and this project aims to follow Semanti
   - Corner selection (typ/min/max or any combination)
   - Collapsible/expandable model groups in GUI for better organization
   - Enhanced parameter parsing supporting multiple IBIS format variations
+- **Executable Build**: Rebuilt `s2ibispy.exe` with PyInstaller 6.17.0 (Python 3.14.0) including all latest fixes and features
 
 ### Fixed
 - **Composite Current sign convention**: Corrected sign of supply current in `[Composite Current]` tables. Now properly converts SPICE passive sign convention (I(Vsource)) to IBIS active convention - positive current represents power supplied from rail into circuit.

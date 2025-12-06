@@ -1,0 +1,83 @@
+|
+| S2I configuration equivalent to generated_io_buf.t2b for direct comparison
+| Created: December 6, 2025
+|
+[IBIS Ver]		5.0
+[File name]		buffer.ibs
+[File rev] 		0
+
+[date]  October 14, 2025
+[source] Generated for SPICE to IBIS conversion
+[notes] Cadence T2B configuration for SPICE to IBIS conversion
+[disclaimer] This file is for demonstration purposes only
+[Copyright] Copyright 2025 Your Company
+
+|
+| Spice configuration
+|
+[Spice type]		hspice
+
+|
+| Global parameters - matching T2B exactly
+|
+[temperature range] 27 100 0
+[voltage range] 3.3 3 3.6
+[sim time] 5ns
+[vil] 0 0 0
+[vih] 3.3 3 3.6
+[rload] 50
+
+| 
+| Default pin parasitics
+| 
+[R_pkg]			2.0m	1.0m	4.0m
+[L_pkg]			0.2nH	0.1nH	0.4nH
+[C_pkg]			2pF     1pF     4pF
+
+|
+| Component Description
+|
+[Component] CMOS_Buffer
+[manufacturer] Your Company
+
+|
+| SPICE file location
+|
+[Spice file]    C:/Users/sh3qm/PycharmProjects/pret2b/tests/io_buf.sp
+
+|
+| Pin list
+|
+[Pin]
+out out out driver
+-> in oe
+
+in in in dummy
+
+oe oe oe dummy
+
+vdd vdd vdd POWER
+
+vss vss vss GND
+
+|
+| Model: driver (I/O type with enable)
+|
+[Model] driver
+[Model type] I/O
+[Enable] oe
+[Polarity] Non-inverting
+[Model file] hspice.mod hspice.mod hspice.mod
+
+[Rising waveform] 50 0 NA NA NA NA NA NA NA
+[Rising waveform] 50 3.3 NA NA NA NA NA NA NA
+
+[Falling waveform] 50 0 NA NA NA NA NA NA NA
+[Falling waveform] 50 3.3 NA NA NA NA NA NA NA
+
+|
+| Model: dummy (input with NoModel flag)
+|
+[Model] 	dummy
+[NoModel]
+[Model type] Input
