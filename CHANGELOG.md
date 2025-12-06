@@ -6,6 +6,17 @@ The format is based on Keep a Changelog, and this project aims to follow Semanti
 
 ## [Unreleased]
 
+### Added
+- **IBIS Overlay Plotter Tools**: New standalone plotting utilities for comparing IBIS files
+  - `plotter/ibis_overlay_plotter.py` - Interactive CLI tool for overlaying multiple IBIS tables
+  - `plotter/ibis_overlay_plotter_gui.py` - GUI version with collapsible model groups
+  - Support for multiple IBIS file comparison with color-coded overlays
+  - Component/Model hierarchy tracking and display
+  - Fixture information display for waveform tables (R_fixture, V_fixture)
+  - Corner selection (typ/min/max or any combination)
+  - Collapsible/expandable model groups in GUI for better organization
+  - Enhanced parameter parsing supporting multiple IBIS format variations
+
 ### Fixed
 - **Composite Current sign convention**: Corrected sign of supply current in `[Composite Current]` tables. Now properly converts SPICE passive sign convention (I(Vsource)) to IBIS active convention - positive current represents power supplied from rail into circuit.
 

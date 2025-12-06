@@ -82,6 +82,12 @@ Linux/macOS users: use the same steps but activate with `source .venv/bin/activa
 
 See [gui/README.md](gui/README.md) for complete GUI documentation.
 
+**IBIS Overlay Plotter Tools:**
+- Standalone utilities for comparing and overlaying IBIS tables from multiple files
+- CLI version (`plotter/ibis_overlay_plotter.py`) - Interactive command-line interface
+- GUI version (`plotter/ibis_overlay_plotter_gui.py`) - Visual interface with collapsible model groups
+- Features: Component/model hierarchy, fixture info display, corner selection, multi-file overlays
+
 ---
 
 ### Installation (Development)
