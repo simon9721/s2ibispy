@@ -210,12 +210,27 @@ A standalone Windows executable is available that requires no Python installatio
 - All resources (icons, templates, data files) are bundled
 
 To build the executable yourself:
+
+**Method 1: Using the spec file (Recommended - Faster Rebuilds)**
+```powershell
+pip install pyinstaller
+pyinstaller s2ibispy.spec
+```
+
+**Method 2: Direct command (First-time build or spec regeneration)**
 ```powershell
 pip install pyinstaller
 pyinstaller --name s2ibispy --onefile --windowed --icon resources\icons\s2ibispy.ico --add-data "resources;resources" --add-data "templates;templates" --add-data "src\s2ibispy\data;s2ibispy\data" gui_main.py
 ```
 
 The built executable will be in `dist\s2ibispy.exe`.
+
+**Note:** The project includes a pre-configured `s2ibispy.spec` file that:
+- Includes `src` in the module search path for proper s2ibispy package detection
+- Explicitly lists all required hidden imports for the GUI
+- Should be used for subsequent builds after any code changes
+
+If the spec file is missing or needs regeneration, use Method 2, which will create a new `s2ibispy.spec` file. You may need to manually add `pathex=['src']` and the hidden imports list to ensure all s2ibispy modules are properly bundled.
 
 **Key Features**:
 

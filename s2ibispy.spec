@@ -3,10 +3,10 @@
 
 a = Analysis(
     ['gui_main.py'],
-    pathex=[],
+    pathex=['src'],
     binaries=[],
     datas=[('resources', 'resources'), ('templates', 'templates'), ('src\\s2ibispy\\data', 's2ibispy\\data')],
-    hiddenimports=[],
+    hiddenimports=['s2ibispy.cli', 's2ibispy.loader', 's2ibispy.s2ianaly', 's2ibispy.s2ioutput', 's2ibispy.s2ispice', 's2ibispy.models', 's2ibispy.schema', 's2ibispy.s2i_constants', 's2ibispy.correlation', 's2ibispy.s2i_to_yaml'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

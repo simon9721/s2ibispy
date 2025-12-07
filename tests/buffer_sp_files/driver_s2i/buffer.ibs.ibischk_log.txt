@@ -1,0 +1,31 @@
+IBISCHK7 V7.2.1
+
+Checking C:\Users\sh3qm\PycharmProjects\s2ibispy\tests\buffer_sp_files\driver_s2i\buffer.ibs for IBIS 7.1 Compatibility...
+
+NOTE (line   60) - Pulldown Typical data is non-monotonic
+NOTE (line   60) - Pulldown Maximum data is non-monotonic
+NOTE (line   65) - Pulldown Minimum data is non-monotonic
+NOTE (line  151) - Pullup Typical data is non-monotonic
+NOTE (line  154) - Pullup Maximum data is non-monotonic
+NOTE (line  225) - Pullup Minimum data is non-monotonic
+NOTE (line  265) - GND Clamp Minimum data is non-monotonic
+NOTE (line  275) - GND Clamp Typical data is non-monotonic
+NOTE (line  276) - GND Clamp Maximum data is non-monotonic
+NOTE (line  493) - ISSO_PU Maximum data is non-monotonic
+NOTE (line  494) - ISSO_PU Typical data is non-monotonic
+NOTE (line  494) - ISSO_PU Minimum data is non-monotonic
+NOTE (line  538) - ISSO_PD Minimum data is non-monotonic
+NOTE (line  541) - ISSO_PD Typical data is non-monotonic
+NOTE (line  541) - ISSO_PD Maximum data is non-monotonic
+WARNING - Model 'driver': Vmeas timing test load parameter should be specified
+NOTE - Combined Pulldown for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pullup for Model: driver Typical data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pulldown for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pullup for Model: driver Minimum data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pulldown for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation
+NOTE - Combined Pullup for Model: driver Maximum data is non-monotonic based on piece-wise linear interpolation
+
+Errors  : 0
+Warnings: 1
+
+File Passed
